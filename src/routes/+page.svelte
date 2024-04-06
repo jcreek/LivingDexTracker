@@ -1,2 +1,9 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import SignUp from '$lib/components/SignUp.svelte';
+
+	export let data;
+	let { supabase } = data;
+	$: ({ supabase } = data);
+</script>
+
+<SignUp {supabase} />
