@@ -1,9 +1,53 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import SignUp from '$lib/components/SignUp.svelte';
+	import SignIn from '$lib/components/SignIn.svelte';
+	import SignOut from '$lib/components/SignOut.svelte';
 
 	export let data;
 	let { supabase } = data;
 	$: ({ supabase } = data);
+
+	let userEmail = null as string | null | undefined;
+
+	onMount(async () => {
+		await setUserEmail();
+	});
+
+	async function getUser() {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (session) {
+			console.log(session.user);
+			return session.user;
+		}
+
+		return null;
+	}
+
+	async function getUserEmail() {
+		const user = await getUser();
+
+		if (user) {
+			return user.email;
+		}
+
+		return null;
+	}
+
+	async function setUserEmail() {
+		userEmail = await getUserEmail();
+	}
 </script>
 
+{#if userEmail}
+	<span>Welcome back {userEmail}</span>
+	<br />
+{/if}
 <SignUp {supabase} />
+<br />
+<SignIn {supabase} on:signedIn={setUserEmail} />
+<br />
+<SignOut {supabase} on:signedOut={setUserEmail} />
