@@ -58,3 +58,5 @@
 	<PokemonSprite pokedexNumber={666} form={''} />
 	<PokemonSprite pokedexNumber={'003'} form={''} />
 </div>
+
+<div class="bg-blue-500 text-white p-4">This is a component styled with Tailwind CSS</div>
