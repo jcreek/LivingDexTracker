@@ -3,6 +3,7 @@
 	import SignUp from '$lib/components/SignUp.svelte';
 	import SignIn from '$lib/components/SignIn.svelte';
 	import SignOut from '$lib/components/SignOut.svelte';
+	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 
 	export let data;
 	let { supabase } = data;
@@ -51,3 +52,9 @@
 <SignIn {supabase} on:signedIn={setUserEmail} />
 <br />
 <SignOut {supabase} on:signedOut={setUserEmail} />
+
+<div>
+	<PokemonSprite pokedexNumber={666} form={'poke-ball'} />
+	<PokemonSprite pokedexNumber={666} form={''} />
+	<PokemonSprite pokedexNumber={'003'} form={''} />
+</div>
