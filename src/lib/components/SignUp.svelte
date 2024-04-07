@@ -36,4 +36,4 @@
 />
 
 <input type="password" bind:value={password} placeholder="Password" />
-<button class="btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
+<button class="btn btn-secondary" on:click={signUpNewUser}>Sign Up</button>
