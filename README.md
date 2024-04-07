@@ -22,3 +22,7 @@ npm run build
 ```
 
 You can preview the production build with `npm run preview`.
+
+## Dependencies
+
+The living dex tracker's sprite collection is taken from [pokesprite](https://github.com/msikma/pokesprite), which is licensed under [the MIT license](https://github.com/msikma/pokesprite/blob/master/LICENSE).
