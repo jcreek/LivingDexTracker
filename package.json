@@ -3,13 +3,14 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
+		"dev": "npx tailwindcss -i ./static/input.css -o ./static/output.css && vite dev",
+		"build": "npx tailwindcss -i ./static/input.css -o ./static/output.css && vite build",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"tailwind": "npx tailwindcss -i ./static/input.css -o ./static/output.css"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^3.0.0",
