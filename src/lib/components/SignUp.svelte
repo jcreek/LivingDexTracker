@@ -28,6 +28,12 @@
 	}
 </script>
 
-<input type="email" bind:value={email} placeholder="Email" />
+<input
+	type="text"
+	placeholder="Email"
+	class="input input-bordered w-full max-w-xs"
+	bind:value={email}
+/>
+
 <input type="password" bind:value={password} placeholder="Password" />
-<button on:click={signUpNewUser}>Sign Up</button>
+<button class="btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
