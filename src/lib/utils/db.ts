@@ -13,18 +13,16 @@ let mongoConnectionState = 0;
 
 export const dbConnect = async () => {
 	if (mongoConnectionState === 1) {
-		console.log('connection established');
+		console.log('Connection already established');
 		return;
 	}
 
 	if (mongoose.connections.length > 0) {
 		mongoConnectionState = mongoose.connections[0].readyState;
 		if (mongoConnectionState === 1) {
-			console.log('using existing connection');
+			console.log('Using existing connection');
 			return;
 		}
-
-		await mongoose.disconnect();
 	}
 
 	try {
@@ -34,11 +32,10 @@ export const dbConnect = async () => {
 		await mongoose.connection.db.admin().command({ ping: 1 });
 		console.log('Pinged your deployment. You successfully connected to MongoDB!');
 		mongoConnectionState = 1;
-	} finally {
-		// Ensures that the client will close when you finish/error
-		await mongoose.disconnect();
+	} catch (error) {
+		console.error('Error connecting to MongoDB:', error);
+		mongoConnectionState = 0;
 	}
-	mongoConnectionState = 1;
 };
 
 export const dbDisconnect = async () => {
