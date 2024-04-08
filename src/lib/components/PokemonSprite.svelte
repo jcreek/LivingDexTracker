@@ -32,5 +32,5 @@
 {#if imagePath}
 	<img src={imagePath} alt="sprite" />
 {:else}
-	<p>Loading...</p>
+	<span class="loading loading-spinner loading-xs"></span>
 {/if}
