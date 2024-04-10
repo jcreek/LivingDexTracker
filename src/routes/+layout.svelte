@@ -1,15 +1,46 @@
 <script lang="ts">
 	import 'tailwindcss/tailwind.css';
+	import { onMount } from 'svelte';
+	import { type User } from '@supabase/auth-js';
+	import SignIn from '$lib/components/SignIn.svelte';
+	import SignOut from '$lib/components/SignOut.svelte';
+
+	export let data;
+	let { supabase } = data;
+	$: ({ supabase } = data);
+
+	let user = null as User | null;
+
+	onMount(async () => {
+		await getUser();
+	});
+
+	async function getUser() {
+		const {
+			data: { session }
+		} = await supabase.auth.getSession();
+
+		if (session) {
+			console.log(session.user);
+			user = session.user;
+		} else {
+			user = null;
+		}
+	}
 </script>
 
 <header>
 	<div class="navbar bg-base-100">
 		<div class="flex-1">
-			<a class="btn btn-ghost text-xl">Pokedex Tracker</a>
+			<a class="btn btn-ghost text-xl" href="/">Living Dex Tracker</a>
 		</div>
 		<div class="flex-none gap-2">
 			<div class="form-control">
-				<input type="text" placeholder="Search" class="input input-bordered w-24 md:w-auto" />
+				<input
+					type="text"
+					placeholder="Search for a Dex"
+					class="input input-bordered w-32 md:w-auto"
+				/>
 			</div>
 			<div class="dropdown dropdown-end">
 				<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
@@ -21,17 +52,18 @@
 					</div>
 				</div>
 				<ul
-					tabindex="0"
-					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52"
+					tabindex="-1"
+					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box min-w-[13rem] w-auto"
 				>
-					<li>
-						<a class="justify-between">
-							Profile
-							<span class="badge">New</span>
-						</a>
-					</li>
-					<li><a>Settings</a></li>
-					<li><a>Logout</a></li>
+					{#if user}
+						<li>
+							<a href="/profile"> Profile </a>
+						</li>
+						<li><a href="/settings">Settings</a></li>
+						<li><SignOut {supabase} on:signedOut={getUser} /></li>
+					{:else}
+						<li><SignIn {supabase} on:signedIn={getUser} /></li>
+					{/if}
 				</ul>
 			</div>
 		</div>
