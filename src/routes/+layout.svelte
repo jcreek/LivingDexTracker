@@ -1,6 +1,7 @@
 <script lang="ts">
 	import 'tailwindcss/tailwind.css';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
 	import SignIn from '$lib/components/SignIn.svelte';
 	import SignOut from '$lib/components/SignOut.svelte';
@@ -9,7 +10,11 @@
 	let { supabase } = data;
 	$: ({ supabase } = data);
 
-	let user = null as User | null;
+	let localUser = null as User | null;
+	const unsubscribe = user.subscribe((value) => {
+		localUser = value;
+	});
+	onDestroy(unsubscribe);
 
 	onMount(async () => {
 		await getUser();
@@ -22,10 +27,13 @@
 
 		if (session) {
 			console.log(session.user);
-			user = session.user;
+			localUser = session.user;
 		} else {
-			user = null;
+			localUser = null;
 		}
+
+		// Update the store so that user is available to all components
+		user.set(localUser);
 	}
 </script>
 
@@ -55,7 +63,7 @@
 					tabindex="-1"
 					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box min-w-[13rem] w-auto"
 				>
-					{#if user}
+					{#if localUser}
 						<li>
 							<a href="/profile"> Profile </a>
 						</li>
