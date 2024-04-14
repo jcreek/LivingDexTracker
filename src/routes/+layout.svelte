@@ -6,6 +6,11 @@
 	import SignIn from '$lib/components/SignIn.svelte';
 	import SignOut from '$lib/components/SignOut.svelte';
 
+	import { pwaInfo } from 'virtual:pwa-info';
+	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
+
+	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : '';
+
 	export let data;
 	let { supabase } = data;
 	$: ({ supabase } = data);
@@ -18,6 +23,24 @@
 
 	onMount(async () => {
 		await getUser();
+
+		if (pwaInfo) {
+			const { registerSW } = await import('virtual:pwa-register');
+			registerSW({
+				immediate: true,
+				onRegistered(r) {
+					// uncomment following code if you want check for updates
+					// r && setInterval(() => {
+					//    console.log('Checking for sw update')
+					//    r.update()
+					// }, 20000 /* 20s for testing purposes */)
+					console.log(`SW Registered: ${r}`);
+				},
+				onRegisterError(error) {
+					console.log('SW registration error', error);
+				}
+			});
+		}
 	});
 
 	async function getUser() {
@@ -36,6 +59,34 @@
 		user.set(localUser);
 	}
 </script>
+
+<svelte:head>
+	{#if pwaAssetsHead.themeColor}
+		<meta name="theme-color" content={pwaAssetsHead.themeColor.content} />
+	{/if}
+	{#if pwaAssetsHead.description}
+		<meta name="description" content={pwaAssetsHead.description.content} />
+	{/if}
+	{#each pwaAssetsHead.links as link}
+		<link {...link} />
+	{/each}
+	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
+	{@html webManifestLink}
+
+	<!-- <meta
+		name="description"
+		content="A free and open source web app to track completion of a living Pokédex, which works offline."
+	/> -->
+	<meta property="og:title" content="Living Dex Tracker - A free Pokédex completion tool" />
+	<meta property="og:url" content="https://pokedex.jcreek.co.uk" />
+	<meta
+		property="og:description"
+		content="A free and open source web app to track completion of a living Pokédex, which works offline."
+	/>
+	<link rel="canonical" href="https://pokedex.jcreek.co.uk" />
+	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+	<!-- <link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" /> -->
+</svelte:head>
 
 <header>
 	<div class="navbar bg-base-100">
@@ -104,3 +155,7 @@
 		<a class="link link-hover">Cookie policy</a>
 	</nav>
 </footer>
+
+{#await import('$lib/components/pwa/ReloadPrompt.svelte') then { default: ReloadPrompt }}
+	<ReloadPrompt />
+{/await}
