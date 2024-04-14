@@ -1,5 +1,7 @@
 import adapter from '@sveltejs/adapter-netlify';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+// you don't need to do this if you're using generateSW strategy in your app
+import { generateSW } from './pwa.mjs';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -17,7 +19,14 @@ const config = {
 			// instead of creating a single one for the entire app.
 			// if `edge` is true, this option cannot be used
 			split: false
-		})
+		}),
+		serviceWorker: {
+			register: true
+		},
+		files: {
+			// you don't need to do this if you're using generateSW strategy in your app
+			serviceWorker: generateSW ? undefined : 'src/prompt-sw.ts'
+		}
 	}
 };
 
