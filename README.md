@@ -35,6 +35,12 @@ The Pokédex data is stored in a [MongoDB](https://www.mongodb.com/) database ho
 
 User authentication is handled by [Supabase Auth](https://supabase.com/auth).
 
+VITE_SUPABASE_PASSWORD="1muR3DwZgy2LNazT" LivingDexTracker
+
+mongodb
+livingdextracker
+0lNlj4wbTFH2UZcy
+
 ## Dependencies
 
 The living dex tracker's sprite collection is taken from [pokesprite](https://github.com/msikma/pokesprite), which is licensed under [the MIT license](https://github.com/msikma/pokesprite/blob/master/LICENSE).
