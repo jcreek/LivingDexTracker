@@ -1,30 +1,42 @@
 <svelte:head>
-	<title>About</title>
+	<title>About Us</title>
 	<meta name="description" content="About this app" />
 </svelte:head>
 
-<div class="content">
-	<h1>About this app</h1>
+<div class="h-screen">
+	<div id="introduction">
+		<p id="about-us">About Us</p>
+		<p id="about-us-features">Features</p>
+		<p id="helpful-info">Helpful Information</p>
+	</div>
 
-	<p>
-		This is a <a href="https://kit.svelte.dev">SvelteKit</a> app. You can make your own by typing the
-		following into your command line and following the prompts:
-	</p>
+	<div id="team-information">
+		Include a section introducing the development team behind the application, highlighting key
+		members and their roles.
+		<ul>
+			<li id="tm-name-one">Team Member Name</li>
 
-	<pre>npm create svelte@latest</pre>
+			<li id="tm-name-two">Team Member Name</li>
+		</ul>
+	</div>
 
-	<p>
-		The page you're looking at is purely static HTML, with no client-side interactivity needed.
-		Because of that, we don't need to load any JavaScript. Try viewing the page's source, or opening
-		the devtools network panel and reloading.
-	</p>
+	<div id="project-details">
+		Share insights into the development process, challenges faced, and any interesting anecdotes or
+		milestones achieved during the project's journey.
+	</div>
 
+	<div id="contact-information">
+		Offer ways for users to get in touch with the development team, such as through social media, or
+		a contact form.
+	</div>
+
+	<div id="acknowledgements">
+		Express gratitude to any individuals or organisations that have contributed to the project's
+		success, including sponsors, supporters, or open-source contributors.
+	</div>
+
+	<div id="legal-information">
+		Provide necessary legal disclaimers, privacy policies, or terms of service to ensure compliance
+		with relevant regulations and protect user rights.
+	</div>
 </div>
-
-<style>
-	.content {
-		width: 100%;
-		max-width: var(--column-width);
-		margin: var(--column-margin-top) auto 0 auto;
-	}
-</style>
