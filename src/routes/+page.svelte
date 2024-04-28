@@ -58,7 +58,7 @@
 	<img src="/template-welcome-pokedex.png" alt="welcome background" height="100%" width="100%" />
 </div>
 
-<div class="Join Us flex justify-center">
+<div class="flex justify-center">
 	<div class="text-4xl text-center font-mono p-8">
 		<h3>Join Us!</h3>
 	</div>
