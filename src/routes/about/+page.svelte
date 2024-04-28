@@ -14,9 +14,8 @@
 		Include a section introducing the development team behind the application, highlighting key
 		members and their roles.
 		<ul>
-			<li id="tm-name-one">Team Member Name</li>
-
-			<li id="tm-name-two">Team Member Name</li>
+			<li>Team Member Name</li>
+			<li>Team Member Name</li>
 		</ul>
 	</div>
 
