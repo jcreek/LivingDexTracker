@@ -38,7 +38,7 @@
 
 		<p class="font-semibold text-xl mt-20 mb-5 ml-5">Features</p>
 
-		<!-- Ask Josh to help you with JavaScript so the card features can swipe -->
+		<!-- TODO (#41) - Make this a card carousel -->
 		<div class="card md:card-side bg-base-00 shadow-m">
 			<figure>
 				<img src="/OIG3.jpeg" alt="Album" />
