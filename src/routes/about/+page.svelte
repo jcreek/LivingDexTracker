@@ -200,9 +200,11 @@
 				Living Dex Tracker is a fan-made website dedicated to providing information about Pokemon
 				creatures. We do not claim ownership of any Pokemon characters, images, or other content
 				featured on this website.
-				<br /><br />We do not generate revenue from the use of Pokemon content. Any advertisements
-				or sponsored content on this website are unrelated to Pokemon and are used solely to support
-				the maintenance and operation of the website.
+			</p>
+			<p class="text-sm mb-5 ml-5 mr-5">
+				We do not generate revenue from the use of Pokemon content. Any advertisements or sponsored
+				content on this website are unrelated to Pokemon and are used solely to support the
+				maintenance and operation of the website.
 			</p>
 		</div>
 
