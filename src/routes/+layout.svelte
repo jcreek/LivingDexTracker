@@ -49,7 +49,6 @@
 		} = await supabase.auth.getSession();
 
 		if (session) {
-			console.log(session.user);
 			localUser = session.user;
 		} else {
 			localUser = null;
