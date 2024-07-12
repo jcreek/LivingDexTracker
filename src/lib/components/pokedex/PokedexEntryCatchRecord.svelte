@@ -49,7 +49,9 @@
 			{#if showForms}
 				<p><strong>Can Gigantamax:</strong> {pokedexEntry.canGigantamax ? 'Yes' : 'No'}</p>
 			{/if}
-			<p><strong>Notes:</strong> {pokedexEntry.notes}</p>
+			{#if pokedexEntry.notes}
+				<p><strong>Notes:</strong> {pokedexEntry.notes}</p>
+			{/if}
 		</div>
 	</div>
 
