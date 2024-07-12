@@ -6,6 +6,8 @@
 
 	export let pokedexEntry: PokedexEntry;
 	export let catchRecord: CatchRecord;
+	export let showOrigins: boolean;
+	export let showForms: boolean;
 
 	const dispatch = createEventDispatcher();
 
@@ -34,15 +36,19 @@
 			</div>
 		</div>
 
-		<div class="bg-white text-black rounded-lg p-4 mb-2">
-			<p><strong>Form:</strong> {pokedexEntry.form ? pokedexEntry.form : '-'}</p>
-		</div>
+		{#if showForms}
+			<div class="bg-white text-black rounded-lg p-4 mb-2">
+				<p><strong>Form:</strong> {pokedexEntry.form ? pokedexEntry.form : '-'}</p>
+			</div>
+		{/if}
 
 		<div class="bg-white text-black rounded-lg p-4">
 			<p><strong>Box:</strong> {pokedexEntry.boxPlacement.box}</p>
 			<p><strong>Row:</strong> {pokedexEntry.boxPlacement.row}</p>
 			<p><strong>Column:</strong> {pokedexEntry.boxPlacement.column}</p>
-			<p><strong>Can Gigantamax:</strong> {pokedexEntry.canGigantamax ? 'Yes' : 'No'}</p>
+			{#if showForms}
+				<p><strong>Can Gigantamax:</strong> {pokedexEntry.canGigantamax ? 'Yes' : 'No'}</p>
+			{/if}
 			<p><strong>Notes:</strong> {pokedexEntry.notes}</p>
 		</div>
 	</div>
@@ -77,7 +83,7 @@
 				class="form-checkbox"
 			/>
 		</div>
-		{#if pokedexEntry.canGigantamax}
+		{#if pokedexEntry.canGigantamax && showForms}
 			<div class="flex items-center">
 				<label class="block font-bold mr-2" for={`hasGigantamaxedInput-${catchRecord._id}`}
 					>Has Gigantamaxed:</label
@@ -103,18 +109,20 @@
 	</div>
 
 	<div class="dex-column additional-details-container">
-		<div class="bg-white text-black rounded-lg p-4 mb-2">
-			<p><strong>Region to Catch In:</strong> {pokedexEntry.regionToCatchIn}</p>
-			<p><strong>Games to catch in:</strong></p>
-			<ul class="list-disc list-inside">
-				{#each pokedexEntry.gamesToCatchIn as game}
-					<li>{game}</li>
-				{/each}
-			</ul>
-			{#if pokedexEntry.regionToEvolveIn}
-				<p><strong>Region to Evolve In:</strong> {pokedexEntry.regionToEvolveIn}</p>
-			{/if}
-		</div>
+		{#if showOrigins}
+			<div class="bg-white text-black rounded-lg p-4 mb-2">
+				<p><strong>Region to Catch In:</strong> {pokedexEntry.regionToCatchIn}</p>
+				<p><strong>Games to catch in:</strong></p>
+				<ul class="list-disc list-inside">
+					{#each pokedexEntry.gamesToCatchIn as game}
+						<li>{game}</li>
+					{/each}
+				</ul>
+				{#if pokedexEntry.regionToEvolveIn}
+					<p><strong>Region to Evolve In:</strong> {pokedexEntry.regionToEvolveIn}</p>
+				{/if}
+			</div>
+		{/if}
 		<div class="bg-white text-black rounded-lg p-4">
 			<button on:click={save}>Save</button>
 		</div>
