@@ -32,7 +32,6 @@
 	}
 
 	async function fetchCatchRecords() {
-		console.log('Fetching catch record data');
 		const response = await fetch('/api/catch-records');
 		if (!response.ok) {
 			throw new Error('Failed to fetch catch record data');
@@ -52,6 +51,11 @@
 				hasGigantamaxed: false,
 				personalNotes: ''
 			}));
+
+			if (newCatchRecords.length === 0) {
+				alert('No pokedex entries to create catch records for');
+				return;
+			}
 
 			const batchSize = 500;
 			for (let i = 0; i < newCatchRecords.length; i += batchSize) {
