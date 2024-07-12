@@ -1,31 +1,31 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 export interface PokedexEntry extends Document {
-	order: number;
-	boxPlacement: { box: number; row: number; column: number };
 	pokedexNumber: number;
+	boxPlacement: { box: number; row: number; column: number };
 	pokemon: string;
 	form: string;
-	generation: number;
-	originGame: string;
-	alternativeOrigin: string;
-	howToObtain: string;
+	canGigantamax: boolean;
+	regionToCatchIn: string;
+	gamesToCatchIn: string[];
+	regionToEvolveIn: string;
+	notes: string;
 }
 
 const pokedexEntrySchema = new Schema<PokedexEntry>({
-	order: Number,
+	pokedexNumber: Number,
 	boxPlacement: {
 		box: Number,
 		row: Number,
 		column: Number
 	},
-	pokedexNumber: Number,
 	pokemon: String,
 	form: String,
-	generation: Number,
-	originGame: String,
-	alternativeOrigin: String,
-	howToObtain: String
+	canGigantamax: Boolean,
+	regionToCatchIn: String,
+	gamesToCatchIn: Array<string>,
+	regionToEvolveIn: String,
+	notes: String
 });
 
 export default mongoose.model<PokedexEntry>('PokedexEntry', pokedexEntrySchema);
