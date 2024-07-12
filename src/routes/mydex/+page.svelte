@@ -21,6 +21,17 @@
 	let creatingRecords = false;
 	let totalRecordsCreated = 0;
 
+	let showOrigins = true;
+	let showForms = true;
+
+	function toggleOrigins() {
+		showOrigins = !showOrigins;
+	}
+
+	function toggleForms() {
+		showForms = !showForms;
+	}
+
 	async function fetchPokeDexEntries() {
 		console.log('Fetching updated Pokedex entry data');
 		const response = await fetch('/api/pokedexentries');
@@ -164,8 +175,8 @@
 <div class="container mx-auto">
 	{#if combinedData}
 		<div>
-			<button>Toggle Forms</button>
-			<button>Toggle Origins</button>
+			<button on:click={() => toggleForms()}>Toggle Forms</button>
+			<button on:click={() => toggleOrigins()}>Toggle Origins</button>
 		</div>
 
 		<!-- <p>
@@ -175,6 +186,8 @@
 			<div>
 				<PokedexEntryCatchRecord
 					{pokedexEntry}
+					{showOrigins}
+					{showForms}
 					bind:catchRecord
 					on:updateCatch={() => updateACatch(catchRecord)}
 				/>
