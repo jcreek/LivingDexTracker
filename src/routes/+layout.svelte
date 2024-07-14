@@ -88,7 +88,7 @@
 </svelte:head>
 
 <header>
-	<div class="navbar bg-neutral">
+	<div class="navbar bg-primary text-primary-content">
 		<div class="navbar-start">
 			<div class="dropdown">
 				<div tabindex="0" role="button" class="btn btn-ghost btn-circle">
@@ -107,7 +107,7 @@
 					>
 				</div>
 				<ul
-					class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
+					class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-primary text-primary-content rounded-box w-52"
 				>
 					<li><a href="/about">About</a></li>
 					<li>
@@ -143,7 +143,7 @@
 				</div>
 				<ul
 					tabindex="-1"
-					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box min-w-[13rem] w-auto"
+					class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-primary text-primary-content rounded-box min-w-[13rem] w-auto"
 				>
 					{#if localUser}
 						<li>
@@ -167,7 +167,7 @@
 	<slot />
 </main>
 
-<footer class="footer items-center p-4 bg-neutral text-neutral-content">
+<footer class="footer items-center p-4 bg-neutral text-neutral-content bottom-0">
 	<aside class="items-center grid-flow-col">
 		<a href="https://github.com/jcreek/LivingDexTracker" target="_blank">
 			<svg

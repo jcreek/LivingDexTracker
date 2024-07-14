@@ -14,9 +14,9 @@ export default {
 				pokeball: {
 					primary: '#ee1515',
 					'primary-content': '#ffffff',
-					secondary: '#3b82c4',
+					secondary: '#ffd700',
 					'secondary-content': '#ffffff',
-					accent: '#7e308e',
+					accent: '#3b82c4',
 					neutral: '#ffffff',
 					'base-100': '#f0f0f0',
 					'base-content': '#222224'
