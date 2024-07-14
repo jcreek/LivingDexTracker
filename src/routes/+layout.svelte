@@ -137,28 +137,32 @@
 					>
 				</button>
 				<div class="dropdown dropdown-end">
-					<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-						<div class="w-10 rounded-full">
-							<img alt="usericon" src="/OIG5.jpg" />
+					{#if localUser}
+						<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+							<div class="w-10 rounded-full">
+								<img alt="usericon" src="/OIG5.jpg" />
+							</div>
 						</div>
-					</div>
-					<ul
-						tabindex="-1"
-						class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-primary text-primary-content rounded-box min-w-[13rem] w-auto"
-					>
-						{#if localUser}
-							<li>
-								<a href="/mydex"> My Dex </a>
-							</li>
-							<li>
-								<a href="/profile"> Profile </a>
-							</li>
-							<li><a href="/settings">Settings</a></li>
-							<li><SignOut {supabase} on:signedOut={getUser} /></li>
-						{:else}
-							<li><SignIn {supabase} on:signedIn={getUser} /></li>
-						{/if}
-					</ul>
+						<ul
+							tabindex="-1"
+							class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-primary text-primary-content rounded-box min-w-[13rem] w-auto"
+						>
+							{#if localUser}
+								<li>
+									<a href="/mydex"> My Dex </a>
+								</li>
+								<li>
+									<a href="/profile"> Profile </a>
+								</li>
+								<li><a href="/settings">Settings</a></li>
+								<li><SignOut {supabase} on:signedOut={getUser} /></li>
+							{:else}
+								<li><SignIn {supabase} on:signedIn={getUser} /></li>
+							{/if}
+						</ul>
+					{:else}
+						<a href="/signin">Sign In</a>
+					{/if}
 				</div>
 			</div>
 		</div>
