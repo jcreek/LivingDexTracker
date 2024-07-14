@@ -139,6 +139,7 @@
 	<div class="dex-column additional-details-container">
 		{#if showOrigins}
 			<div class="bg-white text-black rounded-lg p-4 mb-2">
+				<h3 class="text-xl font-semibold mb-4">Origin Dex Requirements</h3>
 				<p><strong>Region to Catch In:</strong> {pokedexEntry.regionToCatchIn}</p>
 				<p><strong>Games to catch in:</strong></p>
 				<ul class="list-disc list-inside">
