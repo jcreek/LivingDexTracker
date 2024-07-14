@@ -11,7 +11,7 @@
 
 	const dispatch = createEventDispatcher();
 
-	function save() {
+	function updateCatchRecord() {
 		dispatch('updateCatch', { pokedexEntry, catchRecord });
 	}
 </script>
@@ -83,6 +83,7 @@
 						type="checkbox"
 						bind:checked={catchRecord.caught}
 						class="checkbox checkbox-primary border-black"
+						on:change={updateCatchRecord}
 					/>
 				</label>
 			</div>
@@ -95,6 +96,7 @@
 						type="checkbox"
 						bind:checked={catchRecord.haveToEvolve}
 						class="checkbox checkbox-primary border-black"
+						on:change={updateCatchRecord}
 					/>
 				</label>
 			</div>
@@ -107,6 +109,7 @@
 						type="checkbox"
 						bind:checked={catchRecord.inHome}
 						class="checkbox checkbox-primary border-black"
+						on:change={updateCatchRecord}
 					/>
 				</label>
 			</div>
@@ -120,6 +123,7 @@
 							type="checkbox"
 							bind:checked={catchRecord.hasGigantamaxed}
 							class="checkbox checkbox-primary border-black"
+							on:change={updateCatchRecord}
 						/>
 					</label>
 				</div>
@@ -133,6 +137,7 @@
 				bind:value={catchRecord.personalNotes}
 				id={`personalNotesInput-${catchRecord._id}`}
 				class="form-textarea w-full p-2 border rounded"
+				on:change={updateCatchRecord}
 			></textarea>
 		</p>
 	</div>
@@ -152,9 +157,6 @@
 				{/if}
 			</div>
 		{/if}
-		<div class="bg-white text-black rounded-lg p-4">
-			<button on:click={save}>Save</button>
-		</div>
 	</div>
 </div>
 
