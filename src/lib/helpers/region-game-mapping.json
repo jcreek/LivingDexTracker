@@ -1,0 +1,46 @@
+[
+	{
+		"region": "Kanto",
+		"games": ["Red", "Blue", "Yellow", "LG: Pikachu", "LG: Eevee"]
+	},
+	{
+		"region": "Johto",
+		"games": ["Gold", "Silver", "Crystal", "HG", "SS"]
+	},
+	{
+		"region": "Hoenn",
+		"games": ["Ruby", "Sapphire", "Emerald", "OR", "AS"]
+	},
+	{
+		"region": "Sinnoh",
+		"games": ["Diamond", "Pearl", "Platinum", "BD", "SP"]
+	},
+	{
+		"region": "Unova",
+		"games": ["Black", "White", "Black2", "White2", "Dream Radar"]
+	},
+	{
+		"region": "Kalos",
+		"games": ["X", "Y"]
+	},
+	{
+		"region": "Alola",
+		"games": ["Sun", "Moon", "Moon Demo", "US", "UM"]
+	},
+	{
+		"region": "Galar",
+		"games": ["Sword", "Shield"]
+	},
+	{
+		"region": "Hisui",
+		"games": ["PLA"]
+	},
+	{
+		"region": "Paldea",
+		"games": ["Scarlet", "Violet"]
+	},
+	{
+		"region": "Unknown",
+		"games": ["Home", "Go"]
+	}
+]
