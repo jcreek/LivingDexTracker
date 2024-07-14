@@ -55,21 +55,15 @@
 			{/if}
 
 			{#if pokedexEntry.evolutionInformation}
-				<p><strong>Evolution Info:</strong> {pokedexEntry.evolutionInformation}</p>
-			{/if}
-			{#if pokedexEntry.catchInformation.length > 0}
-				<p><strong>Catch Info:</strong></p>
-				<ul class="list-disc list-inside">
-					{#each pokedexEntry.catchInformation as info}
-						<li>
-							<ul>
-								<li><strong>Location:</strong> {info.game}</li>
-								<li><strong>Method:</strong> {info.location}</li>
-								<li><strong>Level:</strong> {info.notes}</li>
-							</ul>
-						</li>
-					{/each}
-				</ul>
+				<p><strong>How to evolve: </strong>{pokedexEntry.evolutionInformation}</p>
+			{:else}
+				<p>
+					<strong>How to evolve: </strong>Currently missing - can you
+					<a
+						href="https://github.com/jcreek/LivingDexTracker"
+						class="underline text-primary hover:text-secondary">help contribute</a
+					>?
+				</p>
 			{/if}
 		</div>
 	</div>
@@ -155,6 +149,39 @@
 				{#if pokedexEntry.regionToEvolveIn}
 					<p><strong>Region to Evolve In:</strong> {pokedexEntry.regionToEvolveIn}</p>
 				{/if}
+			</div>
+		{/if}
+		{#if pokedexEntry.catchInformation.length > 0}
+			<div class="bg-white text-black rounded-lg p-4 mb-2">
+				<p><strong>Where to catch: </strong></p>
+				<ul class="list-disc list-inside">
+					{#each pokedexEntry.catchInformation as info}
+						<li>
+							<ul>
+								<li><strong>Game:</strong> {info.game}</li>
+								<li><strong>Location:</strong> {info.location}</li>
+								<li><strong>Notes:</strong> {info.notes}</li>
+							</ul>
+						</li>
+					{/each}
+				</ul>
+				<p>
+					<strong>Missing a game?</strong> - can you
+					<a
+						href="https://github.com/jcreek/LivingDexTracker"
+						class="underline text-primary hover:text-secondary">help contribute</a
+					>?
+				</p>
+			</div>
+		{:else}
+			<div class="bg-white text-black rounded-lg p-4 mb-2">
+				<p>
+					<strong>Where to catch: </strong>Currently missing - can you
+					<a
+						href="https://github.com/jcreek/LivingDexTracker"
+						class="underline text-primary hover:text-secondary">help contribute</a
+					>?
+				</p>
 			</div>
 		{/if}
 	</div>
