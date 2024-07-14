@@ -16,14 +16,19 @@
 	}
 </script>
 
-<div>
-	<button on:click={previousPage} disabled={currentPage === 1}>Previous</button>
-	<button on:click={nextPage} disabled={currentPage === totalPages}>Next</button>
-
-	<label for="itemsPerPage">Items per page:</label>
-	<select id="itemsPerPage" on:change={setItemsPerPage}>
-		<option value="20">20</option>
-		<option value="50">50</option>
-		<option value="100">100</option>
-	</select>
+<div class="join mb-4">
+	<button class="join-item btn" on:click={previousPage} disabled={currentPage === 1}>«</button>
+	<button class="join-item btn">Page {currentPage} of {totalPages}</button>
+	<button class="join-item btn" on:click={nextPage} disabled={currentPage === totalPages}>»</button>
 </div>
+
+<label for="itemsPerPage">Items per page:</label>
+<select
+	id="itemsPerPage"
+	class="select select-bordered w-full max-w-xs text-black"
+	on:change={setItemsPerPage}
+>
+	<option value="20">20</option>
+	<option value="50">50</option>
+	<option value="100">100</option>
+</select>
