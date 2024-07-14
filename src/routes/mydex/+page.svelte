@@ -160,8 +160,10 @@
 			<button class="btn btn-sm" on:click={() => toggleForms()}>Toggle Forms</button>
 			{showForms ? 'On' : 'Off'}
 			<button class="btn btn-sm" on:click={() => toggleOrigins()}>Toggle Origins</button>
+			{showOrigins ? 'On' : 'Off'}
 		</div>
 
+		<h2 class="text-2xl font-semibold mb-4">Paging</h2>
 		<div>
 			<Pagination bind:currentPage bind:itemsPerPage bind:totalPages />
 		</div>
