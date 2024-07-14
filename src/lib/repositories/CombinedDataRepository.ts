@@ -6,7 +6,9 @@ class CombinedDataRepository {
 	async findCombinedData(
 		page: number = 1,
 		limit: number = 20,
-		enableForms: boolean = true
+		enableForms: boolean = true,
+		region: string = '',
+		game: string = ''
 	): Promise<CombinedData[]> {
 		const skip = (page - 1) * limit;
 		const pipeline: any[] = [
@@ -43,6 +45,22 @@ class CombinedDataRepository {
 			});
 		}
 
+		if (region.length > 0) {
+			pipeline.unshift({
+				$match: {
+					regionToCatchIn: region
+				}
+			});
+		}
+
+		if (game.length > 0) {
+			pipeline.unshift({
+				$match: {
+					gamesToCatchIn: { $in: [game] }
+				}
+			});
+		}
+
 		const combinedData: CombinedData[] = await PokedexEntryModel.aggregate(pipeline).exec();
 
 		// Filter out entries with no catch records
@@ -54,11 +72,26 @@ class CombinedDataRepository {
 		}));
 	}
 
-	async countCombinedData(enableForms: boolean): Promise<number> {
+	async countCombinedData(enableForms: boolean, region: string, game: string): Promise<number> {
 		const filter: any = {};
 
 		if (!enableForms) {
 			filter['boxPlacement.box'] = { $ne: null };
+		}
+
+		if (region.length > 0) {
+			filter['regionToCatchIn'] = region;
+		}
+
+		if (game.length > 0) {
+			// Check if gamesToCatchIn is not already defined in filter
+			if (!filter['gamesToCatchIn']) {
+				filter['gamesToCatchIn'] = [];
+			}
+			// Add the game to the filter if it's not already included
+			if (!filter['gamesToCatchIn'].includes(game)) {
+				filter['gamesToCatchIn'].push(game);
+			}
 		}
 
 		return PokedexEntryModel.countDocuments(filter).exec();
