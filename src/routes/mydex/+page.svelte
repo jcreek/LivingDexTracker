@@ -31,6 +31,7 @@
 	}
 
 	async function getData() {
+		combinedData = null;
 		const response = await fetch(`/api/combined-data?page=${currentPage}&limit=${itemsPerPage}`);
 		const data = await response.json();
 
@@ -49,58 +50,72 @@
 	}
 
 	async function updateACatch(catchRecord: CatchRecord) {
-		alert('here');
-		// if (!localUser?.id) {
-		// 	alert('User not signed in');
-		// 	return;
-		// }
+		if (!localUser?.id) {
+			alert('User not signed in');
+			return;
+		}
 
-		// const requestOptions = {
-		// 	method: 'PUT',
-		// 	headers: { 'Content-Type': 'application/json' },
-		// 	body: JSON.stringify(catchRecord)
-		// };
+		const requestOptions = {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(catchRecord)
+		};
 
-		// try {
-		// 	const response = await fetch('/api/catch-records', requestOptions);
-		// 	if (!response.ok) {
-		// 		throw new Error('Failed to update catch record');
-		// 	}
+		try {
+			const response = await fetch('/api/catch-records', requestOptions);
+			if (!response.ok) {
+				throw new Error('Failed to update catch record');
+			}
 
-		// 	const updatedRecord = await response.json();
-		// 	console.log('Updated catch record:', updatedRecord);
-		// } catch (error) {
-		// 	console.error('Error updating catch record:', error);
-		// }
+			const updatedRecord = await response.json();
+			console.log('Updated catch record:', updatedRecord);
+		} catch (error) {
+			console.error('Error updating catch record:', error);
+		}
 	}
 </script>
 
-<div class="container mx-auto">
-	{#if combinedData}
-		<div>
-			<button on:click={() => toggleForms()}>Toggle Forms</button>
-			<button on:click={() => toggleOrigins()}>Toggle Origins</button>
+<svelte:head>
+	<title>Living Dex Tracker - My Dex</title>
+</svelte:head>
+
+<div class="flex">
+	<aside class="w-64 bg-gray-800 text-white p-4 fixed h-5/6">
+		<h2 class="text-2xl font-semibold mb-4">Filters</h2>
+		<!-- <ul>
+			<li class="mb-2"><a href="#" class="block p-2 hover:bg-gray-700 rounded">Dashboard</a></li>
+			<li class="mb-2"><a href="#" class="block p-2 hover:bg-gray-700 rounded">Profile</a></li>
+			<li class="mb-2"><a href="#" class="block p-2 hover:bg-gray-700 rounded">Settings</a></li>
+			<li class="mb-2"><a href="#" class="block p-2 hover:bg-gray-700 rounded">Logout</a></li>
+		</ul> -->
+		<div class="mb-4">
+			<button class="btn btn-sm" on:click={() => toggleForms()}>Toggle Forms</button>
+			<button class="btn btn-sm" on:click={() => toggleOrigins()}>Toggle Origins</button>
 		</div>
 
-		<Pagination bind:currentPage bind:itemsPerPage bind:totalPages />
-		{currentPage}
+		<div>
+			<Pagination bind:currentPage bind:itemsPerPage bind:totalPages />
+		</div>
+	</aside>
 
-		{#each combinedData as { pokedexEntry, catchRecord }}
-			<div>
-				<PokedexEntryCatchRecord
-					{pokedexEntry}
-					{showOrigins}
-					{showForms}
-					bind:catchRecord
-					on:updateCatch={() => updateACatch(catchRecord)}
-				/>
-			</div>
-		{/each}
-
-		<Pagination bind:currentPage bind:itemsPerPage bind:totalPages />
-		{currentPage}
-	{:else}
-		<h1>Loading Pokédex</h1>
-		<span class="loading loading-spinner loading-xl"></span>
-	{/if}
+	<main class="flex-1 p-4">
+		<div class="max-w-min mx-auto">
+			{#if combinedData}
+				{#each combinedData as { pokedexEntry, catchRecord }}
+					<PokedexEntryCatchRecord
+						{pokedexEntry}
+						{showOrigins}
+						{showForms}
+						bind:catchRecord
+						on:updateCatch={() => updateACatch(catchRecord)}
+					/>
+				{/each}
+			{:else}
+				<div class="min-w-max mx-auto">
+					<h1>Loading Pokédex</h1>
+					<span class="loading loading-spinner loading-xl"></span>
+				</div>
+			{/if}
+		</div>
+	</main>
 </div>
