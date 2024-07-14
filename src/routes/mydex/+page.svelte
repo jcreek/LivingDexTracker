@@ -98,7 +98,7 @@
 		</div>
 	</aside>
 
-	<main class="flex-1 p-4">
+	<main class="flex-1 p-4 ml-64">
 		<div class="max-w-min mx-auto">
 			{#if combinedData}
 				{#each combinedData as { pokedexEntry, catchRecord }}
