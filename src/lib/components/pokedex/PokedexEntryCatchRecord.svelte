@@ -43,14 +43,33 @@
 		{/if}
 
 		<div class="bg-white text-black rounded-lg p-4">
-			<p><strong>Box:</strong> {pokedexEntry.boxPlacement.box}</p>
-			<p><strong>Row:</strong> {pokedexEntry.boxPlacement.row}</p>
-			<p><strong>Column:</strong> {pokedexEntry.boxPlacement.column}</p>
 			{#if showForms}
+				<p><strong>Box:</strong> {pokedexEntry.boxPlacementForms.box}</p>
+				<p><strong>Row:</strong> {pokedexEntry.boxPlacementForms.row}</p>
+				<p><strong>Column:</strong> {pokedexEntry.boxPlacementForms.column}</p>
 				<p><strong>Can Gigantamax:</strong> {pokedexEntry.canGigantamax ? 'Yes' : 'No'}</p>
+			{:else}
+				<p><strong>Box:</strong> {pokedexEntry.boxPlacement.box}</p>
+				<p><strong>Row:</strong> {pokedexEntry.boxPlacement.row}</p>
+				<p><strong>Column:</strong> {pokedexEntry.boxPlacement.column}</p>
 			{/if}
-			{#if pokedexEntry.notes}
-				<p><strong>Notes:</strong> {pokedexEntry.notes}</p>
+
+			{#if pokedexEntry.evolutionInformation}
+				<p><strong>Evolution Info:</strong> {pokedexEntry.evolutionInformation}</p>
+			{/if}
+			{#if pokedexEntry.catchInformation.length > 0}
+				<p><strong>Catch Info:</strong></p>
+				<ul class="list-disc list-inside">
+					{#each pokedexEntry.catchInformation as info}
+						<li>
+							<ul>
+								<li><strong>Location:</strong> {info.game}</li>
+								<li><strong>Method:</strong> {info.location}</li>
+								<li><strong>Level:</strong> {info.notes}</li>
+							</ul>
+						</li>
+					{/each}
+				</ul>
 			{/if}
 		</div>
 	</div>

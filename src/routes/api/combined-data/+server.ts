@@ -10,6 +10,10 @@ export const GET = async ({ url }) => {
 		await dbConnect();
 		const repo = new CombinedDataRepository();
 		const combinedData = await repo.findCombinedData(page, limit);
+
+		if (combinedData.length === 0) {
+			return json({ error: 'No combined data found' }, { status: 404 });
+		}
 		const totalCount = await repo.countCombinedData();
 		const totalPages = Math.ceil(totalCount / limit);
 

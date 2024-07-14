@@ -22,16 +22,19 @@ class CombinedDataRepository {
 			},
 			{
 				$sort: {
-					'boxPlacement.box': 1,
-					'boxPlacement.row': 1,
-					'boxPlacement.column': 1
+					'boxPlacementForms.box': 1,
+					'boxPlacementForms.row': 1,
+					'boxPlacementForms.column': 1
 				}
 			},
 			{ $skip: skip },
 			{ $limit: limit }
 		]).exec();
 
-		return combinedData.map((data) => ({
+		// Filter out entries with no catch records
+		const filteredData = combinedData.filter((data) => data.catchRecord);
+
+		return filteredData.map((data) => ({
 			pokedexEntry: data as PokedexEntry,
 			catchRecord: data.catchRecord as CatchRecord
 		}));

@@ -12,6 +12,11 @@ fs.createReadStream(inputFilePath)
 		const entry = {
 			pokedexNumber: parseInt(data['Dex #']),
 			boxPlacement: {
+				box: parseInt(data['No Form Box']),
+				row: parseInt(data['No Form Row']),
+				column: parseInt(data['No Form Column'])
+			},
+			boxPlacementForms: {
 				box: parseInt(data['Home Box']),
 				row: parseInt(data['Home Row']),
 				column: parseInt(data['Home Column'])
@@ -22,7 +27,8 @@ fs.createReadStream(inputFilePath)
 			regionToCatchIn: data['Region'],
 			gamesToCatchIn: data['Catch In These Games'].split(',').map((game) => game.trim()),
 			regionToEvolveIn: data['Evolve In Region'],
-			notes: data['Notes to obtain']
+			evolutionInformation: data['Evolution Info'],
+			catchInformation: []
 		};
 		results.push(entry);
 	})
