@@ -58,7 +58,8 @@
 		}
 	}
 
-	async function updateACatch(catchRecord: CatchRecord) {
+	async function updateACatch(event: any) {
+		const { catchRecord } = event.detail;
 		if (!localUser?.id) {
 			alert('User not signed in');
 			return;
@@ -73,11 +74,9 @@
 		try {
 			const response = await fetch('/api/catch-records', requestOptions);
 			if (!response.ok) {
+				alert('Failed to update catch record');
 				throw new Error('Failed to update catch record');
 			}
-
-			const updatedRecord = await response.json();
-			console.log('Updated catch record:', updatedRecord);
 		} catch (error) {
 			console.error('Error updating catch record:', error);
 		}
@@ -177,7 +176,7 @@
 						{showOrigins}
 						{showForms}
 						bind:catchRecord
-						on:updateCatch={() => updateACatch(catchRecord)}
+						on:updateCatch={updateACatch}
 					/>
 				{/each}
 			{:else if failedToLoad}
