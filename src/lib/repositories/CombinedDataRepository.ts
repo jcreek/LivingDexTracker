@@ -84,17 +84,16 @@ class CombinedDataRepository {
 		}
 
 		if (game.length > 0) {
-			// Check if gamesToCatchIn is not already defined in filter
-			if (!filter['gamesToCatchIn']) {
-				filter['gamesToCatchIn'] = [];
-			}
-			// Add the game to the filter if it's not already included
-			if (!filter['gamesToCatchIn'].includes(game)) {
-				filter['gamesToCatchIn'].push(game);
-			}
+			filter['gamesToCatchIn'] = { $in: [game] };
 		}
 
-		return PokedexEntryModel.countDocuments(filter).exec();
+		try {
+			const count = await PokedexEntryModel.countDocuments(filter).exec();
+			return count;
+		} catch (error) {
+			console.error('Error counting documents:', error);
+			throw error;
+		}
 	}
 }
 
