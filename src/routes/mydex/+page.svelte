@@ -30,14 +30,17 @@
 		showOrigins = !showOrigins;
 	}
 
-	function toggleForms() {
+	async function toggleForms() {
 		showForms = !showForms;
+		await getData();
 	}
 
 	async function getData() {
 		combinedData = null;
 
-		const response = await fetch(`/api/combined-data?page=${currentPage}&limit=${itemsPerPage}`);
+		const response = await fetch(
+			`/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}`
+		);
 		const data = await response.json();
 
 		if (data.error) {
@@ -156,6 +159,7 @@
 		</ul> -->
 		<div class="mb-4">
 			<button class="btn btn-sm" on:click={() => toggleForms()}>Toggle Forms</button>
+			{showForms ? 'On' : 'Off'}
 			<button class="btn btn-sm" on:click={() => toggleOrigins()}>Toggle Origins</button>
 		</div>
 
