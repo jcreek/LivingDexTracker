@@ -67,11 +67,11 @@
 			{#each boxNumbers as boxNumber}
 				<div class="mb-8">
 					<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
-					<div class="grid grid-cols-6">
+					<div class="grid grid-cols-6 gap-4">
 						{#each combinedData as { pokedexEntry, catchRecord }}
 							{#if pokedexEntry[currentPlacement].box === boxNumber}
 								<div
-									class="border p-2"
+									class="pokemon-box"
 									style="grid-column-start: {pokedexEntry[currentPlacement]
 										.column}; grid-row-start: {pokedexEntry[currentPlacement].row}"
 								>
@@ -105,3 +105,15 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.pokemon-box {
+		border: 1px solid #ddd;
+		padding: 1rem;
+		background-color: #f9f9f9;
+	}
+
+	.pokemon-box:nth-child(even) {
+		background-color: #ffffff;
+	}
+</style>
