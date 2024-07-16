@@ -63,11 +63,11 @@
 			{showForms ? 'Hide Forms' : 'Show Forms'}
 		</button>
 
-		<div class="">
+		<div class="flex flex-wrap -mx-2">
 			{#each boxNumbers as boxNumber}
-				<div class="mb-8">
+				<div class="mb-8 w-1/2 px-2">
 					<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
-					<div class="grid grid-cols-6 gap-4">
+					<div class="grid grid-cols-6">
 						{#each combinedData as { pokedexEntry, catchRecord }}
 							{#if pokedexEntry[currentPlacement].box === boxNumber}
 								<div
@@ -75,16 +75,16 @@
 									style="grid-column-start: {pokedexEntry[currentPlacement]
 										.column}; grid-row-start: {pokedexEntry[currentPlacement].row}"
 								>
-									<div class="font-bold">
+									<!-- <div class="font-bold">
 										{pokedexEntry.pokemon}
 										{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
-									</div>
+									</div> -->
 									<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
-									<div>
+									<!-- <div>
 										Caught: {catchRecord.caught ? 'Yes' : 'No'} <br />
 										Needs to Evolve: {catchRecord.haveToEvolve ? 'Yes' : 'No'} <br />
 										In Home: {catchRecord.inHome ? 'Yes' : 'No'}
-									</div>
+									</div> -->
 								</div>
 							{/if}
 						{/each}
