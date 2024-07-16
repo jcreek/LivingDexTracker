@@ -37,4 +37,4 @@ User authentication is handled by [Supabase Auth](https://supabase.com/auth).
 
 ## Dependencies
 
-The living dex tracker's sprite collection is taken from [pokesprite](https://github.com/msikma/pokesprite), which is licensed under [the MIT license](https://github.com/msikma/pokesprite/blob/master/LICENSE).
+The living dex tracker's sprite collection is taken from [PokéAPI Sprites](https://github.com/PokeAPI/sprites), which is licensed under [the Creative Commons CC0 1.0 Universal license](https://github.com/PokeAPI/sprites/blob/master/LICENCE.txt).
