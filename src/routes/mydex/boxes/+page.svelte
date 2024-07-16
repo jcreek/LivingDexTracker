@@ -8,6 +8,7 @@
 	import Pagination from '$lib/components/Pagination.svelte';
 	import { browser } from '$app/environment';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
+	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 
 	let combinedData = null as CombinedData[] | null;
 	let failedToLoad = false;
@@ -55,6 +56,8 @@
 	<title>Living Dex Tracker - My Boxes</title>
 </svelte:head>
 
+<!-- <PokemonSprite pokemonName={'Raichu'} pokedexNumber={26} form={'Alolan'} /> -->
+
 <div class="container mx-auto">
 	{#if !localUser}
 		<p>Please <a href="/signin" class="underline text-primary hover:text-secondary">sign in</a></p>
@@ -65,7 +68,7 @@
 
 		<div class="flex flex-wrap -mx-2">
 			{#each boxNumbers as boxNumber}
-				<div class="mb-8 w-1/2 px-2">
+				<div class="mb-8 md:w-1/2 px-2">
 					<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
 					<div class="grid grid-cols-6">
 						{#each combinedData as { pokedexEntry, catchRecord }}
@@ -75,11 +78,17 @@
 									style="grid-column-start: {pokedexEntry[currentPlacement]
 										.column}; grid-row-start: {pokedexEntry[currentPlacement].row}"
 								>
+									<PokemonSprite
+										pokemonName={pokedexEntry.pokemon}
+										pokedexNumber={pokedexEntry.pokedexNumber}
+										form={pokedexEntry.form}
+									/>
+									<!-- {pokedexEntry.form ? `(${pokedexEntry.form})` : ''} -->
 									<!-- <div class="font-bold">
 										{pokedexEntry.pokemon}
 										{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
 									</div> -->
-									<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
+									<!-- <div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div> -->
 									<!-- <div>
 										Caught: {catchRecord.caught ? 'Yes' : 'No'} <br />
 										Needs to Evolve: {catchRecord.haveToEvolve ? 'Yes' : 'No'} <br />
