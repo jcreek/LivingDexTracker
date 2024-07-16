@@ -22,13 +22,11 @@
 	<div class="dex-column pokedex-entry-container">
 		<div class="flex mb-2">
 			<div class="sprite-container flex justify-center items-center bg-white rounded-lg p-2">
-				<!-- <PokemonSprite
-					pokedexNumber={pokedexEntry.pokedexNumber.toString().padStart(3, '0')}
-					form={pokedexEntry.form
-						.replace(/[^a-zA-Z ]/g, '')
-						.trim()
-						.replace(/ /g, '-')}
-				/> -->
+				<PokemonSprite
+					pokemonName={pokedexEntry.pokemon}
+					pokedexNumber={pokedexEntry.pokedexNumber}
+					form={pokedexEntry.form}
+				/>
 			</div>
 			<div class="pl-2">
 				<h3 class="text-xl font-bold pt-1 text-secondary">{pokedexEntry.pokemon}</h3>
