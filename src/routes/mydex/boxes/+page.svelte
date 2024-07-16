@@ -20,11 +20,21 @@
 	onDestroy(unsubscribe);
 
 	let showForms = true;
+	let showShiny = false;
 	let currentPlacement = 'boxPlacementForms';
-	let boxNumbers = [];
+	let boxNumbers = Array<any>;
 
 	async function toggleForms() {
 		showForms = !showForms;
+		await getData();
+	}
+
+	async function toggleShiny() {
+		showShiny = !showShiny;
+		if (showShiny) {
+			showForms = false;
+		}
+
 		await getData();
 	}
 
@@ -66,6 +76,10 @@
 			{showForms ? 'Hide Forms' : 'Show Forms'}
 		</button>
 
+		<button class="btn" on:click={toggleShiny}>
+			{showShiny ? 'Hide Shiny' : 'Show Shiny'}
+		</button>
+
 		<div class="flex flex-wrap -mx-2">
 			{#each boxNumbers as boxNumber}
 				<div class="mb-8 md:w-1/2 px-2">
@@ -82,6 +96,7 @@
 										pokemonName={pokedexEntry.pokemon}
 										pokedexNumber={pokedexEntry.pokedexNumber}
 										form={pokedexEntry.form}
+										shiny={showShiny}
 									/>
 									<!-- {pokedexEntry.form ? `(${pokedexEntry.form})` : ''} -->
 									<!-- <div class="font-bold">
