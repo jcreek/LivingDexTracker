@@ -4,11 +4,9 @@
 	import { type User } from '@supabase/auth-js';
 	import { type CatchRecord } from '$lib/models/CatchRecord';
 	import { type CombinedData } from '$lib/models/CombinedData';
-	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
-	import Pagination from '$lib/components/Pagination.svelte';
-	import { browser } from '$app/environment';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
+	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	let combinedData = null as CombinedData[] | null;
 	let failedToLoad = false;
@@ -38,8 +36,10 @@
 		await getData();
 	}
 
-	async function getData() {
-		combinedData = null;
+	async function getData(setCombinedDataToNull = true) {
+		if (setCombinedDataToNull) {
+			combinedData = null;
+		}
 
 		const response = await fetch(`/api/combined-data/all?enableForms=${showForms}`);
 		const data = await response.json();
@@ -60,6 +60,28 @@
 	});
 
 	$: currentPlacement = showForms ? 'boxPlacementForms' : 'boxPlacement';
+
+	function cellBackgroundColourClass(catchRecord: CatchRecord) {
+		if (catchRecord.caught) {
+			return 'bg-green-100/50';
+		} else if (catchRecord.haveToEvolve) {
+			return 'bg-yellow-100/50';
+		} else {
+			return '';
+		}
+	}
+
+	function cellBackgroundColourStyle(pokedexEntry: PokedexEntry, catchRecord: CatchRecord) {
+		if (catchRecord.caught || catchRecord.haveToEvolve) {
+			return '';
+		} else {
+			if (pokedexEntry.boxPlacementForms.column % 2 === 0) {
+				return 'background-color: #ffffff';
+			} else {
+				return 'background-color: #f9f9f9;';
+			}
+		}
+	}
 </script>
 
 <svelte:head>
@@ -88,27 +110,34 @@
 						{#each combinedData as { pokedexEntry, catchRecord }}
 							{#if pokedexEntry[currentPlacement].box === boxNumber}
 								<div
-									class="pokemon-box"
+									class="pokemon-box {cellBackgroundColourClass(catchRecord)}"
 									style="grid-column-start: {pokedexEntry[currentPlacement]
-										.column}; grid-row-start: {pokedexEntry[currentPlacement].row}"
+										.column}; grid-row-start: {pokedexEntry[currentPlacement].row};
+                                        {cellBackgroundColourStyle(pokedexEntry, catchRecord)}"
 								>
-									<PokemonSprite
-										pokemonName={pokedexEntry.pokemon}
-										pokedexNumber={pokedexEntry.pokedexNumber}
-										form={pokedexEntry.form}
-										shiny={showShiny}
-									/>
-									<!-- {pokedexEntry.form ? `(${pokedexEntry.form})` : ''} -->
-									<!-- <div class="font-bold">
-										{pokedexEntry.pokemon}
-										{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
-									</div> -->
-									<!-- <div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div> -->
-									<!-- <div>
-										Caught: {catchRecord.caught ? 'Yes' : 'No'} <br />
-										Needs to Evolve: {catchRecord.haveToEvolve ? 'Yes' : 'No'} <br />
-										In Home: {catchRecord.inHome ? 'Yes' : 'No'}
-									</div> -->
+									<Tooltip>
+										<div slot="hover-target">
+											<PokemonSprite
+												pokemonName={pokedexEntry.pokemon}
+												pokedexNumber={pokedexEntry.pokedexNumber}
+												form={pokedexEntry.form}
+												shiny={showShiny}
+											/>
+											<span class="md:hidden">&#9432;</span>
+										</div>
+										<div slot="tooltip">
+											<div class="font-bold">
+												{pokedexEntry.pokemon}
+												{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
+											</div>
+											<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
+											<div>
+												Caught: {catchRecord.caught ? 'Yes' : 'No'} <br />
+												Needs to Evolve: {catchRecord.haveToEvolve ? 'Yes' : 'No'} <br />
+												In Home: {catchRecord.inHome ? 'Yes' : 'No'}
+											</div>
+										</div>
+									</Tooltip>
 								</div>
 							{/if}
 						{/each}
@@ -134,10 +163,5 @@
 	.pokemon-box {
 		border: 1px solid #ddd;
 		padding: 1rem;
-		background-color: #f9f9f9;
-	}
-
-	.pokemon-box:nth-child(even) {
-		background-color: #ffffff;
 	}
 </style>
