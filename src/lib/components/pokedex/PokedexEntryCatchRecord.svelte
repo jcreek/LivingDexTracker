@@ -8,6 +8,7 @@
 	export let catchRecord: CatchRecord;
 	export let showOrigins: boolean;
 	export let showForms: boolean;
+	export let showShiny: boolean;
 
 	const dispatch = createEventDispatcher();
 
@@ -26,6 +27,7 @@
 					pokemonName={pokedexEntry.pokemon}
 					pokedexNumber={pokedexEntry.pokedexNumber}
 					form={pokedexEntry.form}
+					shiny={showShiny}
 				/>
 			</div>
 			<div class="pl-2">
