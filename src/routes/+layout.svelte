@@ -152,9 +152,6 @@
 									<a href="/mydex"> My Dex </a>
 								</li>
 								<li>
-									<a href="/mydex/boxes"> My Boxes </a>
-								</li>
-								<li>
 									<a href="/profile"> Profile </a>
 								</li>
 								<li><a href="/settings">Settings</a></li>

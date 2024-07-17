@@ -33,7 +33,7 @@
 		if (catchRecord.caught || catchRecord.haveToEvolve) {
 			return '';
 		} else {
-			if (pokedexEntry.boxPlacementForms.column % 2 === 0) {
+			if (pokedexEntry[currentPlacement].column % 2 === 0) {
 				return 'background-color: #ffffff';
 			} else {
 				return 'background-color: #f9f9f9;';

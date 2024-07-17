@@ -2,14 +2,12 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
-	import { type CatchRecord } from '$lib/models/CatchRecord';
 	import { type CombinedData } from '$lib/models/CombinedData';
-	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
-	import Pagination from '$lib/components/Pagination.svelte';
 	import { browser } from '$app/environment';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
+	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
@@ -20,17 +18,19 @@
 	let failedToLoad = false;
 	let catchRegion = '';
 	let catchGame = '';
-
 	let localUser: User | null;
-	const unsubscribe = user.subscribe((value) => {
-		localUser = value;
-	});
-	onDestroy(unsubscribe);
-
 	let showOrigins = true;
 	let showForms = true;
 	let showShiny = false;
 	let drawerOpen = false;
+	let viewAsBoxes = false;
+	let currentPlacement = 'boxPlacementForms';
+	let boxNumbers = Array<any>;
+
+	const unsubscribe = user.subscribe((value) => {
+		localUser = value;
+	});
+	onDestroy(unsubscribe);
 
 	function toggleOrigins() {
 		showOrigins = !showOrigins;
@@ -50,26 +50,30 @@
 		await getData();
 	}
 
-	async function getData() {
-		combinedData = null;
+	async function toggleViewAsBoxes() {
+		viewAsBoxes = !viewAsBoxes;
+		await getData();
+	}
 
-		const response = await fetch(
-			`/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`
-		);
+	async function getData(setCombinedDataToNull = true) {
+		if (setCombinedDataToNull) {
+			combinedData = null;
+		}
+		let endpoint = viewAsBoxes
+			? `/api/combined-data/all?enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`
+			: `/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`;
+		const response = await fetch(endpoint);
 		const data = await response.json();
-
 		if (data.error) {
 			failedToLoad = true;
 			return;
 		}
-
-		combinedData = data.combinedData;
-		totalPages = data.totalPages;
-	}
-
-	$: {
-		if (browser) {
-			currentPage, itemsPerPage, getData();
+		combinedData = viewAsBoxes ? data : data.combinedData;
+		totalPages = data.totalPages || 0;
+		if (viewAsBoxes) {
+			boxNumbers = [
+				...new Set(combinedData.map(({ pokedexEntry }) => pokedexEntry[currentPlacement].box))
+			].filter(Boolean);
 		}
 	}
 
@@ -95,6 +99,61 @@
 		} catch (error) {
 			console.error('Error updating catch record:', error);
 		}
+	}
+
+	async function updateCatchRecords(
+		boxNumber: number,
+		caught: boolean,
+		needsToEvolve: boolean,
+		inHome: boolean | null = null
+	) {
+		let catchRecordsToUpdate = combinedData
+			.filter(({ pokedexEntry }) => pokedexEntry[currentPlacement].box === boxNumber)
+			.map(({ catchRecord }) => {
+				let updatedRecord = { ...catchRecord };
+				if (inHome !== null) {
+					updatedRecord = {
+						...updatedRecord,
+						inHome
+					};
+				} else {
+					updatedRecord = {
+						...updatedRecord,
+						caught,
+						haveToEvolve: needsToEvolve
+					};
+				}
+				return updatedRecord;
+			});
+		await fetch('/api/catch-records', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(catchRecordsToUpdate)
+		}).then(async () => {
+			await getData(false);
+		});
+	}
+
+	async function markBoxAsNotCaught(boxNumber: number) {
+		await updateCatchRecords(boxNumber, false, false);
+	}
+
+	async function markBoxAsCaught(boxNumber: number) {
+		await updateCatchRecords(boxNumber, true, false);
+	}
+
+	async function markBoxAsNeedsToEvolve(boxNumber: number) {
+		await updateCatchRecords(boxNumber, false, true);
+	}
+
+	async function markBoxAsInHome(boxNumber: number) {
+		await updateCatchRecords(boxNumber, false, false, true);
+	}
+
+	async function markBoxAsNotInHome(boxNumber: number) {
+		await updateCatchRecords(boxNumber, false, false, false);
 	}
 
 	async function getPokedexEntries() {
@@ -156,6 +215,18 @@
 			await getData();
 		});
 	}
+
+	onMount(async () => {
+		await getData();
+	});
+
+	$: {
+		if (browser) {
+			currentPage, itemsPerPage, getData();
+		}
+	}
+
+	$: currentPlacement = showForms ? 'boxPlacementForms' : 'boxPlacement';
 </script>
 
 <svelte:head>
@@ -174,21 +245,44 @@
 			>
 				{drawerOpen ? 'Close Filters' : 'Open Filters'}
 			</label>
-			<PokedexViewList
-				bind:showOrigins
-				bind:showForms
-				bind:showShiny
-				bind:combinedData
-				bind:creatingRecords
-				bind:totalRecordsCreated
-				bind:failedToLoad
-				{updateACatch}
-				{createCatchRecords}
-			/>
+			<button class="btn btn-primary" on:click={toggleViewAsBoxes}>
+				{viewAsBoxes ? 'Switch to List View' : 'Switch to Box View'}
+			</button>
+			{#if viewAsBoxes}
+				<PokedexViewBoxes
+					bind:showShiny
+					bind:combinedData
+					bind:boxNumbers
+					bind:currentPlacement
+					bind:creatingRecords
+					bind:failedToLoad
+					{markBoxAsNotCaught}
+					{markBoxAsCaught}
+					{markBoxAsNeedsToEvolve}
+					{markBoxAsInHome}
+					{markBoxAsNotInHome}
+				/>
+			{:else}
+				<PokedexViewList
+					bind:showOrigins
+					bind:showForms
+					bind:showShiny
+					bind:combinedData
+					bind:creatingRecords
+					bind:totalRecordsCreated
+					bind:failedToLoad
+					{updateACatch}
+					{createCatchRecords}
+				/>
+			{/if}
 		</div>
 		<div class="drawer-side lg:relative">
 			<label for="my-drawer" class="drawer-overlay lg:hidden"></label>
 			<PokedexSidebar
+				bind:viewAsBoxes
+				bind:currentPage
+				bind:itemsPerPage
+				bind:totalPages
 				bind:showForms
 				bind:showOrigins
 				bind:showShiny
