@@ -245,9 +245,7 @@
 			>
 				{drawerOpen ? 'Close Filters' : 'Open Filters'}
 			</label>
-			<button class="btn btn-primary" on:click={toggleViewAsBoxes}>
-				{viewAsBoxes ? 'Switch to List View' : 'Switch to Box View'}
-			</button>
+
 			{#if viewAsBoxes}
 				<PokedexViewBoxes
 					bind:showShiny
@@ -292,6 +290,7 @@
 				{toggleForms}
 				{toggleOrigins}
 				{toggleShiny}
+				{toggleViewAsBoxes}
 			/>
 		</div>
 	</div>
