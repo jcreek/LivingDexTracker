@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import pokeApiPokemon from '$lib/helpers/pokeapi-pokemon.json';
+	import { PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER } from '$env/static/public';
 
 	export let pokemonName: string;
 	export let pokedexNumber: string | number;
@@ -12,8 +13,9 @@
 
 	function setImagePath() {
 		let rootFolder =
-			'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home';
-		// let rootFolder = 'sprites/home';
+			PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER === 'true'
+				? '/sprites/home'
+				: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home';
 
 		if (form === 'Female') {
 			rootFolder += '/female';
@@ -57,9 +59,9 @@
 					break;
 			}
 
-			if (strippedPokedexNumber == '869') {
-				console.log(sanitisedPokemonName, sanitisedForm);
-			}
+			// if (strippedPokedexNumber == '869') {
+			// 	console.log(sanitisedPokemonName, sanitisedForm);
+			// }
 
 			// If the form is contained in the identifier, use that
 			if (
