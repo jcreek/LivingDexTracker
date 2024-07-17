@@ -14,11 +14,20 @@
 	export let toggleOrigins = () => {};
 	export let toggleShiny = () => {};
 	export let getData = () => {};
+	export let toggleViewAsBoxes = () => {};
 </script>
 
 <aside
 	class="menu bg-gray-800 text-white min-h-full w-64 p-4 lg:fixed xs:top-0 lg:left-0 h-full lg:h-5/6"
 >
+	<h2 class="text-2xl font-semibold mb-4">Views</h2>
+	<ul>
+		<li class="mb-2">
+			<button class="block p-2 hover:bg-gray-700 rounded" on:click={toggleViewAsBoxes}>
+				{viewAsBoxes ? 'Switch to List View' : 'Switch to Box View'}
+			</button>
+		</li>
+	</ul>
 	<h2 class="text-2xl font-semibold mb-4">Filters</h2>
 	<ul>
 		<li class="mb-2">
