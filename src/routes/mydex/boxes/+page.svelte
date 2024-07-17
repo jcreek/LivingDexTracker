@@ -189,6 +189,12 @@
 								>
 									<Tooltip>
 										<div slot="hover-target">
+											{#if catchRecord.inHome}
+												<span
+													class="absolute -top-5 -right-4 z-2 p-1 text-secondary text-lg font-extrabold"
+													>&#10003;</span
+												>
+											{/if}
 											<PokemonSprite
 												pokemonName={pokedexEntry.pokemon}
 												pokedexNumber={pokedexEntry.pokedexNumber}
