@@ -1,4 +1,10 @@
 <script lang="ts">
+	import Pagination from '$lib/components/Pagination.svelte';
+
+	export let viewAsBoxes = false;
+	export let currentPage = 1;
+	export let itemsPerPage = 20;
+	export let totalPages = 0;
 	export let showForms = true;
 	export let showOrigins = true;
 	export let showShiny = false;
@@ -104,4 +110,11 @@
 			<option value="Go">Go (Unknown)</option>
 		</select>
 	</div>
+
+	{#if !viewAsBoxes}
+		<h2 class="text-2xl font-semibold mb-4">Paging</h2>
+		<div>
+			<Pagination bind:currentPage bind:itemsPerPage bind:totalPages />
+		</div>
+	{/if}
 </aside>
