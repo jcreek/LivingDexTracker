@@ -3,7 +3,11 @@ import CatchRecordModel, { type CatchRecord } from '$lib/models/CatchRecord';
 import { CombinedData } from '$lib/models/CombinedData';
 
 class CombinedDataRepository {
-	async findAllCombinedData(enableForms: boolean = true): Promise<CombinedData[]> {
+	async findAllCombinedData(
+		enableForms: boolean = true,
+		region: string = '',
+		game: string = ''
+	): Promise<CombinedData[]> {
 		const pipeline: any[] = [
 			{
 				$lookup: {
@@ -32,6 +36,22 @@ class CombinedDataRepository {
 			pipeline.unshift({
 				$match: {
 					'boxPlacement.box': { $ne: null }
+				}
+			});
+		}
+
+		if (region.length > 0) {
+			pipeline.unshift({
+				$match: {
+					regionToCatchIn: region
+				}
+			});
+		}
+
+		if (game.length > 0) {
+			pipeline.unshift({
+				$match: {
+					gamesToCatchIn: { $in: [game] }
 				}
 			});
 		}
