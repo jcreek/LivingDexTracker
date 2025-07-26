@@ -5,10 +5,25 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let pokedexEntry: PokedexEntry;
-	export let catchRecord: CatchRecord;
+	export let catchRecord: CatchRecord | null;
 	export let showOrigins: boolean;
 	export let showForms: boolean;
 	export let showShiny: boolean;
+	export let userId: string | null = null;
+
+	// Create a default catch record if none exists
+	$: if (!catchRecord) {
+		catchRecord = {
+			_id: '', // Empty string, not temp ID - will be created by server
+			userId: userId || '',
+			pokedexEntryId: pokedexEntry._id,
+			haveToEvolve: false,
+			caught: false,
+			inHome: false,
+			hasGigantamaxed: false,
+			personalNotes: ''
+		};
+	}
 
 	const dispatch = createEventDispatcher();
 
@@ -124,12 +139,13 @@
 			</div>
 		{/if}
 		<p>
-			<label class="block font-bold mb-1" for={`personalNotesInput-${catchRecord._id}`}
-				>Notes:</label
+			<label
+				class="block font-bold mb-1"
+				for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}>Notes:</label
 			>
 			<textarea
 				bind:value={catchRecord.personalNotes}
-				id={`personalNotesInput-${catchRecord._id}`}
+				id={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
 				class="form-textarea w-full p-2 border rounded"
 				on:change={updateCatchRecord}
 			></textarea>

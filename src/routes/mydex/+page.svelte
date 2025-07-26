@@ -8,6 +8,11 @@
 	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	$: ({ supabase, session } = data);
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
@@ -25,7 +30,7 @@
 	let drawerOpen = false;
 	let viewAsBoxes = false;
 	let currentPlacement = 'boxPlacementForms';
-	let boxNumbers = Array<any>;
+	let boxNumbers: number[] = [];
 
 	const unsubscribe = user.subscribe((value) => {
 		localUser = value;
@@ -86,16 +91,24 @@
 
 		const requestOptions = {
 			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(catchRecord)
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(catchRecord),
+			credentials: 'include' as RequestCredentials
 		};
 
 		try {
 			const response = await fetch('/api/catch-records', requestOptions);
 			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('Server response:', response.status, errorText);
 				alert('Failed to update catch record');
 				throw new Error('Failed to update catch record');
 			}
+
+			// Refresh the data to reflect changes from server
+			await getData(false);
 		} catch (error) {
 			console.error('Error updating catch record:', error);
 		}
@@ -109,8 +122,20 @@
 	) {
 		let catchRecordsToUpdate = combinedData
 			.filter(({ pokedexEntry }) => pokedexEntry[currentPlacement].box === boxNumber)
-			.map(({ catchRecord }) => {
-				let updatedRecord = { ...catchRecord };
+			.map(({ pokedexEntry, catchRecord }) => {
+				// Create default record if null
+				const baseRecord = catchRecord || {
+					_id: '',
+					userId: localUser?.id || '',
+					pokedexEntryId: pokedexEntry._id,
+					haveToEvolve: false,
+					caught: false,
+					inHome: false,
+					hasGigantamaxed: false,
+					personalNotes: ''
+				};
+
+				let updatedRecord = { ...baseRecord };
 				if (inHome !== null) {
 					updatedRecord = {
 						...updatedRecord,
@@ -203,13 +228,11 @@
 
 					const createdRecords = await response.json();
 					totalRecordsCreated += createdRecords.length;
-					console.log(`Created ${createdRecords.length} catch records`);
 				} catch (error) {
 					console.error('Error creating catch records:', error);
 				}
 			}
 
-			console.log('Created catch records for each pokedex entry');
 			creatingRecords = false;
 			failedToLoad = false;
 			await getData();
@@ -269,6 +292,7 @@
 					bind:creatingRecords
 					bind:totalRecordsCreated
 					bind:failedToLoad
+					userId={localUser?.id}
 					{updateACatch}
 					{createCatchRecords}
 				/>

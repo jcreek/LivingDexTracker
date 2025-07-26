@@ -1,49 +1,98 @@
 import { json } from '@sveltejs/kit';
-import { dbConnect, dbDisconnect } from '$lib/utils/db';
-import PokedexEntryModel from '$lib/models/PokedexEntry';
-import PokedexEntryRepository from '$lib/repositories/PokedexEntryRepository';
-import RegionGameMapping from '$lib/models/RegionGameMapping';
-import RegionGameMappingRepository from '$lib/repositories/RegionGameMappingRepository';
-import PokedexMetadataModel from '$lib/models/PokedexMetadata';
+import { createClient } from '@supabase/supabase-js';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import dex from '$lib/helpers/pokedex.json';
 import RegionGameMappingJson from '$lib/helpers/region-game-mapping.json';
 
-// Function to update the lastModified field in the metadata collection
-const updateLastModified = async () => {
-	const metadata = await PokedexMetadataModel.findOne();
-	if (metadata) {
-		metadata.lastModified = new Date();
-		await metadata.save();
-	} else {
-		await PokedexMetadataModel.create({ lastModified: new Date() });
-	}
-};
-
-// Seed Pokedex data
 export const GET = async () => {
-	// Immediately return if not in development to prevent seeding extra data
-	return;
+	// Only allow seeding in development
+	if (process.env.NODE_ENV === 'production') {
+		return json({ message: 'Seeding not allowed in production' }, { status: 403 });
+	}
 
-	await dbConnect()
-		.then(async () => {
-			// Create pokedex entries
-			const repo = new PokedexEntryRepository();
+	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
 
-			dex.forEach(async (pokemon: PokedexEntryModel) => {
-				await repo.create(pokemon);
-				console.log(`Seeded ${pokemon.pokedexNumber} ${pokemon.pokemon} ${pokemon.form}`);
-			});
+	try {
+		// Seed Pokédex entries
+		const { data: existingEntries, error: countError } = await supabase
+			.from('pokedex_entries')
+			.select('id', { count: 'exact', head: true });
 
-			// Create region-game mappings
-			const regionGameMappingRepository = new RegionGameMappingRepository();
-			await regionGameMappingRepository.create(RegionGameMappingJson as RegionGameMapping[]);
+		if (countError) {
+			throw new Error(`Failed to check existing entries: ${countError.message}`);
+		}
 
-			// Update the lastModified field after seeding
-			await updateLastModified();
-		})
-		.finally(() => dbDisconnect());
+		// Only seed if table is empty
+		if (!existingEntries || existingEntries.length === 0) {
+			console.log('Seeding Pokédex entries...');
 
-	return json({
-		message: 'seeded'
-	});
+			// Transform data to match database schema
+			const pokemonData = dex.map((pokemon: any) => ({
+				pokedexNumber: pokemon.pokedexNumber,
+				pokemon: pokemon.pokemon,
+				form: pokemon.form || null,
+				canGigantamax: pokemon.canGigantamax || false,
+				regionToCatchIn: pokemon.regionToCatchIn || null,
+				gamesToCatchIn: pokemon.gamesToCatchIn || null,
+				regionToEvolveIn: pokemon.regionToEvolveIn || null,
+				evolutionInformation: pokemon.evolutionInformation || null,
+				catchInformation: pokemon.catchInformation || null,
+				boxPlacementFormsBox: pokemon.boxPlacementForms?.box || null,
+				boxPlacementFormsRow: pokemon.boxPlacementForms?.row || null,
+				boxPlacementFormsColumn: pokemon.boxPlacementForms?.column || null,
+				boxPlacementBox: pokemon.boxPlacement?.box || null,
+				boxPlacementRow: pokemon.boxPlacement?.row || null,
+				boxPlacementColumn: pokemon.boxPlacement?.column || null
+			}));
+
+			const { error: insertError } = await supabase.from('pokedex_entries').insert(pokemonData);
+
+			if (insertError) {
+				throw new Error(`Failed to seed Pokédex entries: ${insertError.message}`);
+			}
+
+			console.log(`Seeded ${pokemonData.length} Pokédex entries`);
+		} else {
+			console.log('Pokédex entries already exist, skipping seeding');
+		}
+
+		// Seed region-game mappings (check if table exists first)
+		const { data: existingMappings, error: mappingCountError } = await supabase
+			.from('region_game_mappings')
+			.select('id', { count: 'exact', head: true });
+
+		if (!mappingCountError && (!existingMappings || existingMappings.length === 0)) {
+			console.log('Seeding region-game mappings...');
+
+			const { error: mappingInsertError } = await supabase
+				.from('region_game_mappings')
+				.insert(RegionGameMappingJson);
+
+			if (mappingInsertError) {
+				throw new Error(`Failed to seed region-game mappings: ${mappingInsertError.message}`);
+			}
+
+			console.log(`Seeded ${RegionGameMappingJson.length} region-game mappings`);
+		} else if (!mappingCountError) {
+			console.log('Region-game mappings already exist, skipping seeding');
+		}
+
+		return json({
+			message: 'Seeding completed successfully',
+			seeded: {
+				pokemonEntries: !existingEntries || existingEntries.length === 0,
+				regionGameMappings:
+					!mappingCountError && (!existingMappings || existingMappings.length === 0)
+			}
+		});
+	} catch (error) {
+		console.error('Seeding failed:', error);
+		return json(
+			{
+				message: 'Seeding failed',
+				error: error instanceof Error ? error.message : 'Unknown error'
+			},
+			{ status: 500 }
+		);
+	}
 };
