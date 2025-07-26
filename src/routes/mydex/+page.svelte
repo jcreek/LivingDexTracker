@@ -8,6 +8,11 @@
 	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
+	import type { PageData } from './$types';
+
+	export let data: PageData;
+
+	$: ({ supabase, session } = data);
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
@@ -86,13 +91,19 @@
 
 		const requestOptions = {
 			method: 'PUT',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(catchRecord)
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(catchRecord),
+			credentials: 'include' as RequestCredentials
 		};
 
 		try {
+			// Use enhanced fetch that includes authentication context
 			const response = await fetch('/api/catch-records', requestOptions);
 			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('Server response:', response.status, errorText);
 				alert('Failed to update catch record');
 				throw new Error('Failed to update catch record');
 			}
@@ -121,7 +132,7 @@
 					hasGigantamaxed: false,
 					personalNotes: ''
 				};
-				
+
 				let updatedRecord = { ...baseRecord };
 				if (inHome !== null) {
 					updatedRecord = {

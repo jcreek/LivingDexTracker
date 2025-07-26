@@ -1,8 +1,8 @@
-import mongoose, { Schema, Document, Types } from 'mongoose';
-
-export interface CatchRecord extends Document {
+// Supabase-based CatchRecord interface
+export interface CatchRecord {
+	_id: string; // Maps to Supabase 'id' field for frontend compatibility
 	userId: string;
-	pokedexEntryId: Types.ObjectId;
+	pokedexEntryId: string; // String representation of the foreign key
 	haveToEvolve: boolean;
 	caught: boolean;
 	inHome: boolean;
@@ -10,15 +10,16 @@ export interface CatchRecord extends Document {
 	personalNotes: string;
 }
 
-const catchRecordSchema = new Schema<CatchRecord>({
-	userId: String,
-	pokedexEntryId: { type: Schema.Types.ObjectId, ref: 'PokedexEntry', required: true },
-	haveToEvolve: { type: Boolean, default: false },
-	caught: { type: Boolean, default: false },
-	inHome: { type: Boolean, default: false },
-	hasGigantamaxed: { type: Boolean, default: false },
-	personalNotes: String
-});
-
-const CatchRecordModel = mongoose.model<CatchRecord>('CatchRecord', catchRecordSchema);
-export default CatchRecordModel;
+// Database record type for Supabase
+export interface CatchRecordDB {
+	id: string;
+	userId: string;
+	pokedexEntryId: number; // Numeric foreign key in database
+	haveToEvolve: boolean;
+	caught: boolean;
+	inHome: boolean;
+	hasGigantamaxed: boolean;
+	personalNotes: string;
+	createdAt: string;
+	updatedAt: string;
+}

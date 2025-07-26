@@ -1,5 +1,5 @@
 {
-	"name": "LivingDexTracker",
+	"name": "livingdextracker",
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
@@ -29,7 +29,6 @@
 		"supabase:reset": "supabase db reset",
 		"supabase:studio": "supabase studio",
 		"migrate:convert-tsv": "node scripts/convert-tsv-to-sql.js",
-		"migrate:from-mongo": "echo 'MongoDB to Supabase migration complete! Use new supabase endpoints.'",
 		"dev:local": "./scripts/dev-local.sh && npm run dev",
 		"dev:supabase": "supabase start && npm run dev"
 	},

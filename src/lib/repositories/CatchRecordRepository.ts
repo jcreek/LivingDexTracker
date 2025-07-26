@@ -1,35 +1,42 @@
-import type { CatchRecord } from '$lib/models/CatchRecord';
+import type { CatchRecord, CatchRecordDB } from '$lib/models/CatchRecord';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 class CatchRecordRepository {
-	constructor(private supabase: SupabaseClient, private userId: string) {}
+	constructor(
+		private supabase: SupabaseClient,
+		private userId: string
+	) {}
 
-	// Transform Supabase snake_case to frontend camelCase
-	private transformCatchRecord(record: any): CatchRecord {
+	// Transform Supabase data to frontend format (minimal transformation)
+	private transformCatchRecord(record: CatchRecordDB): CatchRecord {
 		return {
 			_id: record.id,
-			userId: record.user_id,
-			pokedexEntryId: record.pokedex_entry_id.toString(),
-			haveToEvolve: record.have_to_evolve,
+			userId: record.userId,
+			pokedexEntryId: record.pokedexEntryId.toString(),
+			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
-			inHome: record.in_home,
-			hasGigantamaxed: record.has_gigantamaxed,
-			personalNotes: record.personal_notes
+			inHome: record.inHome,
+			hasGigantamaxed: record.hasGigantamaxed,
+			personalNotes: record.personalNotes
 		};
 	}
 
-	// Transform frontend camelCase to Supabase snake_case
-	private transformToDatabase(data: Partial<CatchRecord>): any {
-		const dbData: any = {};
+	// Transform frontend data to database format (minimal transformation)
+	private transformToDatabase(data: Partial<CatchRecord>): Partial<CatchRecordDB> {
+		const dbData: Partial<CatchRecordDB> = {};
 		if (data.pokedexEntryId !== undefined && data.pokedexEntryId !== null) {
-			dbData.pokedex_entry_id = Number(data.pokedexEntryId);
+			const numericId = Number(data.pokedexEntryId);
+			if (isNaN(numericId)) {
+				throw new Error(`Invalid pokedexEntryId: ${data.pokedexEntryId}`);
+			}
+			dbData.pokedexEntryId = numericId;
 		}
-		if (data.haveToEvolve !== undefined) dbData.have_to_evolve = data.haveToEvolve;
+		if (data.haveToEvolve !== undefined) dbData.haveToEvolve = data.haveToEvolve;
 		if (data.caught !== undefined) dbData.caught = data.caught;
-		if (data.inHome !== undefined) dbData.in_home = data.inHome;
-		if (data.hasGigantamaxed !== undefined) dbData.has_gigantamaxed = data.hasGigantamaxed;
-		if (data.personalNotes !== undefined) dbData.personal_notes = data.personalNotes;
-		
+		if (data.inHome !== undefined) dbData.inHome = data.inHome;
+		if (data.hasGigantamaxed !== undefined) dbData.hasGigantamaxed = data.hasGigantamaxed;
+		if (data.personalNotes !== undefined) dbData.personalNotes = data.personalNotes;
+
 		return dbData;
 	}
 
@@ -38,7 +45,7 @@ class CatchRecordRepository {
 			.from('catch_records')
 			.select('*')
 			.eq('id', id)
-			.eq('user_id', this.userId)
+			.eq('userId', this.userId)
 			.single();
 
 		if (error || !data) return null;
@@ -49,19 +56,25 @@ class CatchRecordRepository {
 		const { data, error } = await this.supabase
 			.from('catch_records')
 			.select('*')
-			.eq('user_id', this.userId);
+			.eq('userId', this.userId);
 
 		if (error || !data) return [];
-		return data.map(record => this.transformCatchRecord(record));
+		return data.map((record) => this.transformCatchRecord(record));
 	}
 
 	async findByUserId(userId: string): Promise<CatchRecord[]> {
-		return this.findAll(); // Already filtered by user in constructor
+		const { data, error } = await this.supabase
+			.from('catch_records')
+			.select('*')
+			.eq('userId', userId);
+
+		if (error || !data) return [];
+		return data.map((record) => this.transformCatchRecord(record));
 	}
 
 	async create(data: Partial<CatchRecord>): Promise<CatchRecord> {
 		const dbData = {
-			user_id: this.userId,
+			userId: this.userId,
 			...this.transformToDatabase(data)
 		};
 
@@ -75,11 +88,11 @@ class CatchRecordRepository {
 			console.error('Supabase error creating catch record:', error);
 			throw new Error(`Failed to create catch record: ${error.message}`);
 		}
-		
+
 		if (!result) {
 			throw new Error('Failed to create catch record: No result returned');
 		}
-		
+
 		return this.transformCatchRecord(result);
 	}
 
@@ -90,7 +103,7 @@ class CatchRecordRepository {
 			.from('catch_records')
 			.update(dbData)
 			.eq('id', id)
-			.eq('user_id', this.userId)
+			.eq('userId', this.userId)
 			.select()
 			.single();
 
@@ -99,11 +112,16 @@ class CatchRecordRepository {
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.supabase
+		const { error } = await this.supabase
 			.from('catch_records')
 			.delete()
 			.eq('id', id)
-			.eq('user_id', this.userId);
+			.eq('userId', this.userId);
+
+		if (error) {
+			console.error('Error deleting catch record:', error);
+			throw new Error(`Failed to delete catch record: ${error.message}`);
+		}
 	}
 
 	async upsert(data: Partial<CatchRecord>): Promise<CatchRecord | null> {
@@ -125,8 +143,8 @@ class CatchRecordRepository {
 		const { data, error } = await this.supabase
 			.from('catch_records')
 			.select('*')
-			.eq('user_id', userId)
-			.eq('pokedex_entry_id', pokedexEntryId)
+			.eq('userId', userId)
+			.eq('pokedexEntryId', pokedexEntryId)
 			.single();
 
 		if (error || !data) return null;

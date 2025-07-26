@@ -1,31 +1,31 @@
-import { type PokedexEntry } from '$lib/models/PokedexEntry';
+import { type PokedexEntry, type PokedexEntryDB } from '$lib/models/PokedexEntry';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 class PokedexEntryRepository {
 	constructor(private supabase: SupabaseClient) {}
 
-	// Transform Supabase data to match frontend expectations
-	private transformPokedexEntry(entry: any): PokedexEntry {
+	// Transform Supabase data to match frontend expectations (minimal transformation)
+	private transformPokedexEntry(entry: PokedexEntryDB): PokedexEntry {
 		return {
 			_id: entry.id.toString(),
-			pokedexNumber: entry.pokedex_number,
+			pokedexNumber: entry.pokedexNumber,
 			pokemon: entry.pokemon,
-			form: entry.form,
-			canGigantamax: entry.can_gigantamax,
-			regionToCatchIn: entry.region_to_catch_in,
-			gamesToCatchIn: entry.games_to_catch_in || [],
-			regionToEvolveIn: entry.region_to_evolve_in,
-			evolutionInformation: entry.evolution_information,
-			catchInformation: entry.catch_information || [],
+			form: entry.form || '',
+			canGigantamax: entry.canGigantamax,
+			regionToCatchIn: entry.regionToCatchIn || '',
+			gamesToCatchIn: entry.gamesToCatchIn || [],
+			regionToEvolveIn: entry.regionToEvolveIn || '',
+			evolutionInformation: entry.evolutionInformation || '',
+			catchInformation: entry.catchInformation || [],
 			boxPlacementForms: {
-				box: entry.box_placement_forms_box,
-				row: entry.box_placement_forms_row,
-				column: entry.box_placement_forms_column
+				box: entry.boxPlacementFormsBox || 0,
+				row: entry.boxPlacementFormsRow || 0,
+				column: entry.boxPlacementFormsColumn || 0
 			},
 			boxPlacement: {
-				box: entry.box_placement_box,
-				row: entry.box_placement_row,
-				column: entry.box_placement_column
+				box: entry.boxPlacementBox || 0,
+				row: entry.boxPlacementRow || 0,
+				column: entry.boxPlacementColumn || 0
 			}
 		};
 	}
@@ -45,30 +45,35 @@ class PokedexEntryRepository {
 		const { data, error } = await this.supabase
 			.from('pokedex_entries')
 			.select('*')
-			.order('pokedex_number', { ascending: true });
+			.order('pokedexNumber', { ascending: true });
 
 		if (error || !data) return [];
-		return data.map(entry => this.transformPokedexEntry(entry));
+		return data.map((entry) => this.transformPokedexEntry(entry));
 	}
 
 	async create(data: Partial<PokedexEntry>): Promise<PokedexEntry> {
-		// Transform camelCase to snake_case for database
-		const dbData: any = {};
-		if (data.pokedexNumber !== undefined) dbData.pokedex_number = data.pokedexNumber;
+		// Transform to database format (minimal transformation needed)
+		const dbData: Partial<PokedexEntryDB> = {};
+		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
 		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
 		if (data.form !== undefined) dbData.form = data.form;
-		if (data.canGigantamax !== undefined) dbData.can_gigantamax = data.canGigantamax;
-		if (data.regionToCatchIn !== undefined) dbData.region_to_catch_in = data.regionToCatchIn;
-		if (data.gamesToCatchIn !== undefined) dbData.games_to_catch_in = data.gamesToCatchIn;
-		if (data.regionToEvolveIn !== undefined) dbData.region_to_evolve_in = data.regionToEvolveIn;
-		if (data.evolutionInformation !== undefined) dbData.evolution_information = data.evolutionInformation;
-		if (data.catchInformation !== undefined) dbData.catch_information = data.catchInformation;
-		if (data.boxPlacementForms?.box !== undefined) dbData.box_placement_forms_box = data.boxPlacementForms.box;
-		if (data.boxPlacementForms?.row !== undefined) dbData.box_placement_forms_row = data.boxPlacementForms.row;
-		if (data.boxPlacementForms?.column !== undefined) dbData.box_placement_forms_column = data.boxPlacementForms.column;
-		if (data.boxPlacement?.box !== undefined) dbData.box_placement_box = data.boxPlacement.box;
-		if (data.boxPlacement?.row !== undefined) dbData.box_placement_row = data.boxPlacement.row;
-		if (data.boxPlacement?.column !== undefined) dbData.box_placement_column = data.boxPlacement.column;
+		if (data.canGigantamax !== undefined) dbData.canGigantamax = data.canGigantamax;
+		if (data.regionToCatchIn !== undefined) dbData.regionToCatchIn = data.regionToCatchIn;
+		if (data.gamesToCatchIn !== undefined) dbData.gamesToCatchIn = data.gamesToCatchIn;
+		if (data.regionToEvolveIn !== undefined) dbData.regionToEvolveIn = data.regionToEvolveIn;
+		if (data.evolutionInformation !== undefined)
+			dbData.evolutionInformation = data.evolutionInformation;
+		if (data.catchInformation !== undefined) dbData.catchInformation = data.catchInformation;
+		if (data.boxPlacementForms?.box !== undefined)
+			dbData.boxPlacementFormsBox = data.boxPlacementForms.box;
+		if (data.boxPlacementForms?.row !== undefined)
+			dbData.boxPlacementFormsRow = data.boxPlacementForms.row;
+		if (data.boxPlacementForms?.column !== undefined)
+			dbData.boxPlacementFormsColumn = data.boxPlacementForms.column;
+		if (data.boxPlacement?.box !== undefined) dbData.boxPlacementBox = data.boxPlacement.box;
+		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
+		if (data.boxPlacement?.column !== undefined)
+			dbData.boxPlacementColumn = data.boxPlacement.column;
 
 		const { data: result, error } = await this.supabase
 			.from('pokedex_entries')
@@ -81,9 +86,9 @@ class PokedexEntryRepository {
 	}
 
 	async update(id: string, data: Partial<PokedexEntry>): Promise<PokedexEntry | null> {
-		// Transform camelCase to snake_case for database
-		const dbData: any = {};
-		if (data.pokedexNumber !== undefined) dbData.pokedex_number = data.pokedexNumber;
+		// Transform to database format (minimal transformation needed)
+		const dbData: Partial<PokedexEntryDB> = {};
+		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
 		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
 		// ... add other fields as needed
 
@@ -99,10 +104,7 @@ class PokedexEntryRepository {
 	}
 
 	async delete(id: string): Promise<void> {
-		await this.supabase
-			.from('pokedex_entries')
-			.delete()
-			.eq('id', id);
+		await this.supabase.from('pokedex_entries').delete().eq('id', id);
 	}
 }
 
