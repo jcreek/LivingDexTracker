@@ -1,8 +1,11 @@
 import { json } from '@sveltejs/kit';
 import { dbConnect, dbDisconnect } from '$lib/utils/db';
 import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
+import { requireAuth } from '$lib/utils/auth';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export const GET = async ({ url }) => {
+export const GET = async (event: RequestEvent) => {
+	const { url } = event;
 	const page = parseInt(url.searchParams.get('page') || '1', 10);
 	const limit = parseInt(url.searchParams.get('limit') || '20', 10);
 	const enableForms = url.searchParams.get('enableForms') === 'true';
@@ -10,19 +13,25 @@ export const GET = async ({ url }) => {
 	const game = url.searchParams.get('game');
 
 	try {
+		const userId = await requireAuth(event);
 		await dbConnect();
 		const repo = new CombinedDataRepository();
-		const combinedData = await repo.findCombinedData(page, limit, enableForms, region, game);
+		const combinedData = await repo.findCombinedData(userId, page, limit, enableForms, region, game);
 
+		// Return empty array instead of 404 for better UX
 		if (combinedData.length === 0) {
-			return json({ error: 'No combined data found' }, { status: 404 });
+			return json({ combinedData: [], totalPages: 0 });
 		}
-		const totalCount = await repo.countCombinedData(enableForms, region, game);
+		
+		const totalCount = await repo.countCombinedData(userId, enableForms, region, game);
 		const totalPages = Math.ceil(totalCount / limit);
 
 		return json({ combinedData, totalPages });
 	} catch (error) {
 		console.error(error);
+		if (error.status) {
+			throw error;
+		}
 		return json({ error: 'Internal Server Error' }, { status: 500 });
 	} finally {
 		dbDisconnect();
