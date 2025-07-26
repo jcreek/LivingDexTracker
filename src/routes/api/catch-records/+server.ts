@@ -32,21 +32,16 @@ export const GET = async (event: RequestEvent) => {
 
 export const PUT = async (event: RequestEvent) => {
 	try {
-		console.log('PUT request received for catch-records');
-
 		// Check if we can get a session first
 		const { session, user } = await event.locals.safeGetSession();
-		console.log('Session check:', { hasSession: !!session, hasUser: !!user, userId: user?.id });
 
 		const userId = await requireAuth(event);
-		console.log('Auth successful, userId:', userId);
 
 		const data: Partial<CatchRecord> = await event.request.json();
 
 		// Get the user's session and set it on the Supabase client
 		if (session) {
 			await event.locals.supabase.auth.setSession(session);
-			console.log('Session set on Supabase client');
 		}
 
 		// Ensure the userId is set to the authenticated user
