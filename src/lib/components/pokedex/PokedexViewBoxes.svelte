@@ -19,18 +19,18 @@
 	export let markBoxAsNotInHome = (boxNumber: number) => {};
 	export let createCatchRecords = () => {};
 
-	function cellBackgroundColourClass(catchRecord: CatchRecord) {
-		if (catchRecord.caught) {
+	function cellBackgroundColourClass(catchRecord: CatchRecord | null) {
+		if (catchRecord?.caught) {
 			return 'bg-green-100/50';
-		} else if (catchRecord.haveToEvolve) {
+		} else if (catchRecord?.haveToEvolve) {
 			return 'bg-yellow-100/50';
 		} else {
 			return '';
 		}
 	}
 
-	function cellBackgroundColourStyle(pokedexEntry: PokedexEntry, catchRecord: CatchRecord) {
-		if (catchRecord.caught || catchRecord.haveToEvolve) {
+	function cellBackgroundColourStyle(pokedexEntry: PokedexEntry, catchRecord: CatchRecord | null) {
+		if (catchRecord?.caught || catchRecord?.haveToEvolve) {
 			return '';
 		} else {
 			if (pokedexEntry[currentPlacement].column % 2 === 0) {
@@ -76,7 +76,7 @@
 										>
 											<Tooltip>
 												<div slot="hover-target">
-													{#if catchRecord.inHome}
+													{#if catchRecord?.inHome}
 														<span
 															class="absolute -top-5 -right-4 z-2 p-1 text-secondary text-lg font-extrabold"
 															>&#10003;</span
@@ -97,9 +97,9 @@
 													</div>
 													<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
 													<div>
-														Caught: {catchRecord.caught ? 'Yes' : 'No'} <br />
-														Needs to Evolve: {catchRecord.haveToEvolve ? 'Yes' : 'No'} <br />
-														In Home: {catchRecord.inHome ? 'Yes' : 'No'}
+														Caught: {catchRecord?.caught ? 'Yes' : 'No'} <br />
+														Needs to Evolve: {catchRecord?.haveToEvolve ? 'Yes' : 'No'} <br />
+														In Home: {catchRecord?.inHome ? 'Yes' : 'No'}
 													</div>
 												</div>
 											</Tooltip>

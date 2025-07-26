@@ -5,15 +5,27 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let pokedexEntry: PokedexEntry;
-	export let catchRecord: CatchRecord;
+	export let catchRecord: CatchRecord | null;
 	export let showOrigins: boolean;
 	export let showForms: boolean;
 	export let showShiny: boolean;
 
+	// Create a working copy for editing
+	$: workingCatchRecord = catchRecord || {
+		_id: '',
+		userId: '',
+		pokedexEntryId: pokedexEntry._id,
+		haveToEvolve: false,
+		caught: false,
+		inHome: false,
+		hasGigantamaxed: false,
+		personalNotes: ''
+	};
+
 	const dispatch = createEventDispatcher();
 
 	function updateCatchRecord() {
-		dispatch('updateCatch', { pokedexEntry, catchRecord });
+		dispatch('updateCatch', { pokedexEntry, catchRecord: workingCatchRecord });
 	}
 </script>
 
@@ -75,7 +87,7 @@
 					<span class="block font-bold mr-2">Caught:</span>
 					<input
 						type="checkbox"
-						bind:checked={catchRecord.caught}
+						bind:checked={workingCatchRecord.caught}
 						class="checkbox checkbox-primary border-black"
 						on:change={updateCatchRecord}
 					/>
@@ -88,7 +100,7 @@
 					<span class="block font-bold mr-2">Needs to evolve:</span>
 					<input
 						type="checkbox"
-						bind:checked={catchRecord.haveToEvolve}
+						bind:checked={workingCatchRecord.haveToEvolve}
 						class="checkbox checkbox-primary border-black"
 						on:change={updateCatchRecord}
 					/>
@@ -101,7 +113,7 @@
 					<span class="block font-bold mr-2">In home:</span>
 					<input
 						type="checkbox"
-						bind:checked={catchRecord.inHome}
+						bind:checked={workingCatchRecord.inHome}
 						class="checkbox checkbox-primary border-black"
 						on:change={updateCatchRecord}
 					/>
@@ -115,7 +127,7 @@
 						<span class="block font-bold mr-2">Has Gigantamaxed:</span>
 						<input
 							type="checkbox"
-							bind:checked={catchRecord.hasGigantamaxed}
+							bind:checked={workingCatchRecord.hasGigantamaxed}
 							class="checkbox checkbox-primary border-black"
 							on:change={updateCatchRecord}
 						/>
@@ -124,12 +136,12 @@
 			</div>
 		{/if}
 		<p>
-			<label class="block font-bold mb-1" for={`personalNotesInput-${catchRecord._id}`}
+			<label class="block font-bold mb-1" for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
 				>Notes:</label
 			>
 			<textarea
-				bind:value={catchRecord.personalNotes}
-				id={`personalNotesInput-${catchRecord._id}`}
+				bind:value={workingCatchRecord.personalNotes}
+				id={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
 				class="form-textarea w-full p-2 border rounded"
 				on:change={updateCatchRecord}
 			></textarea>

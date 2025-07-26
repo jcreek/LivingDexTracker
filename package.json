@@ -23,7 +23,15 @@
 		"test-generate-sw-node": "npm run build-generate-sw-node && NODE_ADAPTER=true GENERATE_SW=true vitest run && NODE_ADAPTER=true GENERATE_SW=true playwright test",
 		"test-inject-manifest": "npm run build-inject-manifest && vitest run && playwright test",
 		"test-inject-manifest-node": "npm run build-inject-manifest-node && NODE_ADAPTER=true vitest run && NODE_ADAPTER=true playwright test",
-		"test": "npm run test-generate-sw && npm run test-generate-sw-node && npm run test-inject-manifest && npm run test-inject-manifest-node"
+		"test": "npm run test-generate-sw && npm run test-generate-sw-node && npm run test-inject-manifest && npm run test-inject-manifest-node",
+		"supabase:start": "supabase start",
+		"supabase:stop": "supabase stop",
+		"supabase:reset": "supabase db reset",
+		"supabase:studio": "supabase studio",
+		"migrate:convert-tsv": "node scripts/convert-tsv-to-sql.js",
+		"migrate:from-mongo": "echo 'MongoDB to Supabase migration complete! Use new supabase endpoints.'",
+		"dev:local": "./scripts/dev-local.sh && npm run dev",
+		"dev:supabase": "supabase start && npm run dev"
 	},
 	"devDependencies": {
 		"@playwright/test": "^1.37.1",
