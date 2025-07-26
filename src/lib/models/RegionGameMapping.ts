@@ -1,13 +1,13 @@
-import mongoose, { Schema, Document } from 'mongoose';
-
-export interface RegionGameMapping extends Document {
+// Supabase-based RegionGameMapping interface
+export interface RegionGameMapping {
+	id?: number;
 	region: string;
-	games: string[];
+	game: string; // Note: Different from MongoDB version which had 'games' array
 }
 
-const regionGameMappingSchema = new Schema<RegionGameMapping>({
-	region: String,
-	games: Array<string>
-});
-
-export default mongoose.model<RegionGameMapping>('RegionGameMapping', regionGameMappingSchema);
+// Database record type for Supabase
+export interface RegionGameMappingDB {
+	id: number;
+	region: string;
+	game: string;
+}
