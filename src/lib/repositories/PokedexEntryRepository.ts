@@ -90,7 +90,24 @@ class PokedexEntryRepository {
 		const dbData: Partial<PokedexEntryDB> = {};
 		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
 		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
-		// ... add other fields as needed
+		if (data.form !== undefined) dbData.form = data.form;
+		if (data.canGigantamax !== undefined) dbData.canGigantamax = data.canGigantamax;
+		if (data.regionToCatchIn !== undefined) dbData.regionToCatchIn = data.regionToCatchIn;
+		if (data.gamesToCatchIn !== undefined) dbData.gamesToCatchIn = data.gamesToCatchIn;
+		if (data.regionToEvolveIn !== undefined) dbData.regionToEvolveIn = data.regionToEvolveIn;
+		if (data.evolutionInformation !== undefined)
+			dbData.evolutionInformation = data.evolutionInformation;
+		if (data.catchInformation !== undefined) dbData.catchInformation = data.catchInformation;
+		if (data.boxPlacementForms?.box !== undefined)
+			dbData.boxPlacementFormsBox = data.boxPlacementForms.box;
+		if (data.boxPlacementForms?.row !== undefined)
+			dbData.boxPlacementFormsRow = data.boxPlacementForms.row;
+		if (data.boxPlacementForms?.column !== undefined)
+			dbData.boxPlacementFormsColumn = data.boxPlacementForms.column;
+		if (data.boxPlacement?.box !== undefined) dbData.boxPlacementBox = data.boxPlacement.box;
+		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
+		if (data.boxPlacement?.column !== undefined)
+			dbData.boxPlacementColumn = data.boxPlacement.column;
 
 		const { data: result, error } = await this.supabase
 			.from('pokedex_entries')
