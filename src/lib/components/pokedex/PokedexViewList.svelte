@@ -23,6 +23,7 @@
 					{showOrigins}
 					{showForms}
 					{showShiny}
+					{userId}
 					bind:catchRecord
 					on:updateCatch={updateACatch}
 				/>
