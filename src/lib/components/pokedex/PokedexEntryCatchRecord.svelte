@@ -17,6 +17,7 @@
 			_id: '', // Empty string, not temp ID - will be created by server
 			userId: userId || '',
 			pokedexEntryId: pokedexEntry._id,
+			pokedexId: '', // Will be set by the parent component or API
 			haveToEvolve: false,
 			caught: false,
 			inHome: false,

@@ -156,6 +156,22 @@ CREATE POLICY "Users can update own pokedexes" ON user_pokedexes
 CREATE POLICY "Users can delete own pokedexes" ON user_pokedexes
   FOR DELETE USING (auth.uid() = user_id);
 
+-- Function to prevent deletion of last pokédex
+CREATE OR REPLACE FUNCTION prevent_last_pokedex_deletion()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF (SELECT COUNT(*) FROM user_pokedexes WHERE user_id = OLD.user_id) <= 1 THEN
+    RAISE EXCEPTION 'Cannot delete the last pokédex. Users must have at least one pokédex.';
+  END IF;
+  RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger to prevent deletion of last pokédex
+CREATE TRIGGER prevent_last_pokedex_deletion_trigger
+  BEFORE DELETE ON user_pokedexes
+  FOR EACH ROW EXECUTE FUNCTION prevent_last_pokedex_deletion();
+
 -- RLS policies for catch_records (user-specific)
 CREATE POLICY "Users can view own catch records" ON catch_records
   FOR SELECT USING (auth.uid() = "userId");
@@ -176,3 +192,18 @@ CREATE POLICY "Anyone can view region game mappings" ON region_game_mappings
 -- RLS policies for metadata (public read)
 CREATE POLICY "Anyone can view metadata" ON metadata
   FOR SELECT USING (true);
+
+-- Function to create default pokédex for new users
+CREATE OR REPLACE FUNCTION create_default_pokedex_for_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO user_pokedexes (user_id, name, game_scope, is_shiny, require_origin, include_forms)
+  VALUES (NEW.id, 'My Living Dex', 'all_games', FALSE, FALSE, FALSE);
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Trigger to automatically create default pokédex for new users
+CREATE TRIGGER create_default_pokedex_trigger
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE FUNCTION create_default_pokedex_for_user();

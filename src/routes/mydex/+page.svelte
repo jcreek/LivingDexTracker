@@ -128,6 +128,7 @@
 					_id: '',
 					userId: localUser?.id || '',
 					pokedexEntryId: pokedexEntry._id,
+					pokedexId: '', // Will be set when saving
 					haveToEvolve: false,
 					caught: false,
 					inHome: false,
@@ -198,6 +199,7 @@
 			const newCatchRecords = pokedexEntries.map((entry: PokedexEntry) => ({
 				userId: localUser?.id,
 				pokedexEntryId: entry._id,
+				pokedexId: '', // Will be set to default pokédex by the API
 				haveToEvolve: false,
 				caught: false,
 				inHome: false,
