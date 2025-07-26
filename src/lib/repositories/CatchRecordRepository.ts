@@ -140,11 +140,15 @@ class CatchRecordRepository {
 	}
 
 	async findByUserAndPokemon(userId: string, pokedexEntryId: string): Promise<CatchRecord | null> {
+		const numericId = Number(pokedexEntryId);
+		if (isNaN(numericId)) {
+			return null;
+		}
 		const { data, error } = await this.supabase
 			.from('catch_records')
 			.select('*')
 			.eq('userId', userId)
-			.eq('pokedexEntryId', pokedexEntryId)
+			.eq('pokedexEntryId', numericId)
 			.single();
 
 		if (error || !data) return null;
