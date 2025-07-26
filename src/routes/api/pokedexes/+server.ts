@@ -16,7 +16,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const repo = new UserPokedexRepository(event.locals.supabase, userId);
 		const pokedexes = await repo.findAll();
-		
+
 		return json({ pokedexes });
 	} catch (err) {
 		console.error(err);
@@ -38,14 +38,17 @@ export const POST = async (event: RequestEvent) => {
 		}
 
 		const data: CreatePokedexRequest = await event.request.json();
-		
+
 		// Validation
 		if (!data.name || data.name.trim().length === 0) {
 			return json({ error: 'Name is required' }, { status: 400 });
 		}
 
 		if (data.gameScope === 'specific_generation' && !data.generation) {
-			return json({ error: 'Generation is required for specific generation scope' }, { status: 400 });
+			return json(
+				{ error: 'Generation is required for specific generation scope' },
+				{ status: 400 }
+			);
 		}
 
 		if (data.gameScope === 'specific_generation' && data.requireOrigin) {
@@ -54,7 +57,7 @@ export const POST = async (event: RequestEvent) => {
 
 		const repo = new UserPokedexRepository(event.locals.supabase, userId);
 		const pokedex = await repo.create(data);
-		
+
 		return json({ pokedex }, { status: 201 });
 	} catch (err) {
 		console.error(err);

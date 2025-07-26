@@ -9,14 +9,14 @@ export async function loadUserPokedexes() {
 		const response = await fetch('/api/pokedexes');
 		const { pokedexes } = await response.json();
 		userPokedexes.set(pokedexes);
-		
+
 		// Set first pokédex as current if none selected
 		currentPokedex.subscribe((current) => {
 			if (!current && pokedexes.length > 0) {
 				currentPokedex.set(pokedexes[0]);
 			}
 		});
-		
+
 		return pokedexes;
 	} catch (error) {
 		console.error('Failed to load pokédexes:', error);

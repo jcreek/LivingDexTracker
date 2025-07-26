@@ -19,19 +19,19 @@ export const DELETE = async (event: RequestEvent) => {
 		}
 
 		const repo = new UserPokedexRepository(event.locals.supabase, userId);
-		
+
 		// Check if this is the user's last pokédex
 		const count = await repo.getPokedexCount();
 		if (count <= 1) {
 			return json({ error: 'Cannot delete last pokédex' }, { status: 400 });
 		}
-		
+
 		const success = await repo.delete(pokedexId);
-		
+
 		if (!success) {
 			return json({ error: 'Pokédex not found' }, { status: 404 });
 		}
-		
+
 		return json({ success: true });
 	} catch (err) {
 		console.error(err);
