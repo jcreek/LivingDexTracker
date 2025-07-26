@@ -28,10 +28,42 @@ CREATE TABLE pokedex_entries (
 ALTER TABLE pokedex_entries ADD CONSTRAINT unique_pokemon_form 
   UNIQUE("pokedexNumber", form);
 
+-- User pokédexes table
+CREATE TABLE user_pokedexes (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  
+  -- Game scope configuration
+  game_scope TEXT NOT NULL CHECK (game_scope IN ('all_games', 'specific_generation')),
+  generation TEXT, -- Only set if game_scope = 'specific_generation'
+  
+  -- Pokémon type configuration
+  is_shiny BOOLEAN NOT NULL DEFAULT FALSE,
+  require_origin BOOLEAN NOT NULL DEFAULT FALSE, -- Only applicable for all_games
+  include_forms BOOLEAN NOT NULL DEFAULT FALSE,
+  
+  -- Metadata
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW(),
+  
+  -- Constraints
+  UNIQUE(user_id, name),
+  CHECK (
+    (game_scope = 'all_games' AND generation IS NULL) OR
+    (game_scope = 'specific_generation' AND generation IS NOT NULL)
+  ),
+  CHECK (
+    (game_scope = 'all_games') OR 
+    (game_scope = 'specific_generation' AND require_origin = FALSE)
+  )
+);
+
 CREATE TABLE catch_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "userId" UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   "pokedexEntryId" BIGINT NOT NULL REFERENCES pokedex_entries(id) ON DELETE CASCADE,
+  pokedex_id UUID NOT NULL REFERENCES user_pokedexes(id) ON DELETE CASCADE,
   
   -- Catch status fields
   "haveToEvolve" BOOLEAN DEFAULT FALSE,
@@ -43,8 +75,8 @@ CREATE TABLE catch_records (
   "createdAt" TIMESTAMPTZ DEFAULT NOW(),
   "updatedAt" TIMESTAMPTZ DEFAULT NOW(),
   
-  -- Ensure one record per user per pokemon entry
-  UNIQUE("userId", "pokedexEntryId")
+  -- Ensure one record per user per pokemon entry per pokédex
+  UNIQUE("userId", "pokedexEntryId", pokedex_id)
 );
 
 CREATE TABLE region_game_mappings (
@@ -92,8 +124,17 @@ CREATE TRIGGER update_catch_records_updated_at
     BEFORE UPDATE ON catch_records 
     FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_user_pokedexes_updated_at 
+    BEFORE UPDATE ON user_pokedexes 
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- Create indexes
+CREATE INDEX idx_user_pokedexes_user_id ON user_pokedexes(user_id);
+CREATE INDEX idx_catch_records_pokedex_id ON catch_records(pokedex_id);
+
 -- Enable RLS on all tables
 ALTER TABLE pokedex_entries ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_pokedexes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE catch_records ENABLE ROW LEVEL SECURITY;
 ALTER TABLE region_game_mappings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE metadata ENABLE ROW LEVEL SECURITY;
@@ -101,6 +142,19 @@ ALTER TABLE metadata ENABLE ROW LEVEL SECURITY;
 -- RLS policies for pokedex_entries (public read)
 CREATE POLICY "Anyone can view pokemon entries" ON pokedex_entries
   FOR SELECT USING (true);
+
+-- RLS policies for user_pokedexes (user-specific)
+CREATE POLICY "Users can view own pokedexes" ON user_pokedexes
+  FOR SELECT USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can insert own pokedexes" ON user_pokedexes
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
+
+CREATE POLICY "Users can update own pokedexes" ON user_pokedexes
+  FOR UPDATE USING (auth.uid() = user_id);
+
+CREATE POLICY "Users can delete own pokedexes" ON user_pokedexes
+  FOR DELETE USING (auth.uid() = user_id);
 
 -- RLS policies for catch_records (user-specific)
 CREATE POLICY "Users can view own catch records" ON catch_records
