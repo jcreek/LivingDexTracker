@@ -9,12 +9,13 @@
 	export let showOrigins: boolean;
 	export let showForms: boolean;
 	export let showShiny: boolean;
+	export let userId: string | null = null;
 
 	// Create a default catch record if none exists
 	$: if (!catchRecord) {
 		catchRecord = {
 			_id: '', // Empty string, not temp ID - will be created by server
-			userId: '',
+			userId: userId || '',
 			pokedexEntryId: pokedexEntry._id,
 			haveToEvolve: false,
 			caught: false,
