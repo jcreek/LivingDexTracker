@@ -54,10 +54,7 @@ class CombinedDataRepository {
 		region: string = '',
 		game: string = ''
 	): Promise<CombinedData[]> {
-		let query = this.supabase.from('pokedex_entries').select(`
-				*,
-				catch_records(*)
-			`);
+		let query = this.supabase.from('pokedex_entries').select('*');
 
 		// Apply filters
 		if (!enableForms) {
@@ -85,18 +82,36 @@ class CombinedDataRepository {
 				.order('boxPlacementColumn', { ascending: true });
 		}
 
-		const { data, error } = await query;
+		const { data: entries, error: entriesError } = await query;
 
-		if (error) {
-			console.error('Error finding combined data:', error);
+		if (entriesError) {
+			console.error('Error finding combined data:', entriesError);
 			return [];
 		}
 
-		// Transform the data and filter catch records by user
-		return (data || []).map((entry) => {
-			const userCatchRecord = Array.isArray(entry.catch_records)
-				? entry.catch_records.find((record: CatchRecordDB) => record.userId === userId)
-				: null;
+		if (!entries || entries.length === 0) {
+			return [];
+		}
+
+		// Get catch records for all entries
+		let catchRecords: CatchRecordDB[] = [];
+		if (userId) {
+			const entryIds = entries.map((entry) => entry.id);
+			const { data: records, error: recordsError } = await this.supabase
+				.from('catch_records')
+				.select('*')
+				.eq('userId', userId)
+				.in('pokedexEntryId', entryIds);
+
+			if (!recordsError && records) {
+				catchRecords = records;
+			}
+		}
+
+		// Combine the data exactly like master branch
+		return entries.map((entry) => {
+			const userCatchRecord =
+				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			const transformedCatchRecord = userCatchRecord
@@ -121,15 +136,7 @@ class CombinedDataRepository {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
 
-		let query = this.supabase
-			.from('pokedex_entries')
-			.select(
-				`
-				*,
-				catch_records(*)
-			`
-			)
-			.range(from, to);
+		let query = this.supabase.from('pokedex_entries').select('*').range(from, to);
 
 		// Apply filters
 		if (!enableForms) {
@@ -157,18 +164,36 @@ class CombinedDataRepository {
 				.order('boxPlacementColumn', { ascending: true });
 		}
 
-		const { data, error } = await query;
+		const { data: entries, error: entriesError } = await query;
 
-		if (error) {
-			console.error('Error finding paginated combined data:', error);
+		if (entriesError) {
+			console.error('Error finding paginated combined data:', entriesError);
 			return [];
 		}
 
-		// Transform the data and filter catch records by user
-		return (data || []).map((entry) => {
-			const userCatchRecord = Array.isArray(entry.catch_records)
-				? entry.catch_records.find((record: CatchRecordDB) => record.userId === userId)
-				: null;
+		if (!entries || entries.length === 0) {
+			return [];
+		}
+
+		// Get catch records for these entries
+		let catchRecords: CatchRecordDB[] = [];
+		if (userId) {
+			const entryIds = entries.map((entry) => entry.id);
+			const { data: records, error: recordsError } = await this.supabase
+				.from('catch_records')
+				.select('*')
+				.eq('userId', userId)
+				.in('pokedexEntryId', entryIds);
+
+			if (!recordsError && records) {
+				catchRecords = records;
+			}
+		}
+
+		// Combine the data exactly like master branch
+		return entries.map((entry) => {
+			const userCatchRecord =
+				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			const transformedCatchRecord = userCatchRecord

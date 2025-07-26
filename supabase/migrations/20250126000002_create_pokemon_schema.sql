@@ -1,9 +1,3 @@
--- Migration: Create PostgreSQL schema for Pokemon data
--- This replaces the MongoDB collections with proper PostgreSQL tables
-
--- Note: Using individual columns instead of composite types for simplicity
-
--- Pokemon entries table (replaces pokedexentries MongoDB collection)
 CREATE TABLE pokedex_entries (
   id BIGSERIAL PRIMARY KEY,
   "pokedexNumber" INTEGER NOT NULL,
@@ -11,10 +5,10 @@ CREATE TABLE pokedex_entries (
   form TEXT,
   "canGigantamax" BOOLEAN DEFAULT FALSE,
   "regionToCatchIn" TEXT,
-  "gamesToCatchIn" TEXT[], -- Array of games
+  "gamesToCatchIn" TEXT[],
   "regionToEvolveIn" TEXT,
   "evolutionInformation" TEXT,
-  "catchInformation" TEXT[], -- Array of catch info
+  "catchInformation" TEXT[],
   
   -- Box placement for forms view
   "boxPlacementFormsBox" INTEGER,
@@ -34,7 +28,6 @@ CREATE TABLE pokedex_entries (
 ALTER TABLE pokedex_entries ADD CONSTRAINT unique_pokemon_form 
   UNIQUE("pokedexNumber", form);
 
--- Catch records table (replaces catchrecords MongoDB collection)
 CREATE TABLE catch_records (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   "userId" UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
@@ -54,7 +47,6 @@ CREATE TABLE catch_records (
   UNIQUE("userId", "pokedexEntryId")
 );
 
--- Region-game mappings table for filtering
 CREATE TABLE region_game_mappings (
   id BIGSERIAL PRIMARY KEY,
   region TEXT NOT NULL,
@@ -62,7 +54,6 @@ CREATE TABLE region_game_mappings (
   UNIQUE(region, game)
 );
 
--- Metadata table for migration tracking
 CREATE TABLE metadata (
   id BIGSERIAL PRIMARY KEY,
   key TEXT UNIQUE NOT NULL,

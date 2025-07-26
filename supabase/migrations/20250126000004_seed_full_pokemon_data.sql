@@ -1,10 +1,3 @@
--- Auto-generated migration: Full Pokemon data from TSV
--- This replaces the MongoDB seeding and tsv-parser project
-
--- Clear existing data (for development)
-DELETE FROM catch_records;
-DELETE FROM pokedex_entries;
-
 -- Insert full Pokemon dataset
 INSERT INTO pokedex_entries (
   "pokedexNumber", 

@@ -59,10 +59,6 @@
 					break;
 			}
 
-			// if (strippedPokedexNumber == '869') {
-			// 	console.log(sanitisedPokemonName, sanitisedForm);
-			// }
-
 			// If the form is contained in the identifier, use that
 			if (
 				pokeApiPokemon.find(

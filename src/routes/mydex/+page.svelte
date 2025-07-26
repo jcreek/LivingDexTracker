@@ -99,7 +99,6 @@
 		};
 
 		try {
-			// Use enhanced fetch that includes authentication context
 			const response = await fetch('/api/catch-records', requestOptions);
 			if (!response.ok) {
 				const errorText = await response.text();
@@ -107,6 +106,9 @@
 				alert('Failed to update catch record');
 				throw new Error('Failed to update catch record');
 			}
+
+			// Refresh the data to reflect changes from server
+			await getData(false);
 		} catch (error) {
 			console.error('Error updating catch record:', error);
 		}
@@ -226,13 +228,11 @@
 
 					const createdRecords = await response.json();
 					totalRecordsCreated += createdRecords.length;
-					console.log(`Created ${createdRecords.length} catch records`);
 				} catch (error) {
 					console.error('Error creating catch records:', error);
 				}
 			}
 
-			console.log('Created catch records for each pokedex entry');
 			creatingRecords = false;
 			failedToLoad = false;
 			await getData();
@@ -292,6 +292,7 @@
 					bind:creatingRecords
 					bind:totalRecordsCreated
 					bind:failedToLoad
+					userId={localUser?.id}
 					{updateACatch}
 					{createCatchRecords}
 				/>
