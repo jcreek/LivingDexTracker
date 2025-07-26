@@ -12,8 +12,8 @@
 
 	// Create a working copy for editing
 	$: workingCatchRecord = catchRecord || {
-		_id: '',
-		userId: '',
+		_id: `temp-${Date.now()}-${pokedexEntry._id}`, // Generate temporary ID
+		userId: '', // TODO: Get from session context
 		pokedexEntryId: pokedexEntry._id,
 		haveToEvolve: false,
 		caught: false,
@@ -136,8 +136,9 @@
 			</div>
 		{/if}
 		<p>
-			<label class="block font-bold mb-1" for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
-				>Notes:</label
+			<label
+				class="block font-bold mb-1"
+				for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}>Notes:</label
 			>
 			<textarea
 				bind:value={workingCatchRecord.personalNotes}

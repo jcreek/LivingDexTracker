@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
-import { requireAuth } from '$lib/utils/auth';
+import { getOptionalUserId } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export const GET = async (event: RequestEvent) => {
@@ -10,16 +10,26 @@ export const GET = async (event: RequestEvent) => {
 	const game = url.searchParams.get('game') || '';
 
 	try {
-		const userId = await requireAuth(event);
-		const repo = new CombinedDataRepository(event.locals.supabase, userId);
-		const combinedData = await repo.findAllCombinedData(userId, enableForms, region, game);
+		// Get userId if authenticated, null if not
+		const userId = await getOptionalUserId(event);
+
+		// If user is authenticated, set their session on the Supabase client
+		if (userId) {
+			const { session } = await event.locals.safeGetSession();
+			if (session) {
+				await event.locals.supabase.auth.setSession(session);
+			}
+		}
+
+		const repo = new CombinedDataRepository(event.locals.supabase, userId || '');
+		const combinedData = await repo.findAllCombinedData(userId || '', enableForms, region, game);
 
 		// Return empty array instead of 404 for better UX
 		return json(combinedData);
-	} catch (error) {
-		console.error(error);
-		if (error.status) {
-			throw error;
+	} catch (err) {
+		console.error(err);
+		if (err && typeof err === 'object' && 'status' in err) {
+			throw err;
 		}
 		return json({ error: 'Internal Server Error' }, { status: 500 });
 	}

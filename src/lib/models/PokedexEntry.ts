@@ -1,6 +1,6 @@
-import mongoose, { Schema, Document } from 'mongoose';
-
-export interface PokedexEntry extends Document {
+// Supabase-based PokedexEntry interface
+export interface PokedexEntry {
+	_id: string; // Maps to Supabase 'id' field for frontend compatibility
 	pokedexNumber: number;
 	boxPlacement: { box: number; row: number; column: number };
 	boxPlacementForms: { box: number; row: number; column: number };
@@ -11,41 +11,27 @@ export interface PokedexEntry extends Document {
 	gamesToCatchIn: string[];
 	regionToEvolveIn: string;
 	evolutionInformation: string;
-	catchInformation: [
-		{
-			game: string;
-			location: string;
-			notes: string;
-		}
-	];
+	catchInformation: string[];
 }
 
-const pokedexEntrySchema = new Schema<PokedexEntry>({
-	pokedexNumber: Number,
-	boxPlacement: {
-		box: Number,
-		row: Number,
-		column: Number
-	},
-	boxPlacementForms: {
-		box: Number,
-		row: Number,
-		column: Number
-	},
-	pokemon: String,
-	form: String,
-	canGigantamax: Boolean,
-	regionToCatchIn: String,
-	gamesToCatchIn: Array<string>,
-	regionToEvolveIn: String,
-	evolutionInformation: String,
-	catchInformation: [
-		{
-			game: String,
-			location: String,
-			notes: String
-		}
-	]
-});
-
-export default mongoose.model<PokedexEntry>('PokedexEntry', pokedexEntrySchema);
+// Database record type for Supabase
+export interface PokedexEntryDB {
+	id: number;
+	pokedexNumber: number;
+	pokemon: string;
+	form: string | null;
+	canGigantamax: boolean;
+	regionToCatchIn: string | null;
+	gamesToCatchIn: string[] | null;
+	regionToEvolveIn: string | null;
+	evolutionInformation: string | null;
+	catchInformation: string[] | null;
+	boxPlacementFormsBox: number | null;
+	boxPlacementFormsRow: number | null;
+	boxPlacementFormsColumn: number | null;
+	boxPlacementBox: number | null;
+	boxPlacementRow: number | null;
+	boxPlacementColumn: number | null;
+	createdAt: string;
+	updatedAt: string;
+}

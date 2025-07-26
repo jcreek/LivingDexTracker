@@ -13,15 +13,25 @@
 	export let supabase: any;
 
 	async function signInWithEmail() {
-		// TODO use the data and error from the response
-		const { data, error } = await supabase.auth
-			.signInWithPassword({
+		try {
+			const { data, error } = await supabase.auth.signInWithPassword({
 				email: email,
 				password: password
-			})
-			.then(() => {
-				emitSignedInEvent();
 			});
+
+			if (error) {
+				console.error('Sign in error:', error);
+				alert(`Sign in failed: ${error.message}`);
+				return;
+			}
+
+			if (data) {
+				emitSignedInEvent();
+			}
+		} catch (err) {
+			console.error('Sign in error:', err);
+			alert('Sign in failed');
+		}
 	}
 </script>
 

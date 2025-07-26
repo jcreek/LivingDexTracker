@@ -7,15 +7,24 @@ import type { RequestEvent } from '@sveltejs/kit';
 export const GET = async (event: RequestEvent) => {
 	try {
 		const userId = await requireAuth(event);
+
+		// Get the user's session and set it on the Supabase client
+		const { session } = await event.locals.safeGetSession();
+		if (session) {
+			await event.locals.supabase.auth.setSession(session);
+		}
+
 		const repo = new CatchRecordRepository(event.locals.supabase, userId);
 		const catchData = await repo.findByUserId(userId);
 		// order by pokedexEntryId property, ascending
-		const sortedData = catchData.sort((a, b) => Number(a.pokedexEntryId) - Number(b.pokedexEntryId));
+		const sortedData = catchData.sort(
+			(a, b) => Number(a.pokedexEntryId) - Number(b.pokedexEntryId)
+		);
 		return json(sortedData);
-	} catch (error) {
-		console.error(error);
-		if (error.status) {
-			throw error;
+	} catch (err) {
+		console.error(err);
+		if (err && typeof err === 'object' && 'status' in err) {
+			throw err;
 		}
 		return json({ error: 'Internal Server Error' }, { status: 500 });
 	}
@@ -23,18 +32,32 @@ export const GET = async (event: RequestEvent) => {
 
 export const PUT = async (event: RequestEvent) => {
 	try {
+		console.log('PUT request received for catch-records');
+
+		// Check if we can get a session first
+		const { session, user } = await event.locals.safeGetSession();
+		console.log('Session check:', { hasSession: !!session, hasUser: !!user, userId: user?.id });
+
 		const userId = await requireAuth(event);
+		console.log('Auth successful, userId:', userId);
+
 		const data: Partial<CatchRecord> = await event.request.json();
-		
+
+		// Get the user's session and set it on the Supabase client
+		if (session) {
+			await event.locals.supabase.auth.setSession(session);
+			console.log('Session set on Supabase client');
+		}
+
 		// Ensure the userId is set to the authenticated user
 		data.userId = userId;
-		
+
 		const repo = new CatchRecordRepository(event.locals.supabase, userId);
 		const upsertedRecord = await repo.upsert(data);
 		return json(upsertedRecord);
 	} catch (err) {
 		console.error(err);
-		if (err.status) {
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 		return json({ error: 'Internal Server Error' }, { status: 500 });
@@ -45,6 +68,13 @@ export const POST = async (event: RequestEvent) => {
 	try {
 		const userId = await requireAuth(event);
 		const records: Partial<CatchRecord>[] = await event.request.json();
+
+		// Get the user's session and set it on the Supabase client
+		const { session } = await event.locals.safeGetSession();
+		if (session) {
+			await event.locals.supabase.auth.setSession(session);
+		}
+
 		const repo = new CatchRecordRepository(event.locals.supabase, userId);
 
 		const insertedRecords = [];
@@ -58,7 +88,7 @@ export const POST = async (event: RequestEvent) => {
 		return json(insertedRecords);
 	} catch (err) {
 		console.error(err);
-		if (err.status) {
+		if (err && typeof err === 'object' && 'status' in err) {
 			throw err;
 		}
 		return json({ error: 'Internal Server Error' }, { status: 500 });

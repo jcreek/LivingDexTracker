@@ -7,20 +7,20 @@ DELETE FROM pokedex_entries;
 
 -- Insert full Pokemon dataset
 INSERT INTO pokedex_entries (
-  pokedex_number, 
+  "pokedexNumber", 
   pokemon, 
   form, 
-  can_gigantamax, 
-  region_to_catch_in, 
-  games_to_catch_in, 
-  region_to_evolve_in, 
-  evolution_information,
-  box_placement_forms_box,
-  box_placement_forms_row,
-  box_placement_forms_column,
-  box_placement_box,
-  box_placement_row,
-  box_placement_column
+  "canGigantamax", 
+  "regionToCatchIn", 
+  "gamesToCatchIn", 
+  "regionToEvolveIn", 
+  "evolutionInformation",
+  "boxPlacementFormsBox",
+  "boxPlacementFormsRow",
+  "boxPlacementFormsColumn",
+  "boxPlacementBox",
+  "boxPlacementRow",
+  "boxPlacementColumn"
 ) VALUES
 (1, 'Bulbasaur', NULL, false, 'Kanto', ARRAY['Red', 'Blue', 'Yellow', 'LG: Pikachu', 'LG: Eevee'], NULL, NULL, 1, 1, 1, 1, 1, 1),
 (2, 'Ivysaur', NULL, false, 'Kanto', ARRAY['Red', 'Blue', 'Yellow', 'LG: Pikachu', 'LG: Eevee'], NULL, NULL, 1, 1, 2, 1, 1, 2),
@@ -344,7 +344,8 @@ INSERT INTO pokedex_entries (
 (209, 'Snubbull', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, NULL, 12, 2, 6, 7, 5, 5),
 (210, 'Granbull', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, NULL, 12, 3, 1, 7, 5, 6),
 (211, 'Qwilfish', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, 'Route 32, Super Rod', 12, 3, 2, 8, 1, 1),
-(211, 'Qwilfish', 'Hisuian', false, 'Hisui', ARRAY['PLA'], NULL, 'Obsidian Fieldlands: near Ramanas Island (Hisuian Form) Cobalt Coastlands: near Bathers'' Lagoon, near Hideaway Bay, near Tombolo Walk, near Sand''s Reach, Tranquility Cove, Islespy Shore and nearby (additional Alpha icon.png), Lunker''s Lair, near Seagrass Haven, near Firespit Island, massive mass outbreaks (Hisuian Form)', 12, 3, 3, null, null, null),
+(211, 'Qwilfish', 'Hisuian', false, 'Hisui', ARRAY['PLA'], NULL, 'Obsidian Fieldlands: near Ramanas Island (Hisuian Form)
+ Cobalt Coastlands: near Bathers'' Lagoon, near Hideaway Bay, near Tombolo Walk, near Sand''s Reach, Tranquility Cove, Islespy Shore and nearby (additional Alpha icon.png), Lunker''s Lair, near Seagrass Haven, near Firespit Island, massive mass outbreaks (Hisuian Form)', 12, 3, 3, null, null, null),
 (212, 'Scizor', NULL, false, 'Kanto', ARRAY['Red', 'Yellow', 'LG: Pikachu'], 'Johto', 'It evolves from Scyther when traded while holding a Metal Coat.', 12, 3, 4, 8, 1, 2),
 (212, 'Scizor', 'Female', false, 'Kanto', ARRAY['Red', 'Yellow', 'LG: Pikachu'], 'Johto', 'It evolves from Scyther when traded while holding a Metal Coat.', 12, 3, 5, null, null, null),
 (213, 'Shuckle', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, NULL, 12, 3, 6, 8, 1, 3),
@@ -352,8 +353,10 @@ INSERT INTO pokedex_entries (
 (214, 'Heracross', 'Female', false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, NULL, 12, 4, 2, null, null, null),
 (215, 'Sneasel', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, 'Ice Path, b3f, 6pm-4am', 12, 4, 3, 8, 1, 5),
 (215, 'Sneasel', 'Female', false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HG', 'SS'], NULL, 'Ice Path, b3f, 6pm-4am', 12, 4, 4, null, null, null),
-(215, 'Sneasel', 'Hisuian', false, 'Hisui', ARRAY['PLA'], NULL, 'Coronet Highlands: near Celestica Trail, near Primeval Grotto, massive mass outbreaks (Hisuian Form) Alabaster Icelands: near Avalugg''s Legacy (additional Alpha icon.png), Glacier Terrace, near Pearl Settlement (Hisuian Form)', 12, 4, 5, null, null, null),
-(215, 'Sneasel', 'Female-Hisuian', false, 'Hisui', ARRAY['PLA'], NULL, 'Coronet Highlands: near Celestica Trail, near Primeval Grotto, massive mass outbreaks (Hisuian Form) Alabaster Icelands: near Avalugg''s Legacy (additional Alpha icon.png), Glacier Terrace, near Pearl Settlement (Hisuian Form)', 12, 4, 6, null, null, null),
+(215, 'Sneasel', 'Hisuian', false, 'Hisui', ARRAY['PLA'], NULL, 'Coronet Highlands: near Celestica Trail, near Primeval Grotto, massive mass outbreaks (Hisuian Form)
+ Alabaster Icelands: near Avalugg''s Legacy (additional Alpha icon.png), Glacier Terrace, near Pearl Settlement (Hisuian Form)', 12, 4, 5, null, null, null),
+(215, 'Sneasel', 'Female-Hisuian', false, 'Hisui', ARRAY['PLA'], NULL, 'Coronet Highlands: near Celestica Trail, near Primeval Grotto, massive mass outbreaks (Hisuian Form)
+ Alabaster Icelands: near Avalugg''s Legacy (additional Alpha icon.png), Glacier Terrace, near Pearl Settlement (Hisuian Form)', 12, 4, 6, null, null, null),
 (216, 'Teddiursa', NULL, false, 'Johto', ARRAY['Gold', 'Crystal', 'SS'], NULL, 'Dark Cave, Blackthorn City Entrance, 4am-10am', 12, 5, 1, 8, 1, 6),
 (217, 'Ursaring', NULL, false, 'Johto', ARRAY['Gold', 'Crystal', 'SS'], NULL, NULL, 12, 5, 2, 8, 2, 1),
 (217, 'Ursaring', 'Female', false, 'Johto', ARRAY['Gold', 'Crystal', 'SS'], NULL, NULL, 12, 5, 3, null, null, null),
@@ -765,7 +768,9 @@ INSERT INTO pokedex_entries (
 (549, 'Lilligant', 'Hisuian', false, 'Unova', ARRAY['White', 'White2'], 'Hisui', 'In Hisui, Petilil evolves into Hisuian Lilligant when exposed to a Sun Stone.', 27, 5, 5, null, null, null),
 (550, 'Basculin', 'Red-striped', false, 'Unova', ARRAY['Black', 'White', 'Black2', 'White2'], NULL, 'Routes 1, 3, 6, 11, 14, Striaton City, Wellspring Cave, Pinwheel Forest, Dragonspiral Tower, Challenger''s Cave, Victory Road, Village Bridge, Giant Chasm, Abundant Shrine, Lostlorn Forest (Surfing or fishing) (Red-Striped Form) (Rippling water) (Blue-Striped Form)', 27, 5, 6, 19, 2, 4),
 (550, 'Basculin', 'Blue-striped', false, 'Unova', ARRAY['Black', 'White', 'Black2', 'White2'], NULL, 'Routes 1, 3, 6, 11, 14, Striaton City, Wellspring Cave, Pinwheel Forest, Dragonspiral Tower, Challenger''s Cave, Victory Road, Village Bridge, Giant Chasm, Abundant Shrine, Lostlorn Forest (Surfing or fishing) (Red-Striped Form) (Rippling water) (Blue-Striped Form)', 28, 1, 1, null, null, null),
-(550, 'Basculin', 'White-striped', false, 'Hisui', ARRAY['PLA'], NULL, 'Cobalt Coastlands: Tranquility Cove, near Islespy Shore, near Firespit Island, massive mass outbreaks (White-Striped Form) Coronet Highlands: Fabled Spring (White-Striped Form) Alabaster Icelands: near Avalugg''s Legacy, Heart''s Crag, Lake Acuity, near Pearl Settlement (White-Striped Form)', 28, 1, 2, null, null, null),
+(550, 'Basculin', 'White-striped', false, 'Hisui', ARRAY['PLA'], NULL, 'Cobalt Coastlands: Tranquility Cove, near Islespy Shore, near Firespit Island, massive mass outbreaks (White-Striped Form)
+ Coronet Highlands: Fabled Spring (White-Striped Form)
+ Alabaster Icelands: near Avalugg''s Legacy, Heart''s Crag, Lake Acuity, near Pearl Settlement (White-Striped Form)', 28, 1, 2, null, null, null),
 (551, 'Sandile', NULL, false, 'Unova', ARRAY['Black', 'White', 'Black2', 'White2'], NULL, 'Route 4, Desert Resort, Relic Castle', 28, 1, 3, 19, 2, 5),
 (552, 'Krokorok', NULL, false, 'Unova', ARRAY['Black', 'White', 'Black2', 'White2'], NULL, 'Evolves from Sandile at level 29', 28, 1, 4, 19, 2, 6),
 (553, 'Krookodile', NULL, false, 'Unova', ARRAY['Black', 'White', 'Black2', 'White2'], NULL, 'Evolves from Krokorok at level 40', 28, 1, 5, 19, 3, 1),
@@ -1414,9 +1419,51 @@ INSERT INTO pokedex_entries (
 (1025, 'Pecharunt', NULL, false, 'Paldea', ARRAY['Scarlet', 'Violet'], NULL, NULL, 51, 2, 6, 35, 1, 4);
 
 -- Update metadata
-UPDATE pokedex_metadata 
-SET value = '{"count": 1390}', updated_at = NOW() 
+UPDATE metadata 
+SET value = '{"count": 1390}', "updatedAt" = NOW() 
 WHERE key = 'total_pokemon';
+
+-- Insert region-game mappings if not already present
+INSERT INTO region_game_mappings (region, game) VALUES
+('Kanto', 'Red'),
+('Kanto', 'Blue'),
+('Kanto', 'Yellow'),
+('Kanto', 'LG: Pikachu'),
+('Kanto', 'LG: Eevee'),
+('Johto', 'Gold'),
+('Johto', 'Silver'),
+('Johto', 'Crystal'),
+('Hoenn', 'Ruby'),
+('Hoenn', 'Sapphire'),
+('Hoenn', 'Emerald'),
+('Sinnoh', 'Diamond'),
+('Sinnoh', 'Pearl'),
+('Sinnoh', 'Platinum'),
+('Unova', 'Black'),
+('Unova', 'White'),
+('Unova', 'Black 2'),
+('Unova', 'White 2'),
+('Kalos', 'X'),
+('Kalos', 'Y'),
+('Alola', 'Sun'),
+('Alola', 'Moon'),
+('Alola', 'Ultra Sun'),
+('Alola', 'Ultra Moon'),
+('Galar', 'Sword'),
+('Galar', 'Shield'),
+('Paldea', 'Scarlet'),
+('Paldea', 'Violet')
+ON CONFLICT (region, game) DO NOTHING;
+
+-- Insert metadata
+INSERT INTO metadata (key, value) VALUES
+('migration_version', '1.0'),
+('data_source', 'tsv-parser'),
+('last_updated', NOW()::TEXT),
+('total_pokemon', '{"count": 1390}')
+ON CONFLICT (key) DO UPDATE SET 
+  value = EXCLUDED.value,
+  "updatedAt" = NOW();
 
 -- Add success message
 SELECT 'Successfully loaded 1390 Pokemon entries' as message;

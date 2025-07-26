@@ -1,47 +1,50 @@
-import { type PokedexEntry } from '$lib/models/PokedexEntry';
-import { type CatchRecord } from '$lib/models/CatchRecord';
+import { type PokedexEntry, type PokedexEntryDB } from '$lib/models/PokedexEntry';
+import { type CatchRecord, type CatchRecordDB } from '$lib/models/CatchRecord';
 import { type CombinedData } from '$lib/models/CombinedData';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 class CombinedDataRepository {
-	constructor(private supabase: SupabaseClient, private userId: string) {}
+	constructor(
+		private supabase: SupabaseClient,
+		private userId: string
+	) {}
 
-	// Transform Supabase data to match frontend expectations
-	private transformPokedexEntry(entry: any): PokedexEntry {
+	// Transform Supabase data to match frontend expectations (minimal transformation)
+	private transformPokedexEntry(entry: PokedexEntryDB): PokedexEntry {
 		return {
 			_id: entry.id.toString(),
-			pokedexNumber: entry.pokedex_number,
+			pokedexNumber: entry.pokedexNumber,
 			pokemon: entry.pokemon,
-			form: entry.form,
-			canGigantamax: entry.can_gigantamax,
-			regionToCatchIn: entry.region_to_catch_in,
-			gamesToCatchIn: entry.games_to_catch_in || [],
-			regionToEvolveIn: entry.region_to_evolve_in,
-			evolutionInformation: entry.evolution_information,
-			catchInformation: entry.catch_information || [],
+			form: entry.form || '',
+			canGigantamax: entry.canGigantamax,
+			regionToCatchIn: entry.regionToCatchIn || '',
+			gamesToCatchIn: entry.gamesToCatchIn || [],
+			regionToEvolveIn: entry.regionToEvolveIn || '',
+			evolutionInformation: entry.evolutionInformation || '',
+			catchInformation: entry.catchInformation || [],
 			boxPlacementForms: {
-				box: entry.box_placement_forms_box,
-				row: entry.box_placement_forms_row,
-				column: entry.box_placement_forms_column
+				box: entry.boxPlacementFormsBox || 0,
+				row: entry.boxPlacementFormsRow || 0,
+				column: entry.boxPlacementFormsColumn || 0
 			},
 			boxPlacement: {
-				box: entry.box_placement_box,
-				row: entry.box_placement_row,
-				column: entry.box_placement_column
+				box: entry.boxPlacementBox || 0,
+				row: entry.boxPlacementRow || 0,
+				column: entry.boxPlacementColumn || 0
 			}
 		};
 	}
 
-	private transformCatchRecord(record: any): CatchRecord {
+	private transformCatchRecord(record: CatchRecordDB): CatchRecord {
 		return {
 			_id: record.id,
-			userId: record.user_id,
-			pokedexEntryId: record.pokedex_entry_id.toString(),
-			haveToEvolve: record.have_to_evolve,
+			userId: record.userId,
+			pokedexEntryId: record.pokedexEntryId.toString(),
+			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
-			inHome: record.in_home,
-			hasGigantamaxed: record.has_gigantamaxed,
-			personalNotes: record.personal_notes
+			inHome: record.inHome,
+			hasGigantamaxed: record.hasGigantamaxed,
+			personalNotes: record.personalNotes
 		};
 	}
 
@@ -51,35 +54,35 @@ class CombinedDataRepository {
 		region: string = '',
 		game: string = ''
 	): Promise<CombinedData[]> {
-		let query = this.supabase
-			.from('pokedex_entries')
-			.select(`
+		let query = this.supabase.from('pokedex_entries').select(`
 				*,
 				catch_records(*)
 			`);
 
 		// Apply filters
 		if (!enableForms) {
-			query = query.not('box_placement_box', 'is', null);
+			query = query.not('boxPlacementBox', 'is', null);
 		}
 
 		if (region) {
-			query = query.eq('region_to_catch_in', region);
+			query = query.eq('regionToCatchIn', region);
 		}
 
 		if (game) {
-			query = query.contains('games_to_catch_in', [game]);
+			query = query.contains('gamesToCatchIn', [game]);
 		}
 
 		// Order by box placement
 		if (enableForms) {
-			query = query.order('box_placement_forms_box', { ascending: true })
-				.order('box_placement_forms_row', { ascending: true })
-				.order('box_placement_forms_column', { ascending: true });
+			query = query
+				.order('boxPlacementFormsBox', { ascending: true })
+				.order('boxPlacementFormsRow', { ascending: true })
+				.order('boxPlacementFormsColumn', { ascending: true });
 		} else {
-			query = query.order('box_placement_box', { ascending: true })
-				.order('box_placement_row', { ascending: true })
-				.order('box_placement_column', { ascending: true });
+			query = query
+				.order('boxPlacementBox', { ascending: true })
+				.order('boxPlacementRow', { ascending: true })
+				.order('boxPlacementColumn', { ascending: true });
 		}
 
 		const { data, error } = await query;
@@ -90,13 +93,13 @@ class CombinedDataRepository {
 		}
 
 		// Transform the data and filter catch records by user
-		return (data || []).map(entry => {
-			const userCatchRecord = Array.isArray(entry.catch_records) 
-				? entry.catch_records.find((record: any) => record.user_id === userId)
+		return (data || []).map((entry) => {
+			const userCatchRecord = Array.isArray(entry.catch_records)
+				? entry.catch_records.find((record: CatchRecordDB) => record.userId === userId)
 				: null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
-			const transformedCatchRecord = userCatchRecord 
+			const transformedCatchRecord = userCatchRecord
 				? this.transformCatchRecord(userCatchRecord)
 				: null;
 
@@ -120,34 +123,38 @@ class CombinedDataRepository {
 
 		let query = this.supabase
 			.from('pokedex_entries')
-			.select(`
+			.select(
+				`
 				*,
 				catch_records(*)
-			`)
+			`
+			)
 			.range(from, to);
 
 		// Apply filters
 		if (!enableForms) {
-			query = query.not('box_placement_box', 'is', null);
+			query = query.not('boxPlacementBox', 'is', null);
 		}
 
 		if (region) {
-			query = query.eq('region_to_catch_in', region);
+			query = query.eq('regionToCatchIn', region);
 		}
 
 		if (game) {
-			query = query.contains('games_to_catch_in', [game]);
+			query = query.contains('gamesToCatchIn', [game]);
 		}
 
 		// Order by box placement
 		if (enableForms) {
-			query = query.order('box_placement_forms_box', { ascending: true })
-				.order('box_placement_forms_row', { ascending: true })
-				.order('box_placement_forms_column', { ascending: true });
+			query = query
+				.order('boxPlacementFormsBox', { ascending: true })
+				.order('boxPlacementFormsRow', { ascending: true })
+				.order('boxPlacementFormsColumn', { ascending: true });
 		} else {
-			query = query.order('box_placement_box', { ascending: true })
-				.order('box_placement_row', { ascending: true })
-				.order('box_placement_column', { ascending: true });
+			query = query
+				.order('boxPlacementBox', { ascending: true })
+				.order('boxPlacementRow', { ascending: true })
+				.order('boxPlacementColumn', { ascending: true });
 		}
 
 		const { data, error } = await query;
@@ -158,13 +165,13 @@ class CombinedDataRepository {
 		}
 
 		// Transform the data and filter catch records by user
-		return (data || []).map(entry => {
-			const userCatchRecord = Array.isArray(entry.catch_records) 
-				? entry.catch_records.find((record: any) => record.user_id === userId)
+		return (data || []).map((entry) => {
+			const userCatchRecord = Array.isArray(entry.catch_records)
+				? entry.catch_records.find((record: CatchRecordDB) => record.userId === userId)
 				: null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
-			const transformedCatchRecord = userCatchRecord 
+			const transformedCatchRecord = userCatchRecord
 				? this.transformCatchRecord(userCatchRecord)
 				: null;
 
@@ -181,21 +188,19 @@ class CombinedDataRepository {
 		region: string,
 		game: string
 	): Promise<number> {
-		let query = this.supabase
-			.from('pokedex_entries')
-			.select('id', { count: 'exact', head: true });
+		let query = this.supabase.from('pokedex_entries').select('id', { count: 'exact', head: true });
 
 		// Apply same filters as in findCombinedData
 		if (!enableForms) {
-			query = query.not('box_placement_box', 'is', null);
+			query = query.not('boxPlacementBox', 'is', null);
 		}
 
 		if (region) {
-			query = query.eq('region_to_catch_in', region);
+			query = query.eq('regionToCatchIn', region);
 		}
 
 		if (game) {
-			query = query.contains('games_to_catch_in', [game]);
+			query = query.contains('gamesToCatchIn', [game]);
 		}
 
 		const { count, error } = await query;
