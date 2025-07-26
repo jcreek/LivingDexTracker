@@ -9,6 +9,10 @@ class CatchRecordRepository {
 		return CatchRecordModel.find().exec();
 	}
 
+	async findByUserId(userId: string): Promise<CatchRecord[]> {
+		return CatchRecordModel.find({ userId }).exec();
+	}
+
 	async create(data: Partial<CatchRecord>): Promise<CatchRecord> {
 		return CatchRecordModel.create(data);
 	}

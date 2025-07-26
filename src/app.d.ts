@@ -1,6 +1,7 @@
 import 'vite-plugin-pwa/svelte';
 import 'vite-plugin-pwa/info';
 import 'vite-plugin-pwa/pwa-assets';
+import { SupabaseClient, Session, User } from '@supabase/supabase-js';
 
 // See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
@@ -11,12 +12,16 @@ declare global {
 	namespace App {
 		// interface Error {}
 		interface Locals {
+			supabase: SupabaseClient;
+			safeGetSession(): Promise<{ session: Session | null; user: User | null }>;
 			userid: string;
 			buildDate: string;
 			periodicUpdates: boolean;
 		}
 
-		// interface PageData {}
+		interface PageData {
+			session: Session | null;
+		}
 		// interface PageState {}
 		// interface Platform {}
 	}
