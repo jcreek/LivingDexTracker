@@ -17,7 +17,8 @@
 			"virtual:pwa-assets"
 		]
 	},
-	"include": ["node_modules/vite-plugin-pwa/client.d.ts", "node_modules/**/*.d.ts"]
+	"include": ["src/**/*.ts", "src/**/*.svelte", "node_modules/vite-plugin-pwa/client.d.ts"],
+	"exclude": [".svelte-kit/**/*", "node_modules/**/*"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
 	// If you want to overwrite includes/excludes, make sure to copy over the relevant includes/excludes

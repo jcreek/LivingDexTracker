@@ -1,26 +1,14 @@
 import { json } from '@sveltejs/kit';
-import { dbConnect, dbDisconnect } from '$lib/utils/db';
-import { type PokedexEntry } from '$lib/models/PokedexEntry';
 import PokedexEntryRepository from '$lib/repositories/PokedexEntryRepository';
+import type { RequestHandler } from './$types';
 
-export const GET = async () => {
-	return json(await fetchPokeDexEntriesFromDatabase());
-};
-
-async function fetchPokeDexEntriesFromDatabase() {
-	let pokemonData = null as PokedexEntry[] | null;
-
+export const GET: RequestHandler = async (event) => {
 	try {
-		await dbConnect();
-		const repo = new PokedexEntryRepository();
-		pokemonData = await repo.findAll();
-		// order by pokedexNumber property, ascending
-		pokemonData = pokemonData.sort((a, b) => a.pokedexNumber - b.pokedexNumber);
+		const repo = new PokedexEntryRepository(event.locals.supabase);
+		const pokemonData = await repo.findAll();
+		return json(pokemonData);
 	} catch (error) {
-		console.error(error);
-	} finally {
-		dbDisconnect();
+		console.error('Error fetching pokedex entries:', error);
+		return json({ error: 'Failed to fetch pokedex entries' }, { status: 500 });
 	}
-
-	return pokemonData;
-}
+};

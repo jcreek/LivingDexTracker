@@ -16,18 +16,22 @@
 	onDestroy(unsubscribe);
 
 	async function getUser() {
-		const {
-			data: { session }
-		} = await supabase.auth.getSession();
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
 
-		if (session) {
-			localUser = session.user;
-		} else {
-			localUser = null;
+			if (session) {
+				localUser = session.user;
+				user.set(localUser);
+				await goto('/mydex', { replace: true });
+			} else {
+				localUser = null;
+				user.set(localUser);
+			}
+		} catch (error) {
+			console.error('Error getting user session:', error);
 		}
-
-		user.set(localUser);
-		goto('/mydex', { replace: true });
 	}
 </script>
 

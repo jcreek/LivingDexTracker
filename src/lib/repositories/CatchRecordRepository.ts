@@ -1,38 +1,158 @@
-import CatchRecordModel, { type CatchRecord } from '$lib/models/CatchRecord';
+import type { CatchRecord, CatchRecordDB } from '$lib/models/CatchRecord';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 class CatchRecordRepository {
+	constructor(
+		private supabase: SupabaseClient,
+		private userId: string
+	) {}
+
+	// Transform Supabase data to frontend format (minimal transformation)
+	private transformCatchRecord(record: CatchRecordDB): CatchRecord {
+		return {
+			_id: record.id,
+			userId: record.userId,
+			pokedexEntryId: record.pokedexEntryId.toString(),
+			haveToEvolve: record.haveToEvolve,
+			caught: record.caught,
+			inHome: record.inHome,
+			hasGigantamaxed: record.hasGigantamaxed,
+			personalNotes: record.personalNotes
+		};
+	}
+
+	// Transform frontend data to database format (minimal transformation)
+	private transformToDatabase(data: Partial<CatchRecord>): Partial<CatchRecordDB> {
+		const dbData: Partial<CatchRecordDB> = {};
+		if (data.pokedexEntryId !== undefined && data.pokedexEntryId !== null) {
+			const numericId = Number(data.pokedexEntryId);
+			if (isNaN(numericId)) {
+				throw new Error(`Invalid pokedexEntryId: ${data.pokedexEntryId}`);
+			}
+			dbData.pokedexEntryId = numericId;
+		}
+		if (data.haveToEvolve !== undefined) dbData.haveToEvolve = data.haveToEvolve;
+		if (data.caught !== undefined) dbData.caught = data.caught;
+		if (data.inHome !== undefined) dbData.inHome = data.inHome;
+		if (data.hasGigantamaxed !== undefined) dbData.hasGigantamaxed = data.hasGigantamaxed;
+		if (data.personalNotes !== undefined) dbData.personalNotes = data.personalNotes;
+
+		return dbData;
+	}
+
 	async findById(id: string): Promise<CatchRecord | null> {
-		return CatchRecordModel.findById(id).exec();
+		const { data, error } = await this.supabase
+			.from('catch_records')
+			.select('*')
+			.eq('id', id)
+			.eq('userId', this.userId)
+			.single();
+
+		if (error || !data) return null;
+		return this.transformCatchRecord(data);
 	}
 
 	async findAll(): Promise<CatchRecord[]> {
-		return CatchRecordModel.find().exec();
+		const { data, error } = await this.supabase
+			.from('catch_records')
+			.select('*')
+			.eq('userId', this.userId);
+
+		if (error || !data) return [];
+		return data.map((record) => this.transformCatchRecord(record));
 	}
 
 	async findByUserId(userId: string): Promise<CatchRecord[]> {
-		return CatchRecordModel.find({ userId }).exec();
+		const { data, error } = await this.supabase
+			.from('catch_records')
+			.select('*')
+			.eq('userId', userId);
+
+		if (error || !data) return [];
+		return data.map((record) => this.transformCatchRecord(record));
 	}
 
 	async create(data: Partial<CatchRecord>): Promise<CatchRecord> {
-		return CatchRecordModel.create(data);
+		const dbData = {
+			userId: this.userId,
+			...this.transformToDatabase(data)
+		};
+
+		const { data: result, error } = await this.supabase
+			.from('catch_records')
+			.insert(dbData)
+			.select()
+			.single();
+
+		if (error) {
+			console.error('Supabase error creating catch record:', error);
+			throw new Error(`Failed to create catch record: ${error.message}`);
+		}
+
+		if (!result) {
+			throw new Error('Failed to create catch record: No result returned');
+		}
+
+		return this.transformCatchRecord(result);
 	}
 
 	async update(id: string, data: Partial<CatchRecord>): Promise<CatchRecord | null> {
-		return CatchRecordModel.findByIdAndUpdate(id, data, { new: true }).exec();
+		const dbData = this.transformToDatabase(data);
+
+		const { data: result, error } = await this.supabase
+			.from('catch_records')
+			.update(dbData)
+			.eq('id', id)
+			.eq('userId', this.userId)
+			.select()
+			.single();
+
+		if (error || !result) return null;
+		return this.transformCatchRecord(result);
 	}
 
 	async delete(id: string): Promise<void> {
-		await CatchRecordModel.findByIdAndDelete(id).exec();
+		const { error } = await this.supabase
+			.from('catch_records')
+			.delete()
+			.eq('id', id)
+			.eq('userId', this.userId);
+
+		if (error) {
+			console.error('Error deleting catch record:', error);
+			throw new Error(`Failed to delete catch record: ${error.message}`);
+		}
 	}
 
 	async upsert(data: Partial<CatchRecord>): Promise<CatchRecord | null> {
 		if (data._id) {
-			// Update existing record
-			return CatchRecordModel.findByIdAndUpdate(data._id, data, { new: true }).exec();
-		} else {
-			// Create new record
-			return CatchRecordModel.create(data);
+			return this.update(data._id, data);
+		} else if (data.pokedexEntryId) {
+			// Try to find existing record for this user and pokemon
+			const existing = await this.findByUserAndPokemon(this.userId, data.pokedexEntryId);
+			if (existing) {
+				return this.update(existing._id, data);
+			} else {
+				return this.create(data);
+			}
 		}
+		return this.create(data);
+	}
+
+	async findByUserAndPokemon(userId: string, pokedexEntryId: string): Promise<CatchRecord | null> {
+		const numericId = Number(pokedexEntryId);
+		if (isNaN(numericId)) {
+			return null;
+		}
+		const { data, error } = await this.supabase
+			.from('catch_records')
+			.select('*')
+			.eq('userId', userId)
+			.eq('pokedexEntryId', numericId)
+			.single();
+
+		if (error || !data) return null;
+		return this.transformCatchRecord(data);
 	}
 }
 
