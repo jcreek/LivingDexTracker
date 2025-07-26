@@ -13,6 +13,7 @@ class CatchRecordRepository {
 			_id: record.id,
 			userId: record.userId,
 			pokedexEntryId: record.pokedexEntryId.toString(),
+			pokedexId: record.pokedex_id, // NEW FIELD
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
 			inHome: record.inHome,
@@ -31,6 +32,7 @@ class CatchRecordRepository {
 			}
 			dbData.pokedexEntryId = numericId;
 		}
+		if (data.pokedexId !== undefined) dbData.pokedex_id = data.pokedexId; // NEW FIELD
 		if (data.haveToEvolve !== undefined) dbData.haveToEvolve = data.haveToEvolve;
 		if (data.caught !== undefined) dbData.caught = data.caught;
 		if (data.inHome !== undefined) dbData.inHome = data.inHome;
@@ -153,6 +155,17 @@ class CatchRecordRepository {
 
 		if (error || !data) return null;
 		return this.transformCatchRecord(data);
+	}
+
+	async findByPokedexId(pokedexId: string): Promise<CatchRecord[]> {
+		const { data, error } = await this.supabase
+			.from('catch_records')
+			.select('*')
+			.eq('userId', this.userId)
+			.eq('pokedex_id', pokedexId);
+
+		if (error || !data) return [];
+		return data.map((record) => this.transformCatchRecord(record));
 	}
 }
 
