@@ -10,22 +10,24 @@
 	export let showForms: boolean;
 	export let showShiny: boolean;
 
-	// Create a working copy for editing
-	$: workingCatchRecord = catchRecord || {
-		_id: `temp-${Date.now()}-${pokedexEntry._id}`, // Generate temporary ID
-		userId: '', // TODO: Get from session context
-		pokedexEntryId: pokedexEntry._id,
-		haveToEvolve: false,
-		caught: false,
-		inHome: false,
-		hasGigantamaxed: false,
-		personalNotes: ''
-	};
+	// Create a default catch record if none exists
+	$: if (!catchRecord) {
+		catchRecord = {
+			_id: '', // Empty string, not temp ID - will be created by server
+			userId: '',
+			pokedexEntryId: pokedexEntry._id,
+			haveToEvolve: false,
+			caught: false,
+			inHome: false,
+			hasGigantamaxed: false,
+			personalNotes: ''
+		};
+	}
 
 	const dispatch = createEventDispatcher();
 
 	function updateCatchRecord() {
-		dispatch('updateCatch', { pokedexEntry, catchRecord: workingCatchRecord });
+		dispatch('updateCatch', { pokedexEntry, catchRecord });
 	}
 </script>
 
@@ -87,7 +89,7 @@
 					<span class="block font-bold mr-2">Caught:</span>
 					<input
 						type="checkbox"
-						bind:checked={workingCatchRecord.caught}
+						bind:checked={catchRecord.caught}
 						class="checkbox checkbox-primary border-black"
 						on:change={updateCatchRecord}
 					/>
@@ -100,7 +102,7 @@
 					<span class="block font-bold mr-2">Needs to evolve:</span>
 					<input
 						type="checkbox"
-						bind:checked={workingCatchRecord.haveToEvolve}
+						bind:checked={catchRecord.haveToEvolve}
 						class="checkbox checkbox-primary border-black"
 						on:change={updateCatchRecord}
 					/>
@@ -113,7 +115,7 @@
 					<span class="block font-bold mr-2">In home:</span>
 					<input
 						type="checkbox"
-						bind:checked={workingCatchRecord.inHome}
+						bind:checked={catchRecord.inHome}
 						class="checkbox checkbox-primary border-black"
 						on:change={updateCatchRecord}
 					/>
@@ -127,7 +129,7 @@
 						<span class="block font-bold mr-2">Has Gigantamaxed:</span>
 						<input
 							type="checkbox"
-							bind:checked={workingCatchRecord.hasGigantamaxed}
+							bind:checked={catchRecord.hasGigantamaxed}
 							class="checkbox checkbox-primary border-black"
 							on:change={updateCatchRecord}
 						/>
@@ -141,7 +143,7 @@
 				for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}>Notes:</label
 			>
 			<textarea
-				bind:value={workingCatchRecord.personalNotes}
+				bind:value={catchRecord.personalNotes}
 				id={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
 				class="form-textarea w-full p-2 border rounded"
 				on:change={updateCatchRecord}
