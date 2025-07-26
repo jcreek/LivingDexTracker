@@ -110,6 +110,12 @@
 					<ul
 						class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-primary text-primary-content rounded-box w-52"
 					>
+						{#if localUser}
+							<li><a href="/mydex">My Dex</a></li>
+							<li><a href="/pokedexes">My Pokédexes</a></li>
+							<li><a href="/profile">Profile</a></li>
+							<li><hr /></li>
+						{/if}
 						<li><a href="/about">About</a></li>
 						<li>
 							<a href="https://github.com/jcreek/LivingDexTracker" target="_blank">Contribute</a>
