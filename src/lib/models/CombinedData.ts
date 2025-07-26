@@ -3,5 +3,5 @@ import { type CatchRecord } from './CatchRecord';
 
 export interface CombinedData {
 	pokedexEntry: PokedexEntry;
-	catchRecord: CatchRecord;
+	catchRecord: CatchRecord | null;
 }

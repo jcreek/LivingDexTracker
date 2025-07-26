@@ -20,7 +20,11 @@ self.addEventListener('message', (event) => {
 precache([{ url: '/', revision: null }]);
 
 // self.__WB_MANIFEST is default injection point
-precacheAndRoute(self.__WB_MANIFEST);
+// Handle the case where __WB_MANIFEST might be undefined in development
+const manifest = self.__WB_MANIFEST || [];
+if (Array.isArray(manifest)) {
+	precacheAndRoute(manifest);
+}
 
 // clean old assets
 cleanupOutdatedCaches();

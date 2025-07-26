@@ -25,7 +25,7 @@
 	let drawerOpen = false;
 	let viewAsBoxes = false;
 	let currentPlacement = 'boxPlacementForms';
-	let boxNumbers = Array<any>;
+	let boxNumbers: number[] = [];
 
 	const unsubscribe = user.subscribe((value) => {
 		localUser = value;
@@ -109,8 +109,20 @@
 	) {
 		let catchRecordsToUpdate = combinedData
 			.filter(({ pokedexEntry }) => pokedexEntry[currentPlacement].box === boxNumber)
-			.map(({ catchRecord }) => {
-				let updatedRecord = { ...catchRecord };
+			.map(({ pokedexEntry, catchRecord }) => {
+				// Create default record if null
+				const baseRecord = catchRecord || {
+					_id: '',
+					userId: localUser?.id || '',
+					pokedexEntryId: pokedexEntry._id,
+					haveToEvolve: false,
+					caught: false,
+					inHome: false,
+					hasGigantamaxed: false,
+					personalNotes: ''
+				};
+				
+				let updatedRecord = { ...baseRecord };
 				if (inHome !== null) {
 					updatedRecord = {
 						...updatedRecord,
