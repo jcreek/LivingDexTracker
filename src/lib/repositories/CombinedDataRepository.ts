@@ -208,7 +208,6 @@ class CombinedDataRepository {
 	}
 
 	async countCombinedData(
-		userId: string,
 		enableForms: boolean,
 		region: string,
 		game: string

@@ -38,7 +38,7 @@ export const GET = async (event: RequestEvent) => {
 			return json({ combinedData: [], totalPages: 0 });
 		}
 
-		const totalCount = await repo.countCombinedData(userId || '', enableForms, region, game);
+		const totalCount = await repo.countCombinedData(enableForms, region, game);
 		const totalPages = Math.ceil(totalCount / limit);
 
 		return json({ combinedData, totalPages });
