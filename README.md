@@ -31,7 +31,7 @@ You can preview the production build with `npm run preview`.
 
 The app is hosted on [Netlify](https://www.netlify.com/) at [pokedex.jcreek.co.uk](https://pokedex.jcreek.co.uk/).
 
-The Pokédex data is stored in a [MongoDB](https://www.mongodb.com/) database hosted on [MongoDB Cloud](https://cloud.mongodb.com/).
+The Pokédex data is stored in a [Supabase](https://supabase.com/) database.
 
 User authentication is handled by [Supabase Auth](https://supabase.com/auth).
 
