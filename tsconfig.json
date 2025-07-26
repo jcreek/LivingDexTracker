@@ -17,12 +17,7 @@
 			"virtual:pwa-assets"
 		]
 	},
-	"include": [
-		"src/**/*.ts",
-		"src/**/*.svelte",
-		"node_modules/vite-plugin-pwa/client.d.ts",
-		"node_modules/**/*.d.ts"
-	],
+	"include": ["src/**/*.ts", "src/**/*.svelte", "node_modules/vite-plugin-pwa/client.d.ts"],
 	"exclude": [".svelte-kit/**/*", "node_modules/**/*"]
 	// Path aliases are handled by https://kit.svelte.dev/docs/configuration#alias
 	//
