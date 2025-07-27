@@ -15,6 +15,10 @@
 		}
 	}
 
+	function handleSelect() {
+		dispatch('select', pokedex.id);
+	}
+
 	function getPokedexTypeDescription(pokedex: UserPokedex): string {
 		const parts = [];
 
@@ -38,7 +42,7 @@
 		<p class="text-sm text-base-content/70">{getPokedexTypeDescription(pokedex)}</p>
 
 		<div class="card-actions justify-end mt-4">
-			<button class="btn btn-primary btn-sm"> Select </button>
+			<button class="btn btn-primary btn-sm" on:click={handleSelect}> Select </button>
 			{#if canDelete}
 				<button class="btn btn-error btn-sm" on:click={handleDelete}> Delete </button>
 			{/if}

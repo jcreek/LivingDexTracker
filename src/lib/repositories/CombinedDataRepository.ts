@@ -52,7 +52,8 @@ class CombinedDataRepository {
 		userId: string,
 		enableForms: boolean = true,
 		region: string = '',
-		game: string = ''
+		game: string = '',
+		pokedexId: string = ''
 	): Promise<CombinedData[]> {
 		let query = this.supabase.from('pokedex_entries').select('*');
 
@@ -97,11 +98,18 @@ class CombinedDataRepository {
 		let catchRecords: CatchRecordDB[] = [];
 		if (userId) {
 			const entryIds = entries.map((entry) => entry.id);
-			const { data: records, error: recordsError } = await this.supabase
+			let recordsQuery = this.supabase
 				.from('catch_records')
 				.select('*')
 				.eq('userId', userId)
 				.in('pokedexEntryId', entryIds);
+
+			// Filter by pokédx ID if provided
+			if (pokedexId) {
+				recordsQuery = recordsQuery.eq('pokedex_id', pokedexId);
+			}
+
+			const { data: records, error: recordsError } = await recordsQuery;
 
 			if (!recordsError && records) {
 				catchRecords = records;
@@ -131,7 +139,8 @@ class CombinedDataRepository {
 		limit: number = 20,
 		enableForms: boolean = true,
 		region: string = '',
-		game: string = ''
+		game: string = '',
+		pokedexId: string = ''
 	): Promise<CombinedData[]> {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
@@ -179,11 +188,18 @@ class CombinedDataRepository {
 		let catchRecords: CatchRecordDB[] = [];
 		if (userId) {
 			const entryIds = entries.map((entry) => entry.id);
-			const { data: records, error: recordsError } = await this.supabase
+			let recordsQuery = this.supabase
 				.from('catch_records')
 				.select('*')
 				.eq('userId', userId)
 				.in('pokedexEntryId', entryIds);
+
+			// Filter by pokédx ID if provided
+			if (pokedexId) {
+				recordsQuery = recordsQuery.eq('pokedex_id', pokedexId);
+			}
+
+			const { data: records, error: recordsError } = await recordsQuery;
 
 			if (!recordsError && records) {
 				catchRecords = records;

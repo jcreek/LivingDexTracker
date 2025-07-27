@@ -10,6 +10,7 @@ export const GET = async (event: RequestEvent) => {
 	const enableForms = url.searchParams.get('enableForms') === 'true';
 	const region = url.searchParams.get('region') || '';
 	const game = url.searchParams.get('game') || '';
+	const pokedexId = url.searchParams.get('pokedexId') || '';
 
 	try {
 		// Get userId if authenticated, null if not
@@ -30,7 +31,8 @@ export const GET = async (event: RequestEvent) => {
 			limit,
 			enableForms,
 			region,
-			game
+			game,
+			pokedexId
 		);
 
 		// Return empty array instead of 404 for better UX

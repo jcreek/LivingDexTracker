@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { type CatchRecord } from '$lib/models/CatchRecord';
 import CatchRecordRepository from '$lib/repositories/CatchRecordRepository';
+import UserPokedexRepository from '$lib/repositories/UserPokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -33,7 +34,7 @@ export const GET = async (event: RequestEvent) => {
 export const PUT = async (event: RequestEvent) => {
 	try {
 		// Check if we can get a session first
-		const { session, user } = await event.locals.safeGetSession();
+		const { session } = await event.locals.safeGetSession();
 
 		const userId = await requireAuth(event);
 
@@ -46,6 +47,16 @@ export const PUT = async (event: RequestEvent) => {
 
 		// Ensure the userId is set to the authenticated user
 		data.userId = userId;
+
+		// If no pokedexId provided, get the user's first pokédex
+		if (!data.pokedexId) {
+			const pokedexRepo = new UserPokedexRepository(event.locals.supabase, userId);
+			const userPokedexes = await pokedexRepo.findAll();
+			if (userPokedexes.length === 0) {
+				return json({ error: 'No pokédex found for user' }, { status: 400 });
+			}
+			data.pokedexId = userPokedexes[0].id;
+		}
 
 		const repo = new CatchRecordRepository(event.locals.supabase, userId);
 		const upsertedRecord = await repo.upsert(data);
@@ -72,10 +83,27 @@ export const POST = async (event: RequestEvent) => {
 
 		const repo = new CatchRecordRepository(event.locals.supabase, userId);
 
+		// Get user's first pokédx if needed for records without pokedexId
+		let defaultPokedexId: string | null = null;
+
 		const insertedRecords = [];
 		for (const record of records) {
 			// Ensure the userId is set to the authenticated user
 			record.userId = userId;
+
+			// If no pokedexId provided, get the user's first pokédex
+			if (!record.pokedexId) {
+				if (!defaultPokedexId) {
+					const pokedexRepo = new UserPokedexRepository(event.locals.supabase, userId);
+					const userPokedexes = await pokedexRepo.findAll();
+					if (userPokedexes.length === 0) {
+						return json({ error: 'No pokédex found for user' }, { status: 400 });
+					}
+					defaultPokedexId = userPokedexes[0].id;
+				}
+				record.pokedexId = defaultPokedexId;
+			}
+
 			const upsertedRecord = await repo.upsert(record);
 			insertedRecords.push(upsertedRecord);
 		}

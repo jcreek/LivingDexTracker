@@ -32,7 +32,9 @@ class CatchRecordRepository {
 			}
 			dbData.pokedexEntryId = numericId;
 		}
-		if (data.pokedexId !== undefined) dbData.pokedex_id = data.pokedexId; // NEW FIELD
+		if (data.pokedexId !== undefined && data.pokedexId !== null && data.pokedexId !== '') {
+			dbData.pokedex_id = data.pokedexId; // NEW FIELD
+		}
 		if (data.haveToEvolve !== undefined) dbData.haveToEvolve = data.haveToEvolve;
 		if (data.caught !== undefined) dbData.caught = data.caught;
 		if (data.inHome !== undefined) dbData.inHome = data.inHome;

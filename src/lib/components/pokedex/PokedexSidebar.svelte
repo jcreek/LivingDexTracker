@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Pagination from '$lib/components/Pagination.svelte';
+	import { userPokedexes } from '$lib/stores/currentPokedexStore';
+	import type { UserPokedex } from '$lib/models/UserPokedex';
 
 	export let viewAsBoxes = false;
 	export let currentPage = 1;
@@ -10,11 +12,13 @@
 	export let showShiny = false;
 	export let catchRegion = '';
 	export let catchGame = '';
+	export let selectedPokedex: UserPokedex | null = null;
 	export let toggleForms = () => {};
 	export let toggleOrigins = () => {};
 	export let toggleShiny = () => {};
 	export let getData = () => {};
 	export let toggleViewAsBoxes = () => {};
+	export let onPokedexChange = (pokedex: UserPokedex) => {};
 </script>
 
 <aside

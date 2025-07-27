@@ -1,10 +1,16 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import { user } from '$lib/stores/user.js';
+	import {
+		currentPokedex,
+		userPokedexes,
+		loadUserPokedexes
+	} from '$lib/stores/currentPokedexStore';
 	import { type User } from '@supabase/auth-js';
 	import { type CombinedData } from '$lib/models/CombinedData';
 	import { browser } from '$app/environment';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
+	import type { UserPokedex } from '$lib/models/UserPokedex';
 	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
@@ -12,7 +18,7 @@
 
 	export let data: PageData;
 
-	$: ({ supabase, session } = data);
+	$: ({ supabase, session, pokedexId } = data);
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
@@ -21,6 +27,7 @@
 	let creatingRecords = false;
 	let totalRecordsCreated = 0;
 	let failedToLoad = false;
+	let selectedPokedex: UserPokedex | null = null;
 	let catchRegion = '';
 	let catchGame = '';
 	let localUser: User | null;
@@ -36,6 +43,46 @@
 		localUser = value;
 	});
 	onDestroy(unsubscribe);
+
+	// Reactive statement to reload data when selected pokédx changes
+	$: if (selectedPokedex && browser) {
+		getData();
+	}
+
+	// Reactive statement to update selectedPokedex when URL pokedexId changes
+	$: if (pokedexId && $userPokedexes.length > 0 && browser) {
+		const newSelectedPokedex = $userPokedexes.find(p => p.id === pokedexId);
+		if (newSelectedPokedex && newSelectedPokedex !== selectedPokedex) {
+			selectedPokedex = newSelectedPokedex;
+		}
+	}
+
+	// Load user pokedexes and set selected pokedex
+	onMount(async () => {
+		await loadUserPokedexes();
+
+		// If pokedexId is provided in URL, find and set that pokedex
+		if (pokedexId) {
+			selectedPokedex = $userPokedexes.find((p) => p.id === pokedexId) || null;
+		}
+
+		// If no pokedex selected, use the first available one
+		if (!selectedPokedex && $userPokedexes.length > 0) {
+			selectedPokedex = $userPokedexes[0];
+		}
+
+		// If still no pokedex available, redirect to pokedexes management
+		if (!selectedPokedex) {
+			if (browser) {
+				window.location.href = '/pokedexes';
+			}
+			return;
+		}
+
+		// Set current pokedex in store
+		currentPokedex.set(selectedPokedex);
+		await getData();
+	});
 
 	function toggleOrigins() {
 		showOrigins = !showOrigins;
@@ -64,9 +111,13 @@
 		if (setCombinedDataToNull) {
 			combinedData = null;
 		}
+		
+		// Add pokedexId parameter to filter data by selected pokédx
+		const pokedexParam = selectedPokedex?.id ? `&pokedexId=${selectedPokedex.id}` : '';
+		
 		let endpoint = viewAsBoxes
-			? `/api/combined-data/all?enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`
-			: `/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`;
+			? `/api/combined-data/all?enableForms=${showForms}&region=${catchRegion}&game=${catchGame}${pokedexParam}`
+			: `/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}${pokedexParam}`;
 		const response = await fetch(endpoint);
 		const data = await response.json();
 		if (data.error) {
@@ -128,13 +179,18 @@
 					_id: '',
 					userId: localUser?.id || '',
 					pokedexEntryId: pokedexEntry._id,
-					pokedexId: '', // Will be set when saving
+					pokedexId: selectedPokedex?.id, // Use selected pokedex ID, undefined if none selected
 					haveToEvolve: false,
 					caught: false,
 					inHome: false,
 					hasGigantamaxed: false,
 					personalNotes: ''
 				};
+
+				// Ensure pokedexId is always set to current selection (for legacy records)
+				if (!baseRecord.pokedexId && selectedPokedex?.id) {
+					baseRecord.pokedexId = selectedPokedex.id;
+				}
 
 				let updatedRecord = { ...baseRecord };
 				if (inHome !== null) {
@@ -240,10 +296,6 @@
 			await getData();
 		});
 	}
-
-	onMount(async () => {
-		await getData();
-	});
 
 	$: {
 		if (browser) {
