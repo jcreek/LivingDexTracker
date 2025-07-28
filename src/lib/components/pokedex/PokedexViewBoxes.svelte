@@ -4,6 +4,7 @@
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
+	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
 
 	export let showShiny = false;
 	export let combinedData: CombinedData[] | null;
@@ -18,6 +19,14 @@
 	export let markBoxAsInHome = (boxNumber: number) => {};
 	export let markBoxAsNotInHome = (boxNumber: number) => {};
 	export let createCatchRecords = () => {};
+	export let regionalPokedexName = 'national';
+
+	// Function to get the appropriate display number
+	function getDisplayNumber(pokedexEntry: PokedexEntry): number {
+		return regionalPokedexName === 'national'
+			? pokedexEntry.pokedexNumber
+			: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
+	}
 
 	function cellBackgroundColourClass(catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught) {
@@ -84,7 +93,7 @@
 													{/if}
 													<PokemonSprite
 														pokemonName={pokedexEntry.pokemon}
-														pokedexNumber={pokedexEntry.pokedexNumber}
+														pokedexNumber={getDisplayNumber(pokedexEntry)}
 														form={pokedexEntry.form}
 														shiny={showShiny}
 													/>
@@ -95,7 +104,7 @@
 														{pokedexEntry.pokemon}
 														{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
 													</div>
-													<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
+													<div>{getDisplayNumber(pokedexEntry).toString().padStart(3, '0')}</div>
 													<div>
 														Caught: {catchRecord?.caught ? 'Yes' : 'No'} <br />
 														Needs to Evolve: {catchRecord?.haveToEvolve ? 'Yes' : 'No'} <br />

@@ -51,7 +51,7 @@
 
 	// Reactive statement to update selectedPokedex when URL pokedexId changes
 	$: if (pokedexId && $userPokedexes.length > 0 && browser) {
-		const newSelectedPokedex = $userPokedexes.find(p => p.id === pokedexId);
+		const newSelectedPokedex = $userPokedexes.find((p) => p.id === pokedexId);
 		if (newSelectedPokedex && newSelectedPokedex !== selectedPokedex) {
 			selectedPokedex = newSelectedPokedex;
 		}
@@ -111,13 +111,18 @@
 		if (setCombinedDataToNull) {
 			combinedData = null;
 		}
-		
+
 		// Add pokedexId parameter to filter data by selected pokédx
 		const pokedexParam = selectedPokedex?.id ? `&pokedexId=${selectedPokedex.id}` : '';
-		
+
+		// Add pokédx settings parameters
+		const pokédxParams = selectedPokedex
+			? `&regionalPokedexName=${selectedPokedex?.regionalPokedexName || 'national'}&gameScope=${selectedPokedex?.gameScope || 'all_games'}&generation=${selectedPokedex?.generation || ''}`
+			: '';
+
 		let endpoint = viewAsBoxes
-			? `/api/combined-data/all?enableForms=${showForms}&region=${catchRegion}&game=${catchGame}${pokedexParam}`
-			: `/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}${pokedexParam}`;
+			? `/api/combined-data/all?enableForms=${showForms}&region=${catchRegion}&game=${catchGame}${pokedexParam}${pokédxParams}`
+			: `/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}${pokedexParam}${pokédxParams}`;
 		const response = await fetch(endpoint);
 		const data = await response.json();
 		if (data.error) {
@@ -252,6 +257,8 @@
 		await getPokedexEntries().then(async (pokedexEntries) => {
 			// If there are no catch records, make one for each pokedex entry
 			creatingRecords = true;
+
+			// Backend now handles filtering, so we use all returned entries
 			const newCatchRecords = pokedexEntries.map((entry: PokedexEntry) => ({
 				userId: localUser?.id,
 				pokedexEntryId: entry._id,
@@ -331,6 +338,7 @@
 					bind:currentPlacement
 					bind:creatingRecords
 					bind:failedToLoad
+					regionalPokedexName={selectedPokedex?.regionalPokedexName || 'national'}
 					{markBoxAsNotCaught}
 					{markBoxAsCaught}
 					{markBoxAsNeedsToEvolve}
@@ -347,6 +355,7 @@
 					bind:totalRecordsCreated
 					bind:failedToLoad
 					userId={localUser?.id}
+					regionalPokedexName={selectedPokedex?.regionalPokedexName || 'national'}
 					{updateACatch}
 					{createCatchRecords}
 				/>

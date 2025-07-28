@@ -31,7 +31,32 @@ class CombinedDataRepository {
 				box: entry.boxPlacementBox || 0,
 				row: entry.boxPlacementRow || 0,
 				column: entry.boxPlacementColumn || 0
-			}
+			},
+			// Regional pokédex numbers
+			kantoNumber: entry.kanto_number || undefined,
+			johtoNumber: entry.johto_number || undefined,
+			hoennNumber: entry.hoenn_number || undefined,
+			sinnohNumber: entry.sinnoh_number || undefined,
+			sinnohExtendedNumber: entry.sinnoh_extended_number || undefined,
+			unovaNumber: entry.unova_number || undefined,
+			unovaUpdatedNumber: entry.unova_updated_number || undefined,
+			kalosCentralNumber: entry.kalos_central_number || undefined,
+			kalosCoastalNumber: entry.kalos_coastal_number || undefined,
+			kalosMountainNumber: entry.kalos_mountain_number || undefined,
+			hoennUpdatedNumber: entry.hoenn_updated_number || undefined,
+			alolaNumber: entry.alola_number || undefined,
+			alolaUpdatedNumber: entry.alola_updated_number || undefined,
+			melemeleNumber: entry.melemele_number || undefined,
+			akalaNumber: entry.akala_number || undefined,
+			ulaulaNumber: entry.ulaula_number || undefined,
+			poniNumber: entry.poni_number || undefined,
+			galarNumber: entry.galar_number || undefined,
+			isleArmorNumber: entry.isle_armor_number || undefined,
+			crownTundraNumber: entry.crown_tundra_number || undefined,
+			hisuiNumber: entry.hisui_number || undefined,
+			paldeaNumber: entry.paldea_number || undefined,
+			kitakamiNumber: entry.kitakami_number || undefined,
+			blueberryNumber: entry.blueberry_number || undefined
 		};
 	}
 
@@ -53,7 +78,10 @@ class CombinedDataRepository {
 		enableForms: boolean = true,
 		region: string = '',
 		game: string = '',
-		pokedexId: string = ''
+		pokedexId: string = '',
+		regionalPokedexName: string = 'national',
+		gameScope: string = 'all_games',
+		generation: string = ''
 	): Promise<CombinedData[]> {
 		let query = this.supabase.from('pokedex_entries').select('*');
 
@@ -68,6 +96,41 @@ class CombinedDataRepository {
 
 		if (game) {
 			query = query.contains('gamesToCatchIn', [game]);
+		}
+
+		// Apply regional pokédx filtering
+		if (regionalPokedexName !== 'national') {
+			const columnMap: Record<string, string> = {
+				kanto: 'kanto_number',
+				johto: 'johto_number',
+				hoenn: 'hoenn_number',
+				sinnoh: 'sinnoh_number',
+				'sinnoh-extended': 'sinnoh_extended_number',
+				unova: 'unova_number',
+				'unova-updated': 'unova_updated_number',
+				'kalos-central': 'kalos_central_number',
+				'kalos-coastal': 'kalos_coastal_number',
+				'kalos-mountain': 'kalos_mountain_number',
+				'hoenn-updated': 'hoenn_updated_number',
+				alola: 'alola_number',
+				'alola-updated': 'alola_updated_number',
+				melemele: 'melemele_number',
+				akala: 'akala_number',
+				ulaula: 'ulaula_number',
+				poni: 'poni_number',
+				galar: 'galar_number',
+				'isle-armor': 'isle_armor_number',
+				'crown-tundra': 'crown_tundra_number',
+				hisui: 'hisui_number',
+				paldea: 'paldea_number',
+				kitakami: 'kitakami_number',
+				blueberry: 'blueberry_number'
+			};
+
+			const columnName = columnMap[regionalPokedexName];
+			if (columnName) {
+				query = query.not(columnName, 'is', null);
+			}
 		}
 
 		// Order by box placement
@@ -140,7 +203,10 @@ class CombinedDataRepository {
 		enableForms: boolean = true,
 		region: string = '',
 		game: string = '',
-		pokedexId: string = ''
+		pokedexId: string = '',
+		regionalPokedexName: string = 'national',
+		gameScope: string = 'all_games',
+		generation: string = ''
 	): Promise<CombinedData[]> {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
@@ -158,6 +224,41 @@ class CombinedDataRepository {
 
 		if (game) {
 			query = query.contains('gamesToCatchIn', [game]);
+		}
+
+		// Apply regional pokédx filtering
+		if (regionalPokedexName !== 'national') {
+			const columnMap: Record<string, string> = {
+				kanto: 'kanto_number',
+				johto: 'johto_number',
+				hoenn: 'hoenn_number',
+				sinnoh: 'sinnoh_number',
+				'sinnoh-extended': 'sinnoh_extended_number',
+				unova: 'unova_number',
+				'unova-updated': 'unova_updated_number',
+				'kalos-central': 'kalos_central_number',
+				'kalos-coastal': 'kalos_coastal_number',
+				'kalos-mountain': 'kalos_mountain_number',
+				'hoenn-updated': 'hoenn_updated_number',
+				alola: 'alola_number',
+				'alola-updated': 'alola_updated_number',
+				melemele: 'melemele_number',
+				akala: 'akala_number',
+				ulaula: 'ulaula_number',
+				poni: 'poni_number',
+				galar: 'galar_number',
+				'isle-armor': 'isle_armor_number',
+				'crown-tundra': 'crown_tundra_number',
+				hisui: 'hisui_number',
+				paldea: 'paldea_number',
+				kitakami: 'kitakami_number',
+				blueberry: 'blueberry_number'
+			};
+
+			const columnName = columnMap[regionalPokedexName];
+			if (columnName) {
+				query = query.not(columnName, 'is', null);
+			}
 		}
 
 		// Order by box placement
@@ -223,11 +324,7 @@ class CombinedDataRepository {
 		});
 	}
 
-	async countCombinedData(
-		enableForms: boolean,
-		region: string,
-		game: string
-	): Promise<number> {
+	async countCombinedData(enableForms: boolean, region: string, game: string): Promise<number> {
 		let query = this.supabase.from('pokedex_entries').select('id', { count: 'exact', head: true });
 
 		// Apply same filters as in findCombinedData

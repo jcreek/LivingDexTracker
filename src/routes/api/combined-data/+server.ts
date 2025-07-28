@@ -11,6 +11,9 @@ export const GET = async (event: RequestEvent) => {
 	const region = url.searchParams.get('region') || '';
 	const game = url.searchParams.get('game') || '';
 	const pokedexId = url.searchParams.get('pokedexId') || '';
+	const regionalPokedexName = url.searchParams.get('regionalPokedexName') || 'national';
+	const gameScope = url.searchParams.get('gameScope') || 'all_games';
+	const generation = url.searchParams.get('generation') || '';
 
 	try {
 		// Get userId if authenticated, null if not
@@ -32,7 +35,10 @@ export const GET = async (event: RequestEvent) => {
 			enableForms,
 			region,
 			game,
-			pokedexId
+			pokedexId,
+			regionalPokedexName,
+			gameScope,
+			generation
 		);
 
 		// Return empty array instead of 404 for better UX

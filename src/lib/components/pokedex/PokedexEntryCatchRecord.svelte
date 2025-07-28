@@ -3,6 +3,7 @@
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokemonSprite from '../PokemonSprite.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
 
 	export let pokedexEntry: PokedexEntry;
 	export let catchRecord: CatchRecord | null;
@@ -10,6 +11,13 @@
 	export let showForms: boolean;
 	export let showShiny: boolean;
 	export let userId: string | null = null;
+	export let regionalPokedexName = 'national';
+
+	// Get the appropriate number to display
+	$: displayNumber =
+		regionalPokedexName === 'national'
+			? pokedexEntry.pokedexNumber
+			: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
 
 	// Create a default catch record if none exists
 	$: if (!catchRecord) {
@@ -41,14 +49,14 @@
 			<div class="sprite-container flex justify-center items-center bg-white rounded-lg p-2">
 				<PokemonSprite
 					pokemonName={pokedexEntry.pokemon}
-					pokedexNumber={pokedexEntry.pokedexNumber}
+					pokedexNumber={displayNumber}
 					form={pokedexEntry.form}
 					shiny={showShiny}
 				/>
 			</div>
 			<div class="pl-2">
 				<h3 class="text-xl font-bold pt-1 text-secondary">{pokedexEntry.pokemon}</h3>
-				<sub class="text-gray-200">#{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</sub>
+				<sub class="text-gray-200">#{displayNumber.toString().padStart(3, '0')}</sub>
 			</div>
 		</div>
 

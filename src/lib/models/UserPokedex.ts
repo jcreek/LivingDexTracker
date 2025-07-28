@@ -4,6 +4,7 @@ export interface UserPokedex {
 	name: string;
 	gameScope: 'all_games' | 'specific_generation';
 	generation?: string;
+	regionalPokedexName: string;
 	isShiny: boolean;
 	requireOrigin: boolean;
 	includeForms: boolean;
@@ -17,6 +18,7 @@ export interface UserPokedexDB {
 	name: string;
 	game_scope: 'all_games' | 'specific_generation';
 	generation?: string;
+	regional_pokedex_name: string;
 	is_shiny: boolean;
 	require_origin: boolean;
 	include_forms: boolean;
@@ -28,6 +30,7 @@ export interface CreatePokedexRequest {
 	name: string;
 	gameScope: 'all_games' | 'specific_generation';
 	generation?: string;
+	regionalPokedexName: string;
 	isShiny: boolean;
 	requireOrigin: boolean;
 	includeForms: boolean;

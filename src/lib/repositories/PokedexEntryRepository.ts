@@ -26,7 +26,32 @@ class PokedexEntryRepository {
 				box: entry.boxPlacementBox || 0,
 				row: entry.boxPlacementRow || 0,
 				column: entry.boxPlacementColumn || 0
-			}
+			},
+			// Regional numbers
+			kantoNumber: entry.kanto_number || undefined,
+			johtoNumber: entry.johto_number || undefined,
+			hoennNumber: entry.hoenn_number || undefined,
+			sinnohNumber: entry.sinnoh_number || undefined,
+			sinnohExtendedNumber: entry.sinnoh_extended_number || undefined,
+			unovaNumber: entry.unova_number || undefined,
+			unovaUpdatedNumber: entry.unova_updated_number || undefined,
+			kalosCentralNumber: entry.kalos_central_number || undefined,
+			kalosCoastalNumber: entry.kalos_coastal_number || undefined,
+			kalosMountainNumber: entry.kalos_mountain_number || undefined,
+			hoennUpdatedNumber: entry.hoenn_updated_number || undefined,
+			alolaNumber: entry.alola_number || undefined,
+			alolaUpdatedNumber: entry.alola_updated_number || undefined,
+			melemeleNumber: entry.melemele_number || undefined,
+			akalaNumber: entry.akala_number || undefined,
+			ulaulaNumber: entry.ulaula_number || undefined,
+			poniNumber: entry.poni_number || undefined,
+			galarNumber: entry.galar_number || undefined,
+			isleArmorNumber: entry.isle_armor_number || undefined,
+			crownTundraNumber: entry.crown_tundra_number || undefined,
+			hisuiNumber: entry.hisui_number || undefined,
+			paldeaNumber: entry.paldea_number || undefined,
+			kitakamiNumber: entry.kitakami_number || undefined,
+			blueberryNumber: entry.blueberry_number || undefined
 		};
 	}
 
