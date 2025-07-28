@@ -1,14 +1,23 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { userPokedexes, loadUserPokedexes } from '$lib/stores/currentPokedexStore';
 	import CreatePokedexModal from '$lib/components/CreatePokedexModal.svelte';
 	import PokedexCard from '$lib/components/PokedexCard.svelte';
 	import type { PageData } from './$types';
+	import type { UserPokedex } from '$lib/models/UserPokedex';
 
 	export let data: PageData;
 
 	let showCreateModal = false;
 	let isDeleting = false;
+	let sortBy: 'name' | 'completion' | 'created' = 'name';
+	let sortDirection: 'asc' | 'desc' = 'asc';
+	let completionStats: Record<
+		string,
+		{ caught: number; total: number; readyToEvolve: number } | null
+	> = {};
+	let loadingStats = false;
 
 	// Initialize the store with data from the server
 	$userPokedexes = data.pokedexes;
@@ -25,6 +34,77 @@
 		closeCreateModal();
 		// Reload the pokedexes after creation
 		await loadUserPokedexes();
+		// Load stats for new pokédxes
+		await loadCompletionStats();
+	}
+
+	async function loadCompletionStats() {
+		if ($userPokedexes.length === 0) return;
+
+		loadingStats = true;
+		completionStats = {};
+
+		const statsPromises = $userPokedexes.map(async (pokedex) => {
+			try {
+				const response = await fetch(`/api/pokedexes/${pokedex.id}/stats`);
+				if (response.ok) {
+					const stats = await response.json();
+					completionStats[pokedex.id] = stats;
+				} else {
+					completionStats[pokedex.id] = null;
+				}
+			} catch (error) {
+				console.error(`Error loading stats for pokédx ${pokedex.id}:`, error);
+				completionStats[pokedex.id] = null;
+			}
+		});
+
+		await Promise.all(statsPromises);
+		completionStats = { ...completionStats }; // Trigger reactivity
+		loadingStats = false;
+	}
+
+	function getSortedPokedexes(): UserPokedex[] {
+		const sorted = [...$userPokedexes].sort((a, b) => {
+			let compareValue = 0;
+
+			switch (sortBy) {
+				case 'name':
+					compareValue = a.name.localeCompare(b.name);
+					break;
+				case 'completion':
+					const aStats = completionStats[a.id];
+					const bStats = completionStats[b.id];
+					const aPercentage = aStats
+						? aStats.total > 0
+							? (aStats.caught / aStats.total) * 100
+							: 0
+						: 0;
+					const bPercentage = bStats
+						? bStats.total > 0
+							? (bStats.caught / bStats.total) * 100
+							: 0
+						: 0;
+					compareValue = aPercentage - bPercentage;
+					break;
+				case 'created':
+					compareValue = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+					break;
+			}
+
+			return sortDirection === 'asc' ? compareValue : -compareValue;
+		});
+
+		return sorted;
+	}
+
+	function handleSort(newSortBy: 'name' | 'completion' | 'created') {
+		if (sortBy === newSortBy) {
+			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortBy = newSortBy;
+			sortDirection = 'asc';
+		}
 	}
 
 	async function handleDeletePokedex(pokedexId: string) {
@@ -47,6 +127,7 @@
 
 			// Reload the pokedexes after deletion
 			await loadUserPokedexes();
+			await loadCompletionStats();
 		} catch (error) {
 			console.error('Error deleting pokedex:', error);
 			alert(error instanceof Error ? error.message : 'Failed to delete pokedex');
@@ -57,6 +138,18 @@
 
 	function handleSelectPokedex(pokedexId: string) {
 		goto(`/mydex?pokedexId=${pokedexId}`);
+	}
+
+	// Load completion stats when the page loads
+	onMount(async () => {
+		if ($userPokedexes.length > 0) {
+			await loadCompletionStats();
+		}
+	});
+
+	// Reactive statement to load stats when pokedexes change
+	$: if ($userPokedexes.length > 0 && Object.keys(completionStats).length === 0 && !loadingStats) {
+		loadCompletionStats();
 	}
 </script>
 
@@ -110,11 +203,55 @@
 			</div>
 		</div>
 	{:else}
+		<!-- Sorting Controls -->
+		<div class="flex flex-wrap items-center justify-between mb-6 gap-4">
+			<div class="flex items-center space-x-2">
+				<span class="text-sm font-medium text-base-content/70">Sort by:</span>
+				<div class="join">
+					<button
+						class="btn btn-sm join-item {sortBy === 'name' ? 'btn-active' : 'btn-outline'}"
+						on:click={() => handleSort('name')}
+					>
+						Name
+						{#if sortBy === 'name'}
+							<span class="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+						{/if}
+					</button>
+					<button
+						class="btn btn-sm join-item {sortBy === 'completion' ? 'btn-active' : 'btn-outline'}"
+						on:click={() => handleSort('completion')}
+					>
+						Completion
+						{#if sortBy === 'completion'}
+							<span class="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+						{/if}
+					</button>
+					<button
+						class="btn btn-sm join-item {sortBy === 'created' ? 'btn-active' : 'btn-outline'}"
+						on:click={() => handleSort('created')}
+					>
+						Created
+						{#if sortBy === 'created'}
+							<span class="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
+						{/if}
+					</button>
+				</div>
+			</div>
+
+			{#if loadingStats}
+				<div class="flex items-center space-x-2 text-sm text-base-content/60">
+					<span class="loading loading-spinner loading-sm"></span>
+					<span>Loading statistics...</span>
+				</div>
+			{/if}
+		</div>
+
 		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each $userPokedexes as pokedex (pokedex.id)}
+			{#each getSortedPokedexes() as pokedex (pokedex.id)}
 				<PokedexCard
 					{pokedex}
 					canDelete={!isDeleting}
+					completionStats={completionStats[pokedex.id]}
 					on:select={() => handleSelectPokedex(pokedex.id)}
 					on:delete={() => handleDeletePokedex(pokedex.id)}
 				/>
