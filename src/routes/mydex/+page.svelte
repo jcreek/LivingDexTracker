@@ -14,6 +14,8 @@
 	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
+	import MultiRegionalTabs from '$lib/components/MultiRegionalTabs.svelte';
+	import { getMultiRegionalConfig, isMultiRegional, type MultiRegionalPokedex } from '$lib/models/RegionalPokedex';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -38,14 +40,30 @@
 	let viewAsBoxes = false;
 	let currentPlacement = 'boxPlacementForms';
 	let boxNumbers: number[] = [];
+	let activeRegion = '';
+	let multiRegionalConfig: MultiRegionalPokedex | null = null;
 
 	const unsubscribe = user.subscribe((value) => {
 		localUser = value;
 	});
 	onDestroy(unsubscribe);
 
-	// Reactive statement to reload data when selected pokédx changes
-	$: if (selectedPokedex && browser) {
+	// Reactive statement to handle multi-regional configuration
+	$: if (selectedPokedex) {
+		const config = getMultiRegionalConfig(selectedPokedex.regionalPokedexName);
+		multiRegionalConfig = config;
+
+		// Set initial active region (default or current regional pokedex name)
+		if (config) {
+			const defaultRegion = config.regions.find((r) => r.isDefault);
+			activeRegion = defaultRegion ? defaultRegion.name : config.regions[0].name;
+		} else {
+			activeRegion = selectedPokedex.regionalPokedexName;
+		}
+	}
+
+	// Reactive statement to reload data when selected pokédx or active region changes
+	$: if (selectedPokedex && activeRegion && browser) {
 		getData();
 	}
 
@@ -107,6 +125,11 @@
 		await getData();
 	}
 
+	function handleRegionChange(event: CustomEvent<{ regionName: string }>) {
+		activeRegion = event.detail.regionName;
+		currentPage = 1; // Reset to first page when changing regions
+	}
+
 	async function getData(setCombinedDataToNull = true) {
 		if (setCombinedDataToNull) {
 			combinedData = null;
@@ -115,9 +138,9 @@
 		// Add pokedexId parameter to filter data by selected pokédx
 		const pokedexParam = selectedPokedex?.id ? `&pokedexId=${selectedPokedex.id}` : '';
 
-		// Add pokédx settings parameters
+		// Add pokédx settings parameters (use activeRegion for multi-regional support)
 		const pokédxParams = selectedPokedex
-			? `&regionalPokedexName=${selectedPokedex?.regionalPokedexName || 'national'}&gameScope=${selectedPokedex?.gameScope || 'all_games'}&generation=${selectedPokedex?.generation || ''}`
+			? `&regionalPokedexName=${activeRegion || selectedPokedex?.regionalPokedexName || 'national'}&gameScope=${selectedPokedex?.gameScope || 'all_games'}&generation=${selectedPokedex?.generation || ''}`
 			: '';
 
 		let endpoint = viewAsBoxes
@@ -330,6 +353,17 @@
 				{drawerOpen ? 'Close Filters' : 'Open Filters'}
 			</label>
 
+			<!-- Multi-regional tabs for games with multiple regions -->
+			{#if multiRegionalConfig}
+				<div class="w-full max-w-4xl mx-auto px-4">
+					<MultiRegionalTabs
+						config={multiRegionalConfig}
+						{activeRegion}
+						on:regionChange={handleRegionChange}
+					/>
+				</div>
+			{/if}
+
 			{#if viewAsBoxes}
 				<PokedexViewBoxes
 					bind:showShiny
@@ -338,7 +372,7 @@
 					bind:currentPlacement
 					bind:creatingRecords
 					bind:failedToLoad
-					regionalPokedexName={selectedPokedex?.regionalPokedexName || 'national'}
+					regionalPokedexName={activeRegion || 'national'}
 					{markBoxAsNotCaught}
 					{markBoxAsCaught}
 					{markBoxAsNeedsToEvolve}
@@ -355,7 +389,7 @@
 					bind:totalRecordsCreated
 					bind:failedToLoad
 					userId={localUser?.id}
-					regionalPokedexName={selectedPokedex?.regionalPokedexName || 'national'}
+					regionalPokedexName={activeRegion || 'national'}
 					{updateACatch}
 					{createCatchRecords}
 				/>

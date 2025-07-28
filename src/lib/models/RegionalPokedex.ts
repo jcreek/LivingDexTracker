@@ -89,3 +89,75 @@ export const REGIONAL_POKEDEXES = [
 	{ value: 'kitakami', label: 'Kitakami Pokédex (Teal Mask)' },
 	{ value: 'blueberry', label: 'Blueberry Academy Pokédex (Indigo Disk)' }
 ] as const;
+
+// Multi-regional pokédx configuration for games with multiple regions
+export interface MultiRegionalPokedex {
+	gameGroup: string;
+	displayName: string;
+	games: string[];
+	regions: Array<{
+		name: string;
+		displayName: string;
+		isDefault?: boolean;
+	}>;
+}
+
+// Games that have multiple regional pokédxes
+export const MULTI_REGIONAL_POKEDEXES: MultiRegionalPokedex[] = [
+	{
+		gameGroup: 'kalos',
+		displayName: 'Kalos (X/Y)',
+		games: ['x', 'y'],
+		regions: [
+			{ name: 'kalos-central', displayName: 'Central', isDefault: true },
+			{ name: 'kalos-coastal', displayName: 'Coastal' },
+			{ name: 'kalos-mountain', displayName: 'Mountain' }
+		]
+	},
+	{
+		gameGroup: 'alola',
+		displayName: 'Alola (Sun/Moon/USUM)',
+		games: ['sun', 'moon', 'ultra-sun', 'ultra-moon'],
+		regions: [
+			{ name: 'alola', displayName: 'Alola', isDefault: true },
+			{ name: 'melemele', displayName: 'Melemele' },
+			{ name: 'akala', displayName: 'Akala' },
+			{ name: 'ulaula', displayName: 'Ulaula' },
+			{ name: 'poni', displayName: 'Poni' }
+		]
+	},
+	{
+		gameGroup: 'galar',
+		displayName: 'Galar (Sword/Shield)',
+		games: ['sword', 'shield'],
+		regions: [
+			{ name: 'galar', displayName: 'Galar', isDefault: true },
+			{ name: 'isle-armor', displayName: 'Isle of Armor' },
+			{ name: 'crown-tundra', displayName: 'Crown Tundra' }
+		]
+	},
+	{
+		gameGroup: 'paldea',
+		displayName: 'Paldea (Scarlet/Violet)',
+		games: ['scarlet', 'violet'],
+		regions: [
+			{ name: 'paldea', displayName: 'Paldea', isDefault: true },
+			{ name: 'kitakami', displayName: 'Kitakami' },
+			{ name: 'blueberry', displayName: 'Blueberry Academy' }
+		]
+	}
+];
+
+// Helper function to get multi-regional configuration for a regional pokédx name
+export function getMultiRegionalConfig(regionalPokedexName: string): MultiRegionalPokedex | null {
+	return (
+		MULTI_REGIONAL_POKEDEXES.find((config) =>
+			config.regions.some((region) => region.name === regionalPokedexName)
+		) || null
+	);
+}
+
+// Helper function to check if a regional pokédx is part of a multi-regional game
+export function isMultiRegional(regionalPokedexName: string): boolean {
+	return getMultiRegionalConfig(regionalPokedexName) !== null;
+}
