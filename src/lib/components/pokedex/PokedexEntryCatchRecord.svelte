@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { CatchRecord } from '$lib/models/CatchRecord';
+	import type { CatchRecord, CatchStatus, LocationStatus } from '$lib/models/CatchRecord';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokemonSprite from '../PokemonSprite.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -28,18 +28,74 @@
 			userId: userId || '',
 			pokedexEntryId: pokedexEntry._id,
 			pokedexId: '', // Will be set by the parent component or API
+			// Legacy fields
 			haveToEvolve: false,
 			caught: false,
 			inHome: false,
 			hasGigantamaxed: false,
+			// Enhanced fields
+			catchStatus: 'not_caught',
+			locationStatus: 'none',
 			personalNotes: ''
 		};
+	}
+
+	// Sync enhanced status with legacy fields for backward compatibility
+	$: if (catchRecord) {
+		// Sync catch status
+		if (catchRecord.catchStatus === 'caught' && !catchRecord.caught) {
+			catchRecord.caught = true;
+			catchRecord.haveToEvolve = false;
+		} else if (catchRecord.catchStatus === 'ready_to_evolve' && !catchRecord.haveToEvolve) {
+			catchRecord.haveToEvolve = true;
+			catchRecord.caught = false;
+		} else if (catchRecord.catchStatus === 'not_caught') {
+			catchRecord.caught = false;
+			catchRecord.haveToEvolve = false;
+		}
+
+		// Sync location status
+		if (catchRecord.locationStatus === 'in_home' && !catchRecord.inHome) {
+			catchRecord.inHome = true;
+		} else if (catchRecord.locationStatus !== 'in_home' && catchRecord.inHome) {
+			catchRecord.inHome = false;
+		}
 	}
 
 	const dispatch = createEventDispatcher();
 
 	function updateCatchRecord() {
 		dispatch('updateCatch', { pokedexEntry, catchRecord });
+	}
+
+	function handleCatchStatusChange(newStatus: CatchStatus) {
+		if (catchRecord) {
+			catchRecord.catchStatus = newStatus;
+			updateCatchRecord();
+		}
+	}
+
+	function handleLocationStatusChange(newStatus: LocationStatus) {
+		if (catchRecord) {
+			catchRecord.locationStatus = newStatus;
+			updateCatchRecord();
+		}
+	}
+
+	// Simple evolution detection helper (could be expanded with full evolution chains)
+	function isReadyToEvolve(pokemon: PokedexEntry): boolean {
+		// Basic evolution detection based on evolution information
+		// This is a simple implementation that could be enhanced later
+		if (!pokemon.evolutionInformation) return false;
+
+		// Check if evolution info contains common evolution triggers
+		const evolutionInfo = pokemon.evolutionInformation.toLowerCase();
+		return (
+			evolutionInfo.includes('level') ||
+			evolutionInfo.includes('stone') ||
+			evolutionInfo.includes('trade') ||
+			evolutionInfo.includes('friendship')
+		);
 	}
 </script>
 
@@ -110,41 +166,88 @@
 	</div>
 
 	<div class="dex-column catch-record-container bg-white text-black rounded-lg p-4 mb-4 md:mb-0">
-		<div class="flex items-center">
+		<!-- Enhanced Catch Status -->
+		<div class="mb-4">
+			<h4 class="font-bold mb-2">Catch Status:</h4>
 			<div class="form-control">
 				<label class="cursor-pointer label">
-					<span class="block font-bold mr-2">Caught:</span>
+					<span class="label-text">Not Caught</span>
 					<input
-						type="checkbox"
-						bind:checked={catchRecord.caught}
-						class="checkbox checkbox-primary border-black"
-						on:change={updateCatchRecord}
+						type="radio"
+						name="catch-status-{catchRecord?._id || pokedexEntry._id}"
+						class="radio radio-primary"
+						checked={catchRecord?.catchStatus === 'not_caught'}
+						on:change={() => handleCatchStatusChange('not_caught')}
+					/>
+				</label>
+			</div>
+			<div class="form-control">
+				<label class="cursor-pointer label">
+					<span class="label-text">
+						Ready to Evolve
+						{#if isReadyToEvolve(pokedexEntry)}
+							<span class="text-xs text-green-600 font-semibold">(Can evolve!)</span>
+						{/if}
+					</span>
+					<input
+						type="radio"
+						name="catch-status-{catchRecord?._id || pokedexEntry._id}"
+						class="radio radio-primary"
+						checked={catchRecord?.catchStatus === 'ready_to_evolve'}
+						on:change={() => handleCatchStatusChange('ready_to_evolve')}
+					/>
+				</label>
+			</div>
+			<div class="form-control">
+				<label class="cursor-pointer label">
+					<span class="label-text">Caught</span>
+					<input
+						type="radio"
+						name="catch-status-{catchRecord?._id || pokedexEntry._id}"
+						class="radio radio-primary"
+						checked={catchRecord?.catchStatus === 'caught'}
+						on:change={() => handleCatchStatusChange('caught')}
 					/>
 				</label>
 			</div>
 		</div>
-		<div class="flex items-center">
+
+		<!-- Enhanced Location Status -->
+		<div class="mb-4">
+			<h4 class="font-bold mb-2">Location:</h4>
 			<div class="form-control">
 				<label class="cursor-pointer label">
-					<span class="block font-bold mr-2">Needs to evolve:</span>
+					<span class="label-text">None</span>
 					<input
-						type="checkbox"
-						bind:checked={catchRecord.haveToEvolve}
-						class="checkbox checkbox-primary border-black"
-						on:change={updateCatchRecord}
+						type="radio"
+						name="location-status-{catchRecord?._id || pokedexEntry._id}"
+						class="radio radio-secondary"
+						checked={catchRecord?.locationStatus === 'none'}
+						on:change={() => handleLocationStatusChange('none')}
 					/>
 				</label>
 			</div>
-		</div>
-		<div class="flex items-center">
 			<div class="form-control">
 				<label class="cursor-pointer label">
-					<span class="block font-bold mr-2">In home:</span>
+					<span class="label-text">In Game</span>
 					<input
-						type="checkbox"
-						bind:checked={catchRecord.inHome}
-						class="checkbox checkbox-primary border-black"
-						on:change={updateCatchRecord}
+						type="radio"
+						name="location-status-{catchRecord?._id || pokedexEntry._id}"
+						class="radio radio-secondary"
+						checked={catchRecord?.locationStatus === 'in_game'}
+						on:change={() => handleLocationStatusChange('in_game')}
+					/>
+				</label>
+			</div>
+			<div class="form-control">
+				<label class="cursor-pointer label">
+					<span class="label-text">In HOME</span>
+					<input
+						type="radio"
+						name="location-status-{catchRecord?._id || pokedexEntry._id}"
+						class="radio radio-secondary"
+						checked={catchRecord?.locationStatus === 'in_home'}
+						on:change={() => handleLocationStatusChange('in_home')}
 					/>
 				</label>
 			</div>
@@ -156,7 +259,7 @@
 						<span class="block font-bold mr-2">Has Gigantamaxed:</span>
 						<input
 							type="checkbox"
-							bind:checked={catchRecord.hasGigantamaxed}
+							bind:checked={catchRecord?.hasGigantamaxed}
 							class="checkbox checkbox-primary border-black"
 							on:change={updateCatchRecord}
 						/>
@@ -170,7 +273,7 @@
 				for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}>Notes:</label
 			>
 			<textarea
-				bind:value={catchRecord.personalNotes}
+				bind:value={catchRecord?.personalNotes}
 				id={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
 				class="form-textarea w-full p-2 border rounded"
 				on:change={updateCatchRecord}

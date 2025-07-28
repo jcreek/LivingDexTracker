@@ -15,7 +15,11 @@
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
 	import MultiRegionalTabs from '$lib/components/MultiRegionalTabs.svelte';
-	import { getMultiRegionalConfig, isMultiRegional, type MultiRegionalPokedex } from '$lib/models/RegionalPokedex';
+	import {
+		getMultiRegionalConfig,
+		isMultiRegional,
+		type MultiRegionalPokedex
+	} from '$lib/models/RegionalPokedex';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
