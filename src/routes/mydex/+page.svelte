@@ -11,7 +11,7 @@
 	import { browser } from '$app/environment';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import type { UserPokedex } from '$lib/models/UserPokedex';
-	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
+	import ResponsiveNavigation from '$lib/components/ResponsiveNavigation.svelte';
 	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
 	import MultiRegionalTabs from '$lib/components/MultiRegionalTabs.svelte';
@@ -40,7 +40,6 @@
 	let showOrigins = true;
 	let showForms = true;
 	let showShiny = false;
-	let drawerOpen = false;
 	let viewAsBoxes = false;
 	let currentPlacement = 'boxPlacementForms';
 	let boxNumbers: number[] = [];
@@ -132,6 +131,11 @@
 	function handleRegionChange(event: CustomEvent<{ regionName: string }>) {
 		activeRegion = event.detail.regionName;
 		currentPage = 1; // Reset to first page when changing regions
+	}
+
+	function onPokedexChange(pokedex: UserPokedex) {
+		// This could be expanded to handle pokédx switching from the navigation
+		selectedPokedex = pokedex;
 	}
 
 	async function getData(setCombinedDataToNull = true) {
@@ -345,29 +349,44 @@
 </svelte:head>
 
 {#if !localUser}
-	<p>Please <a href="/signin" class="underline text-primary hover:text-secondary">sign in</a></p>
+	<p class="text-center p-8">
+		Please <a href="/signin" class="underline text-primary hover:text-secondary">sign in</a>
+	</p>
 {:else}
-	<div class="drawer lg:drawer-open">
-		<input id="my-drawer" type="checkbox" class="drawer-toggle" bind:checked={drawerOpen} />
-		<div class="drawer-content flex flex-col items-center justify-center md:ml-64">
-			<label
-				for="my-drawer"
-				class="btn btn-secondary drawer-button lg:hidden fixed -left-10 top-1/2 -rotate-90"
-			>
-				{drawerOpen ? 'Close Filters' : 'Open Filters'}
-			</label>
+	<div class="flex flex-col min-h-screen">
+		<!-- Responsive Navigation -->
+		<ResponsiveNavigation
+			bind:viewAsBoxes
+			bind:currentPage
+			bind:itemsPerPage
+			bind:totalPages
+			bind:showForms
+			bind:showOrigins
+			bind:showShiny
+			bind:catchRegion
+			bind:catchGame
+			{selectedPokedex}
+			{getData}
+			{toggleForms}
+			{toggleOrigins}
+			{toggleShiny}
+			{toggleViewAsBoxes}
+			{onPokedexChange}
+		/>
 
-			<!-- Multi-regional tabs for games with multiple regions -->
-			{#if multiRegionalConfig}
-				<div class="w-full max-w-4xl mx-auto px-4">
-					<MultiRegionalTabs
-						config={multiRegionalConfig}
-						{activeRegion}
-						on:regionChange={handleRegionChange}
-					/>
-				</div>
-			{/if}
+		<!-- Multi-regional tabs for games with multiple regions -->
+		{#if multiRegionalConfig}
+			<div class="w-full max-w-6xl mx-auto px-4 pt-4">
+				<MultiRegionalTabs
+					config={multiRegionalConfig}
+					{activeRegion}
+					on:regionChange={handleRegionChange}
+				/>
+			</div>
+		{/if}
 
+		<!-- Main Content Area -->
+		<div class="flex-1 w-full max-w-6xl mx-auto px-4">
 			{#if viewAsBoxes}
 				<PokedexViewBoxes
 					bind:showShiny
@@ -398,25 +417,6 @@
 					{createCatchRecords}
 				/>
 			{/if}
-		</div>
-		<div class="drawer-side lg:relative">
-			<label for="my-drawer" class="drawer-overlay lg:hidden"></label>
-			<PokedexSidebar
-				bind:viewAsBoxes
-				bind:currentPage
-				bind:itemsPerPage
-				bind:totalPages
-				bind:showForms
-				bind:showOrigins
-				bind:showShiny
-				bind:catchRegion
-				bind:catchGame
-				{getData}
-				{toggleForms}
-				{toggleOrigins}
-				{toggleShiny}
-				{toggleViewAsBoxes}
-			/>
 		</div>
 	</div>
 {/if}
