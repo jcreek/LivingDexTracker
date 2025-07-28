@@ -7,11 +7,11 @@ import { error } from '@sveltejs/kit';
  */
 export async function requireAuth(event: RequestEvent): Promise<string> {
 	const { session, user } = await event.locals.safeGetSession();
-	
+
 	if (!session || !user) {
 		throw error(401, 'Authentication required');
 	}
-	
+
 	return user.id;
 }
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import Pagination from '$lib/components/Pagination.svelte';
-	import { userPokedexes } from '$lib/stores/currentPokedexStore';
+	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
 	import type { UserPokedex } from '$lib/models/UserPokedex';
 
 	export let viewAsBoxes = false;
@@ -19,6 +19,10 @@
 	export let getData = () => {};
 	export let toggleViewAsBoxes = () => {};
 	export let onPokedexChange = (pokedex: UserPokedex) => {};
+
+	function toggleNationalNumbers() {
+		showNationalNumbers.update((value) => !value);
+	}
 </script>
 
 <aside
@@ -47,6 +51,11 @@
 		<li class="mb-2">
 			<button class="block p-2 hover:bg-gray-700 rounded" on:click={toggleShiny}>
 				Toggle Shiny (Currently {showShiny ? 'On' : 'Off'})
+			</button>
+		</li>
+		<li class="mb-2">
+			<button class="block p-2 hover:bg-gray-700 rounded" on:click={toggleNationalNumbers}>
+				Show National Numbers (Currently {$showNationalNumbers ? 'On' : 'Off'})
 			</button>
 		</li>
 	</ul>

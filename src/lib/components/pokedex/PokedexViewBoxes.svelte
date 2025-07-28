@@ -5,6 +5,7 @@
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
+	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
 
 	export let showShiny = false;
 	export let combinedData: CombinedData[] | null;
@@ -21,11 +22,13 @@
 	export let createCatchRecords = () => {};
 	export let regionalPokedexName = 'national';
 
-	// Function to get the appropriate display number
+	// Function to get the appropriate display number based on toggle
 	function getDisplayNumber(pokedexEntry: PokedexEntry): number {
-		return regionalPokedexName === 'national'
+		return $showNationalNumbers
 			? pokedexEntry.pokedexNumber
-			: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
+			: regionalPokedexName === 'national'
+				? pokedexEntry.pokedexNumber
+				: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
 	}
 
 	function cellBackgroundColourClass(catchRecord: CatchRecord | null) {

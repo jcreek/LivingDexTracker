@@ -83,70 +83,44 @@ class CombinedDataRepository {
 		gameScope: string = 'all_games',
 		generation: string = ''
 	): Promise<CombinedData[]> {
-		let query = this.supabase.from('pokedex_entries').select('*');
+		let entries: any[] = [];
+		let entriesError: any = null;
 
-		// Apply filters
-		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
-		}
-
-		if (region) {
-			query = query.eq('regionToCatchIn', region);
-		}
-
-		if (game) {
-			query = query.contains('gamesToCatchIn', [game]);
-		}
-
-		// Apply regional pokédx filtering
 		if (regionalPokedexName !== 'national') {
-			const columnMap: Record<string, string> = {
-				kanto: 'kanto_number',
-				johto: 'johto_number',
-				hoenn: 'hoenn_number',
-				sinnoh: 'sinnoh_number',
-				'sinnoh-extended': 'sinnoh_extended_number',
-				unova: 'unova_number',
-				'unova-updated': 'unova_updated_number',
-				'kalos-central': 'kalos_central_number',
-				'kalos-coastal': 'kalos_coastal_number',
-				'kalos-mountain': 'kalos_mountain_number',
-				'hoenn-updated': 'hoenn_updated_number',
-				alola: 'alola_number',
-				'alola-updated': 'alola_updated_number',
-				melemele: 'melemele_number',
-				akala: 'akala_number',
-				ulaula: 'ulaula_number',
-				poni: 'poni_number',
-				galar: 'galar_number',
-				'isle-armor': 'isle_armor_number',
-				'crown-tundra': 'crown_tundra_number',
-				hisui: 'hisui_number',
-				paldea: 'paldea_number',
-				kitakami: 'kitakami_number',
-				blueberry: 'blueberry_number'
-			};
+			// Query regional pokédx entries with joined pokédx data
+			const { data, error } = await this.supabase
+				.from('regional_pokedex_entries')
+				.select(
+					`
+					regional_number,
+					pokedex_entries(*)
+				`
+				)
+				.eq('regional_pokedex_name', regionalPokedexName)
+				.order('regional_number', { ascending: true });
 
-			const columnName = columnMap[regionalPokedexName];
-			if (columnName) {
-				query = query.not(columnName, 'is', null);
+			if (error) {
+				console.error('Error finding regional combined data:', error);
+				return [];
 			}
-		}
 
-		// Order by box placement
-		if (enableForms) {
-			query = query
-				.order('boxPlacementFormsBox', { ascending: true })
-				.order('boxPlacementFormsRow', { ascending: true })
-				.order('boxPlacementFormsColumn', { ascending: true });
+			// Extract the pokédx entries from the joined data
+			entries =
+				data?.map((item) => ({
+					...item.pokedex_entries,
+					regionalNumber: item.regional_number
+				})) || [];
 		} else {
-			query = query
-				.order('boxPlacementBox', { ascending: true })
-				.order('boxPlacementRow', { ascending: true })
-				.order('boxPlacementColumn', { ascending: true });
-		}
+			// Query all pokédx entries for national dex
+			let query = this.supabase.from('pokedex_entries').select('*');
 
-		const { data: entries, error: entriesError } = await query;
+			// Order by pokédx number for national dex since box placement data isn't populated
+			query = query.order('pokedexNumber', { ascending: true });
+
+			const { data, error } = await query;
+			entries = data || [];
+			entriesError = error;
+		}
 
 		if (entriesError) {
 			console.error('Error finding combined data:', entriesError);
@@ -157,9 +131,25 @@ class CombinedDataRepository {
 			return [];
 		}
 
+		// Apply additional filters
+		// Box placement filtering is disabled for now since our data doesn't populate these fields
+		// if (!enableForms && regionalPokedexName === 'national') {
+		// 	entries = entries.filter(entry => entry.boxPlacementBox !== null);
+		// }
+
+		if (region) {
+			entries = entries.filter((entry) => entry.regionToCatchIn === region);
+		}
+
+		if (game) {
+			entries = entries.filter(
+				(entry) => entry.gamesToCatchIn && entry.gamesToCatchIn.includes(game)
+			);
+		}
+
 		// Get catch records for all entries
 		let catchRecords: CatchRecordDB[] = [];
-		if (userId) {
+		if (userId && entries.length > 0) {
 			const entryIds = entries.map((entry) => entry.id);
 			let recordsQuery = this.supabase
 				.from('catch_records')
@@ -179,7 +169,7 @@ class CombinedDataRepository {
 			}
 		}
 
-		// Combine the data exactly like master branch
+		// Combine the data
 		return entries.map((entry) => {
 			const userCatchRecord =
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
@@ -211,70 +201,51 @@ class CombinedDataRepository {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
 
-		let query = this.supabase.from('pokedex_entries').select('*').range(from, to);
+		let entries: any[] = [];
+		let entriesError: any = null;
 
-		// Apply filters
-		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
-		}
-
-		if (region) {
-			query = query.eq('regionToCatchIn', region);
-		}
-
-		if (game) {
-			query = query.contains('gamesToCatchIn', [game]);
-		}
-
-		// Apply regional pokédx filtering
 		if (regionalPokedexName !== 'national') {
-			const columnMap: Record<string, string> = {
-				kanto: 'kanto_number',
-				johto: 'johto_number',
-				hoenn: 'hoenn_number',
-				sinnoh: 'sinnoh_number',
-				'sinnoh-extended': 'sinnoh_extended_number',
-				unova: 'unova_number',
-				'unova-updated': 'unova_updated_number',
-				'kalos-central': 'kalos_central_number',
-				'kalos-coastal': 'kalos_coastal_number',
-				'kalos-mountain': 'kalos_mountain_number',
-				'hoenn-updated': 'hoenn_updated_number',
-				alola: 'alola_number',
-				'alola-updated': 'alola_updated_number',
-				melemele: 'melemele_number',
-				akala: 'akala_number',
-				ulaula: 'ulaula_number',
-				poni: 'poni_number',
-				galar: 'galar_number',
-				'isle-armor': 'isle_armor_number',
-				'crown-tundra': 'crown_tundra_number',
-				hisui: 'hisui_number',
-				paldea: 'paldea_number',
-				kitakami: 'kitakami_number',
-				blueberry: 'blueberry_number'
-			};
+			// Query regional pokédx entries with joined pokédx data
+			const { data, error } = await this.supabase
+				.from('regional_pokedex_entries')
+				.select(
+					`
+					regional_number,
+					pokedex_entries(*)
+				`
+				)
+				.eq('regional_pokedex_name', regionalPokedexName)
+				.order('regional_number', { ascending: true })
+				.range(from, to);
 
-			const columnName = columnMap[regionalPokedexName];
-			if (columnName) {
-				query = query.not(columnName, 'is', null);
+			if (error) {
+				console.error('Error finding regional paginated data:', error);
+				return [];
 			}
-		}
 
-		// Order by box placement
-		if (enableForms) {
-			query = query
-				.order('boxPlacementFormsBox', { ascending: true })
-				.order('boxPlacementFormsRow', { ascending: true })
-				.order('boxPlacementFormsColumn', { ascending: true });
+			// Extract the pokédx entries from the joined data
+			entries =
+				data?.map((item) => ({
+					...item.pokedex_entries,
+					regionalNumber: item.regional_number
+				})) || [];
 		} else {
-			query = query
-				.order('boxPlacementBox', { ascending: true })
-				.order('boxPlacementRow', { ascending: true })
-				.order('boxPlacementColumn', { ascending: true });
-		}
+			// Query pokédx entries for national dex with pagination
+			let query = this.supabase.from('pokedex_entries').select('*').range(from, to);
 
-		const { data: entries, error: entriesError } = await query;
+			// Apply filters for national dex
+			// Box placement filtering is disabled for now since our data doesn't populate these fields
+			// if (!enableForms) {
+			// 	query = query.not('boxPlacementBox', 'is', null);
+			// }
+
+			// Order by pokédx number for national dex since box placement data isn't populated
+			query = query.order('pokedexNumber', { ascending: true });
+
+			const { data, error } = await query;
+			entries = data || [];
+			entriesError = error;
+		}
 
 		if (entriesError) {
 			console.error('Error finding paginated combined data:', entriesError);
@@ -285,9 +256,22 @@ class CombinedDataRepository {
 			return [];
 		}
 
+		// Apply additional filters (only for regional pokédxes, national dex filters are applied in query)
+		if (regionalPokedexName !== 'national') {
+			if (region) {
+				entries = entries.filter((entry) => entry.regionToCatchIn === region);
+			}
+
+			if (game) {
+				entries = entries.filter(
+					(entry) => entry.gamesToCatchIn && entry.gamesToCatchIn.includes(game)
+				);
+			}
+		}
+
 		// Get catch records for these entries
 		let catchRecords: CatchRecordDB[] = [];
-		if (userId) {
+		if (userId && entries.length > 0) {
 			const entryIds = entries.map((entry) => entry.id);
 			let recordsQuery = this.supabase
 				.from('catch_records')
@@ -307,7 +291,7 @@ class CombinedDataRepository {
 			}
 		}
 
-		// Combine the data exactly like master branch
+		// Combine the data
 		return entries.map((entry) => {
 			const userCatchRecord =
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
@@ -324,30 +308,56 @@ class CombinedDataRepository {
 		});
 	}
 
-	async countCombinedData(enableForms: boolean, region: string, game: string): Promise<number> {
-		let query = this.supabase.from('pokedex_entries').select('id', { count: 'exact', head: true });
+	async countCombinedData(
+		enableForms: boolean,
+		region: string,
+		game: string,
+		regionalPokedexName: string = 'national'
+	): Promise<number> {
+		if (regionalPokedexName !== 'national') {
+			// Count regional pokédx entries
+			let query = this.supabase
+				.from('regional_pokedex_entries')
+				.select('pokedex_entries(*)', { count: 'exact', head: true })
+				.eq('regional_pokedex_name', regionalPokedexName);
 
-		// Apply same filters as in findCombinedData
-		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			const { count, error } = await query;
+
+			if (error) {
+				console.error('Error counting regional combined data:', error);
+				return 0;
+			}
+
+			return count || 0;
+		} else {
+			// Count national pokédx entries
+			let query = this.supabase
+				.from('pokedex_entries')
+				.select('id', { count: 'exact', head: true });
+
+			// Apply same filters as in findCombinedData
+			// Box placement filtering is disabled for now since our data doesn't populate these fields
+			// if (!enableForms) {
+			// 	query = query.not('boxPlacementBox', 'is', null);
+			// }
+
+			if (region) {
+				query = query.eq('regionToCatchIn', region);
+			}
+
+			if (game) {
+				query = query.contains('gamesToCatchIn', [game]);
+			}
+
+			const { count, error } = await query;
+
+			if (error) {
+				console.error('Error counting national combined data:', error);
+				return 0;
+			}
+
+			return count || 0;
 		}
-
-		if (region) {
-			query = query.eq('regionToCatchIn', region);
-		}
-
-		if (game) {
-			query = query.contains('gamesToCatchIn', [game]);
-		}
-
-		const { count, error } = await query;
-
-		if (error) {
-			console.error('Error counting combined data:', error);
-			return 0;
-		}
-
-		return count || 0;
 	}
 }
 

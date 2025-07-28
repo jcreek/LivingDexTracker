@@ -12,7 +12,7 @@ export interface PokedexEntry {
 	regionToEvolveIn: string;
 	evolutionInformation: string;
 	catchInformation: string[];
-	
+
 	// Regional pokedex numbers
 	kantoNumber?: number;
 	johtoNumber?: number;
@@ -52,7 +52,7 @@ export interface PokedexEntryDB {
 	regionToEvolveIn: string | null;
 	evolutionInformation: string | null;
 	catchInformation: string[] | null;
-	
+
 	// Regional pokedex numbers (snake_case for DB)
 	kanto_number: number | null;
 	johto_number: number | null;
@@ -78,7 +78,7 @@ export interface PokedexEntryDB {
 	paldea_number: number | null;
 	kitakami_number: number | null;
 	blueberry_number: number | null;
-	
+
 	boxPlacementFormsBox: number | null;
 	boxPlacementFormsRow: number | null;
 	boxPlacementFormsColumn: number | null;

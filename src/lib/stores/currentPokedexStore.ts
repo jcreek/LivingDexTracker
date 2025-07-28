@@ -3,6 +3,7 @@ import type { UserPokedex } from '$lib/models/UserPokedex';
 
 export const currentPokedex = writable<UserPokedex | null>(null);
 export const userPokedexes = writable<UserPokedex[]>([]);
+export const showNationalNumbers = writable<boolean>(false);
 
 export async function loadUserPokedexes() {
 	try {

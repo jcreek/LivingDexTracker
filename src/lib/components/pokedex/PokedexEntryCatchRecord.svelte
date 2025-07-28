@@ -4,6 +4,7 @@
 	import PokemonSprite from '../PokemonSprite.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
+	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
 
 	export let pokedexEntry: PokedexEntry;
 	export let catchRecord: CatchRecord | null;
@@ -13,9 +14,10 @@
 	export let userId: string | null = null;
 	export let regionalPokedexName = 'national';
 
-	// Get the appropriate number to display
-	$: displayNumber =
-		regionalPokedexName === 'national'
+	// Get the appropriate number to display based on toggle
+	$: displayNumber = $showNationalNumbers
+		? pokedexEntry.pokedexNumber
+		: regionalPokedexName === 'national'
 			? pokedexEntry.pokedexNumber
 			: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
 
@@ -57,6 +59,21 @@
 			<div class="pl-2">
 				<h3 class="text-xl font-bold pt-1 text-secondary">{pokedexEntry.pokemon}</h3>
 				<sub class="text-gray-200">#{displayNumber.toString().padStart(3, '0')}</sub>
+				{#if !$showNationalNumbers && regionalPokedexName !== 'national'}
+					{@const regionalNum = getRegionalNumber(pokedexEntry, regionalPokedexName)}
+					{#if regionalNum && regionalNum !== pokedexEntry.pokedexNumber}
+						<sub class="text-gray-300 block text-xs"
+							>National: #{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</sub
+						>
+					{/if}
+				{:else if $showNationalNumbers && regionalPokedexName !== 'national'}
+					{@const regionalNum = getRegionalNumber(pokedexEntry, regionalPokedexName)}
+					{#if regionalNum}
+						<sub class="text-gray-300 block text-xs"
+							>{regionalPokedexName}: #{regionalNum.toString().padStart(3, '0')}</sub
+						>
+					{/if}
+				{/if}
 			</div>
 		</div>
 
