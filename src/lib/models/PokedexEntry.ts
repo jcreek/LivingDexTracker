@@ -14,6 +14,7 @@ export interface PokedexEntry {
 	catchInformation: string[];
 
 	// Regional pokedex numbers
+	regionalNumber?: number; // From normalized regional_pokedex_entries table
 	kantoNumber?: number;
 	johtoNumber?: number;
 	hoennNumber?: number;

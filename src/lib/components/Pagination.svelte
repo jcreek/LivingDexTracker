@@ -10,25 +10,27 @@
 	function previousPage() {
 		currentPage = Math.max(currentPage - 1, 1);
 	}
-
-	function setItemsPerPage(event: any) {
-		itemsPerPage = parseInt(event.target.value, 10);
-	}
 </script>
 
-<div class="join mb-4">
-	<button class="join-item btn" on:click={previousPage} disabled={currentPage === 1}>«</button>
-	<button class="join-item btn">Page {currentPage} of {totalPages}</button>
-	<button class="join-item btn" on:click={nextPage} disabled={currentPage === totalPages}>»</button>
-</div>
+<div class="flex items-center space-x-4">
+	<div class="flex items-center space-x-2">
+		<label class="text-sm font-medium" for="itemsPerPage">Items per page:</label>
+		<select id="itemsPerPage" class="select select-sm select-bordered" bind:value={itemsPerPage}>
+			<option value={20}>20</option>
+			<option value={50}>50</option>
+			<option value={100}>100</option>
+		</select>
+	</div>
 
-<label for="itemsPerPage">Items per page:</label>
-<select
-	id="itemsPerPage"
-	class="select select-bordered w-full max-w-xs text-black"
-	on:change={setItemsPerPage}
->
-	<option value="20">20</option>
-	<option value="50">50</option>
-	<option value="100">100</option>
-</select>
+	<div class="flex items-center space-x-2">
+		<button class="btn btn-sm btn-outline" on:click={previousPage} disabled={currentPage === 1}>
+			«
+		</button>
+		<span class="text-sm font-medium px-3 py-2 bg-base-200 rounded">
+			Page {currentPage} of {totalPages}
+		</span>
+		<button class="btn btn-sm btn-outline" on:click={nextPage} disabled={currentPage === totalPages}>
+			»
+		</button>
+	</div>
+</div>

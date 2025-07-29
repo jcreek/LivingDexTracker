@@ -261,5 +261,5 @@
 </div>
 
 {#if showCreateModal}
-	<CreatePokedexModal on:close={closeCreateModal} on:created={handleCreatePokedex} />
+	<CreatePokedexModal on:cancel={closeCreateModal} on:create={handleCreatePokedex} />
 {/if}

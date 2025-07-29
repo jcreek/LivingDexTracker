@@ -5,10 +5,24 @@
 
 	const dispatch = createEventDispatcher();
 
+	// Map generations to their default regional pokédexes
+	const generationToRegionalPokedex: Record<string, string> = {
+		gen1: 'kanto',
+		gen2: 'johto',
+		gen3: 'hoenn',
+		gen4: 'sinnoh',
+		gen5: 'unova',
+		gen6: 'kalos-central', // Default to central for Kalos
+		gen7: 'alola',
+		gen8: 'galar',
+		gen9: 'paldea'
+	};
+
 	let formData: CreatePokedexRequest = {
 		name: '',
 		gameScope: 'all_games',
 		generation: undefined,
+		regionalPokedexName: 'national',
 		isShiny: false,
 		requireOrigin: false,
 		includeForms: false
@@ -49,11 +63,18 @@
 
 	$: if (formData.gameScope === 'specific_generation') {
 		formData.requireOrigin = false; // Reset origin when switching to specific generation
+		// Set regional pokédex based on generation
+		if (formData.generation && generationToRegionalPokedex[formData.generation]) {
+			formData.regionalPokedexName = generationToRegionalPokedex[formData.generation];
+		}
+	} else {
+		// Reset to national dex when switching to all games
+		formData.regionalPokedexName = 'national';
 	}
 </script>
 
-<div class="modal modal-open">
-	<div class="modal-box">
+<div class="modal modal-open" on:click={() => dispatch('cancel')}>
+	<div class="modal-box" on:click|stopPropagation>
 		<h3 class="font-bold text-lg mb-4">Create New Pokédex</h3>
 
 		<form on:submit|preventDefault={handleSubmit} class="space-y-4">

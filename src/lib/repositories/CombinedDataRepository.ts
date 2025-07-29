@@ -175,6 +175,12 @@ class CombinedDataRepository {
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
+			
+			// Add the regional number if it exists (from regional pokédex join)
+			if (entry.regionalNumber !== undefined) {
+				transformedEntry.regionalNumber = entry.regionalNumber;
+			}
+			
 			const transformedCatchRecord = userCatchRecord
 				? this.transformCatchRecord(userCatchRecord)
 				: null;
@@ -297,6 +303,12 @@ class CombinedDataRepository {
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
+			
+			// Add the regional number if it exists (from regional pokédex join)
+			if (entry.regionalNumber !== undefined) {
+				transformedEntry.regionalNumber = entry.regionalNumber;
+			}
+			
 			const transformedCatchRecord = userCatchRecord
 				? this.transformCatchRecord(userCatchRecord)
 				: null;

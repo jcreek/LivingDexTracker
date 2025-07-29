@@ -14,6 +14,7 @@ class UserPokedexRepository {
 			name: record.name,
 			gameScope: record.game_scope,
 			generation: record.generation,
+			regionalPokedexName: record.regional_pokedex_name,
 			isShiny: record.is_shiny,
 			requireOrigin: record.require_origin,
 			includeForms: record.include_forms,
@@ -27,6 +28,7 @@ class UserPokedexRepository {
 			name: data.name,
 			game_scope: data.gameScope,
 			generation: data.generation,
+			regional_pokedex_name: data.regionalPokedexName,
 			is_shiny: data.isShiny,
 			require_origin: data.requireOrigin,
 			include_forms: data.includeForms

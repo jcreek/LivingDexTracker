@@ -5,6 +5,14 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
 	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
+	import pokeApiPokemon from '$lib/helpers/pokeapi-pokemon.json';
+
+	// Reactive calculation of national dex number
+	$: nationalDexNumber = (() => {
+		const sanitisedName = pokedexEntry.pokemon.toLowerCase().replace(/[^a-z]/g, '');
+		const basePokemon = pokeApiPokemon.find((p) => p.identifier === sanitisedName);
+		return basePokemon ? basePokemon.species_id : pokedexEntry.pokedexNumber;
+	})();
 
 	export let pokedexEntry: PokedexEntry;
 	export let catchRecord: CatchRecord | null;
@@ -107,7 +115,7 @@
 			<div class="sprite-container flex justify-center items-center bg-white rounded-lg p-2">
 				<PokemonSprite
 					pokemonName={pokedexEntry.pokemon}
-					pokedexNumber={displayNumber}
+					pokedexNumber={nationalDexNumber}
 					form={pokedexEntry.form}
 					shiny={showShiny}
 				/>
@@ -259,9 +267,14 @@
 						<span class="block font-bold mr-2">Has Gigantamaxed:</span>
 						<input
 							type="checkbox"
-							bind:checked={catchRecord?.hasGigantamaxed}
+							checked={catchRecord?.hasGigantamaxed || false}
 							class="checkbox checkbox-primary border-black"
-							on:change={updateCatchRecord}
+							on:change={(e) => {
+								if (catchRecord) {
+									catchRecord.hasGigantamaxed = e.currentTarget.checked;
+									updateCatchRecord();
+								}
+							}}
 						/>
 					</label>
 				</div>
@@ -273,10 +286,15 @@
 				for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}>Notes:</label
 			>
 			<textarea
-				bind:value={catchRecord?.personalNotes}
+				value={catchRecord?.personalNotes || ''}
 				id={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
 				class="form-textarea w-full p-2 border rounded"
-				on:change={updateCatchRecord}
+				on:input={(e) => {
+					if (catchRecord) {
+						catchRecord.personalNotes = e.currentTarget.value;
+						updateCatchRecord();
+					}
+				}}
 			></textarea>
 		</p>
 	</div>

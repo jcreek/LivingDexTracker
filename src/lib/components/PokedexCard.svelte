@@ -14,11 +14,7 @@
 	const dispatch = createEventDispatcher();
 
 	function handleDelete() {
-		if (
-			confirm(`Are you sure you want to delete "${pokedex.name}"? This action cannot be undone.`)
-		) {
-			dispatch('delete', pokedex.id);
-		}
+		dispatch('delete', pokedex.id);
 	}
 
 	function handleSelect() {
@@ -41,7 +37,9 @@
 		return parts.join(' • ');
 	}
 
-	function getRegionDisplayName(regionalPokedexName: string): string {
+	function getRegionDisplayName(regionalPokedexName: string | undefined): string {
+		if (!regionalPokedexName) return 'National Dex';
+		
 		const regionMap: Record<string, string> = {
 			national: 'National Dex',
 			kanto: 'Kanto',
@@ -78,6 +76,7 @@
 	}
 
 	function isMultiRegional(): boolean {
+		if (!pokedex.regionalPokedexName) return false;
 		return getMultiRegionalConfig(pokedex.regionalPokedexName) !== null;
 	}
 </script>

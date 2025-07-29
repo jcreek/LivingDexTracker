@@ -28,6 +28,12 @@ export interface RegionalPokedexInfoDB {
 
 // Helper function to get regional number from a pokemon entry
 export function getRegionalNumber(pokemonEntry: any, regionalPokedexName: string): number | null {
+	// First check if we have the regionalNumber from the normalized table
+	if (pokemonEntry.regionalNumber !== undefined && pokemonEntry.regionalNumber !== null) {
+		return pokemonEntry.regionalNumber;
+	}
+	
+	// Fallback to legacy column-based approach
 	const columnMap: Record<string, string> = {
 		national: 'pokedexNumber',
 		kanto: 'kantoNumber',

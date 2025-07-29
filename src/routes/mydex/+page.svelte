@@ -37,14 +37,15 @@
 	let catchRegion = '';
 	let catchGame = '';
 	let localUser: User | null;
-	let showOrigins = true;
-	let showForms = true;
-	let showShiny = false;
+	let showOrigins = false; // Hide origins by default since it's not user-configurable
+	let showForms = true;   // Show forms by default
+	let showShiny = false;  // Hide shiny by default
 	let viewAsBoxes = false;
 	let currentPlacement = 'boxPlacementForms';
 	let boxNumbers: number[] = [];
 	let activeRegion = '';
 	let multiRegionalConfig: MultiRegionalPokedex | null = null;
+
 
 	const unsubscribe = user.subscribe((value) => {
 		localUser = value;
@@ -360,18 +361,9 @@
 			bind:currentPage
 			bind:itemsPerPage
 			bind:totalPages
-			bind:showForms
-			bind:showOrigins
-			bind:showShiny
-			bind:catchRegion
 			bind:catchGame
-			{selectedPokedex}
 			{getData}
-			{toggleForms}
-			{toggleOrigins}
-			{toggleShiny}
 			{toggleViewAsBoxes}
-			{onPokedexChange}
 		/>
 
 		<!-- Multi-regional tabs for games with multiple regions -->

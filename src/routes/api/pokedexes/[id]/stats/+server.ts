@@ -1,15 +1,16 @@
 import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/private';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ params, url, locals }) => {
+export const GET = async (event: RequestEvent) => {
 	try {
-		const supabase = createClient(
-			env.PRIVATE_SUPABASE_URL ?? '',
-			env.PRIVATE_SUPABASE_SERVICE_ROLE_KEY ?? ''
-		);
-		const pokedexId = params.id;
+		// Set the user's session on the Supabase client if authenticated
+		const { session } = await event.locals.safeGetSession();
+		if (session) {
+			await event.locals.supabase.auth.setSession(session);
+		}
+
+		const supabase = event.locals.supabase;
+		const pokedexId = event.params.id;
 
 		if (!pokedexId) {
 			return json({ error: 'Pokédex ID is required' }, { status: 400 });
@@ -54,7 +55,7 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		// Get catch records stats for this pokédx
 		const { data: catchStats, error: catchError } = await supabase
 			.from('catch_records')
-			.select('caught, status')
+			.select('caught, catch_status')
 			.eq('pokedex_id', pokedexId);
 
 		if (catchError) {
@@ -63,8 +64,10 @@ export const GET: RequestHandler = async ({ params, url, locals }) => {
 		}
 
 		// Calculate statistics
-		const caught = catchStats.filter((record: any) => record.caught === true).length;
-		const readyToEvolve = catchStats.filter((record: any) => record.status === 'ready_to_evolve').length;
+		const caught = catchStats?.filter((record: { caught: boolean }) => record.caught === true).length || 0;
+		const readyToEvolve = catchStats?.filter(
+			(record: { catch_status: string | null }) => record.catch_status === 'ready_to_evolve'
+		).length || 0;
 		const total = totalCount || 0;
 
 		return json({
