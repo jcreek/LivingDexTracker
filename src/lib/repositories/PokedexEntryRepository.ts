@@ -18,14 +18,14 @@ class PokedexEntryRepository {
 			evolutionInformation: entry.evolutionInformation || '',
 			catchInformation: entry.catchInformation || [],
 			boxPlacementForms: {
-				box: entry.boxPlacementFormsBox || 0,
-				row: entry.boxPlacementFormsRow || 0,
-				column: entry.boxPlacementFormsColumn || 0
+				box: entry.boxPlacementFormsBox || Math.ceil(entry.pokedexNumber / 30), // 30 per box
+				row: entry.boxPlacementFormsRow || Math.ceil((entry.pokedexNumber % 30 || 30) / 6), // 6 per row
+				column: entry.boxPlacementFormsColumn || ((entry.pokedexNumber - 1) % 6) + 1 // 1-6 columns
 			},
 			boxPlacement: {
-				box: entry.boxPlacementBox || 0,
-				row: entry.boxPlacementRow || 0,
-				column: entry.boxPlacementColumn || 0
+				box: entry.boxPlacementBox || Math.ceil(entry.pokedexNumber / 30), // 30 per box
+				row: entry.boxPlacementRow || Math.ceil((entry.pokedexNumber % 30 || 30) / 6), // 6 per row
+				column: entry.boxPlacementColumn || ((entry.pokedexNumber - 1) % 6) + 1 // 1-6 columns
 			},
 			// Regional numbers
 			kantoNumber: entry.kanto_number || undefined,

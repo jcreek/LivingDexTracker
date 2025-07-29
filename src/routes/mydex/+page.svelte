@@ -164,9 +164,9 @@
 		combinedData = viewAsBoxes ? data : data.combinedData;
 		totalPages = data.totalPages || 0;
 		if (viewAsBoxes) {
-			boxNumbers = [
-				...new Set(combinedData.map(({ pokedexEntry }) => pokedexEntry[currentPlacement].box))
-			].filter(Boolean);
+			// Let the PokedexViewBoxes component calculate dynamic box numbers
+			// This is handled by dynamicBoxNumbers in that component
+			boxNumbers = [];
 		}
 	}
 

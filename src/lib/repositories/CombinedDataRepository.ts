@@ -23,14 +23,14 @@ class CombinedDataRepository {
 			evolutionInformation: entry.evolutionInformation || '',
 			catchInformation: entry.catchInformation || [],
 			boxPlacementForms: {
-				box: entry.boxPlacementFormsBox || 0,
-				row: entry.boxPlacementFormsRow || 0,
-				column: entry.boxPlacementFormsColumn || 0
+				box: entry.boxPlacementFormsBox || Math.ceil(entry.pokedexNumber / 30), // 30 per box
+				row: entry.boxPlacementFormsRow || Math.ceil((entry.pokedexNumber % 30 || 30) / 6), // 6 per row
+				column: entry.boxPlacementFormsColumn || ((entry.pokedexNumber - 1) % 6) + 1 // 1-6 columns
 			},
 			boxPlacement: {
-				box: entry.boxPlacementBox || 0,
-				row: entry.boxPlacementRow || 0,
-				column: entry.boxPlacementColumn || 0
+				box: entry.boxPlacementBox || Math.ceil(entry.pokedexNumber / 30), // 30 per box
+				row: entry.boxPlacementRow || Math.ceil((entry.pokedexNumber % 30 || 30) / 6), // 6 per row
+				column: entry.boxPlacementColumn || ((entry.pokedexNumber - 1) % 6) + 1 // 1-6 columns
 			},
 			// Regional pokédex numbers
 			kantoNumber: entry.kanto_number || undefined,
@@ -111,15 +111,34 @@ class CombinedDataRepository {
 					regionalNumber: item.regional_number
 				})) || [];
 		} else {
-			// Query all pokédx entries for national dex
-			let query = this.supabase.from('pokedex_entries').select('*');
+			// Query all pokédx entries for national dex using pagination to get everything
+			let allEntries: any[] = [];
+			let hasMore = true;
+			let from = 0;
+			const batchSize = 1000;
 
-			// Order by pokédx number for national dex since box placement data isn't populated
-			query = query.order('pokedexNumber', { ascending: true });
+			while (hasMore) {
+				const { data, error } = await this.supabase
+					.from('pokedex_entries')
+					.select('*')
+					.order('pokedexNumber', { ascending: true })
+					.range(from, from + batchSize - 1);
 
-			const { data, error } = await query;
-			entries = data || [];
-			entriesError = error;
+				if (error) {
+					entriesError = error;
+					break;
+				}
+
+				if (data && data.length > 0) {
+					allEntries.push(...data);
+					hasMore = data.length === batchSize; // Continue if we got a full batch
+					from += batchSize;
+				} else {
+					hasMore = false;
+				}
+			}
+
+			entries = allEntries;
 		}
 
 		if (entriesError) {
@@ -147,36 +166,41 @@ class CombinedDataRepository {
 			);
 		}
 
-		// Get catch records for all entries
+		// Get catch records for all entries (batch to avoid Supabase .in() limit)
 		let catchRecords: CatchRecordDB[] = [];
 		if (userId && entries.length > 0) {
 			const entryIds = entries.map((entry) => entry.id);
-			let recordsQuery = this.supabase
-				.from('catch_records')
-				.select('*')
-				.eq('userId', userId)
-				.in('pokedexEntryId', entryIds);
+			const batchSize = 1000; // Supabase .in() limit
+			
+			for (let i = 0; i < entryIds.length; i += batchSize) {
+				const batch = entryIds.slice(i, i + batchSize);
+				let recordsQuery = this.supabase
+					.from('catch_records')
+					.select('*')
+					.eq('userId', userId)
+					.in('pokedexEntryId', batch);
 
-			// Filter by pokédx ID if provided
-			if (pokedexId) {
-				recordsQuery = recordsQuery.eq('pokedex_id', pokedexId);
-			}
+				// Filter by pokédx ID if provided
+				if (pokedexId) {
+					recordsQuery = recordsQuery.eq('pokedex_id', pokedexId);
+				}
 
-			const { data: records, error: recordsError } = await recordsQuery;
+				const { data: records, error: recordsError } = await recordsQuery;
 
-			if (!recordsError && records) {
-				catchRecords = records;
+				if (!recordsError && records) {
+					catchRecords.push(...records);
+				}
 			}
 		}
 
 		// Combine the data
-		return entries.map((entry) => {
+		const result = entries.map((entry) => {
 			const userCatchRecord =
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			
-			// Add the regional number if it exists (from regional pokédex join)
+			// Add the regional number if it exists (from regional pokédx join)
 			if (entry.regionalNumber !== undefined) {
 				transformedEntry.regionalNumber = entry.regionalNumber;
 			}
@@ -190,6 +214,8 @@ class CombinedDataRepository {
 				catchRecord: transformedCatchRecord
 			};
 		});
+		
+		return result;
 	}
 
 	async findCombinedData(

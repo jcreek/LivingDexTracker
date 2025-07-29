@@ -6,10 +6,17 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
 	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
+	import pokeApiPokemon from '$lib/helpers/pokeapi-pokemon.json';
 
 	export let showShiny = false;
 	export let combinedData: CombinedData[] | null;
 	export let boxNumbers = Array<number>;
+
+	// Calculate box numbers dynamically based on regional context
+	$: dynamicBoxNumbers = combinedData ? [
+		...new Set(combinedData.map(({ pokedexEntry }) => getBoxPlacement(pokedexEntry).box))
+	].filter(Boolean).sort((a, b) => a - b) : [];
+	
 	export let currentPlacement = 'boxPlacementForms';
 	export let creatingRecords = false;
 	export let totalRecordsCreated = 0;
@@ -31,6 +38,24 @@
 				: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
 	}
 
+	// Function to get national dex number for sprites
+	function getNationalDexNumber(pokemonName: string): number {
+		const sanitisedName = pokemonName.toLowerCase().replace(/[^a-z]/g, '');
+		const basePokemon = pokeApiPokemon.find((p) => p.identifier === sanitisedName);
+		return basePokemon ? basePokemon.species_id : 1;
+	}
+
+	// Function to get box placement based on regional context
+	function getBoxPlacement(pokedexEntry: PokedexEntry) {
+		// Use the display number (which respects regional context) for box placement
+		const displayNum = getDisplayNumber(pokedexEntry);
+		return {
+			box: Math.ceil(displayNum / 30), // 30 per box
+			row: Math.ceil((displayNum % 30 || 30) / 6), // 6 per row
+			column: ((displayNum - 1) % 6) + 1 // 1-6 columns
+		};
+	}
+
 	function cellBackgroundColourClass(catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught) {
 			return 'bg-green-100/50';
@@ -41,11 +66,11 @@
 		}
 	}
 
-	function cellBackgroundColourStyle(pokedexEntry: PokedexEntry, catchRecord: CatchRecord | null) {
+	function cellBackgroundColourStyle(placement: {box: number, row: number, column: number}, catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught || catchRecord?.haveToEvolve) {
 			return '';
 		} else {
-			if (pokedexEntry[currentPlacement].column % 2 === 0) {
+			if (placement.column % 2 === 0) {
 				return 'background-color: #ffffff';
 			} else {
 				return 'background-color: #f9f9f9;';
@@ -59,7 +84,7 @@
 		{#if combinedData && combinedData.length > 0}
 			<div class="container mx-auto">
 				<div class="flex flex-wrap -mx-2">
-					{#each boxNumbers as boxNumber}
+					{#each dynamicBoxNumbers as boxNumber}
 						<div class="mb-8 md:w-1/2 px-2">
 							<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
 							<button class="btn" on:click={markBoxAsNotCaught(boxNumber)}>
@@ -79,12 +104,11 @@
 							>
 							<div class="grid grid-cols-6">
 								{#each combinedData as { pokedexEntry, catchRecord }}
-									{#if pokedexEntry[currentPlacement].box === boxNumber}
+									{@const placement = getBoxPlacement(pokedexEntry)}
+									{#if placement.box === boxNumber}
 										<div
 											class="pokemon-box {cellBackgroundColourClass(catchRecord)}"
-											style="grid-column-start: {pokedexEntry[currentPlacement]
-												.column}; grid-row-start: {pokedexEntry[currentPlacement].row};
-                                        {cellBackgroundColourStyle(pokedexEntry, catchRecord)}"
+											style="grid-column-start: {placement.column}; grid-row-start: {placement.row}; {cellBackgroundColourStyle(placement, catchRecord)}"
 										>
 											<Tooltip>
 												<div slot="hover-target">
@@ -96,7 +120,7 @@
 													{/if}
 													<PokemonSprite
 														pokemonName={pokedexEntry.pokemon}
-														pokedexNumber={getDisplayNumber(pokedexEntry)}
+														pokedexNumber={getNationalDexNumber(pokedexEntry.pokemon)}
 														form={pokedexEntry.form}
 														shiny={showShiny}
 													/>
