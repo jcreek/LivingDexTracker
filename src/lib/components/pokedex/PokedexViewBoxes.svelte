@@ -6,7 +6,6 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
 	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
-	import pokeApiPokemon from '$lib/helpers/pokeapi-pokemon.json';
 
 	export let showShiny = false;
 	export let combinedData: CombinedData[] | null;
@@ -38,12 +37,6 @@
 				: getRegionalNumber(pokedexEntry, regionalPokedexName) || pokedexEntry.pokedexNumber;
 	}
 
-	// Function to get national dex number for sprites
-	function getNationalDexNumber(pokemonName: string): number {
-		const sanitisedName = pokemonName.toLowerCase().replace(/[^a-z]/g, '');
-		const basePokemon = pokeApiPokemon.find((p) => p.identifier === sanitisedName);
-		return basePokemon ? basePokemon.species_id : 1;
-	}
 
 	// Function to get box placement based on regional context
 	function getBoxPlacement(pokedexEntry: PokedexEntry) {
@@ -120,7 +113,7 @@
 													{/if}
 													<PokemonSprite
 														pokemonName={pokedexEntry.pokemon}
-														pokedexNumber={getNationalDexNumber(pokedexEntry.pokemon)}
+														pokedexNumber={pokedexEntry.pokedexNumber}
 														form={pokedexEntry.form}
 														shiny={showShiny}
 													/>

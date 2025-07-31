@@ -5,14 +5,9 @@
 	import { createEventDispatcher } from 'svelte';
 	import { getRegionalNumber } from '$lib/models/RegionalPokedex';
 	import { showNationalNumbers } from '$lib/stores/currentPokedexStore';
-	import pokeApiPokemon from '$lib/helpers/pokeapi-pokemon.json';
 
-	// Reactive calculation of national dex number
-	$: nationalDexNumber = (() => {
-		const sanitisedName = pokedexEntry.pokemon.toLowerCase().replace(/[^a-z]/g, '');
-		const basePokemon = pokeApiPokemon.find((p) => p.identifier === sanitisedName);
-		return basePokemon ? basePokemon.species_id : pokedexEntry.pokedexNumber;
-	})();
+	// For sprites, always use the pokédex number directly (handles forms correctly)
+	$: nationalDexNumber = pokedexEntry.pokedexNumber;
 
 	export let pokedexEntry: PokedexEntry;
 	export let catchRecord: CatchRecord | null;
