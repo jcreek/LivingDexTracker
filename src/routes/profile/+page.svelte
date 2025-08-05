@@ -72,26 +72,26 @@
 </svelte:head>
 
 <div class="mb-8">
-	<h1 class="text-3xl font-bold mb-4">Profile</h1>
+	<h1 class="text-3xl font-bold mb-4" data-testid="profile-title">Profile</h1>
 	<p class="text-base-content/70">Manage your account and view your collection statistics</p>
 </div>
 
 {#if loading}
-	<div class="flex items-center justify-center h-64">
+	<div class="flex items-center justify-center h-64" data-testid="profile-loading">
 		<span class="loading loading-spinner loading-lg"></span>
 	</div>
 {:else}
-	<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+	<div class="grid grid-cols-1 lg:grid-cols-3 gap-8" data-testid="profile-content">
 		<!-- User Info -->
 		<div class="lg:col-span-1">
-			<div class="card bg-base-100 shadow-lg">
+			<div class="card bg-base-100 shadow-lg" data-testid="account-info-card">
 				<div class="card-body">
-					<h2 class="card-title">Account Information</h2>
+					<h2 class="card-title" data-testid="account-info-title">Account Information</h2>
 					
 					<div class="space-y-4">
 						<div>
 							<label class="text-sm font-medium text-base-content/70">Email</label>
-							<p class="text-lg">{data.session?.user?.email || 'Not available'}</p>
+							<p class="text-lg" data-testid="user-email">{data.session?.user?.email || 'Not available'}</p>
 						</div>
 						
 						<div>
@@ -107,8 +107,8 @@
 					</div>
 
 					<div class="card-actions justify-end mt-6">
-						<form method="POST" action="/auth/signout">
-							<button type="submit" class="btn btn-outline btn-error">
+						<form method="POST" action="/auth/signout" data-testid="profile-signout-form">
+							<button type="submit" class="btn btn-outline btn-error" data-testid="profile-signout-button">
 								Sign Out
 							</button>
 						</form>
@@ -119,27 +119,27 @@
 
 		<!-- Collection Stats -->
 		<div class="lg:col-span-2">
-			<div class="card bg-base-100 shadow-lg">
+			<div class="card bg-base-100 shadow-lg" data-testid="collection-stats-card">
 				<div class="card-body">
-					<h2 class="card-title">Collection Statistics</h2>
+					<h2 class="card-title" data-testid="collection-stats-title">Collection Statistics</h2>
 					
-					<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-						<div class="stat bg-base-200 rounded-lg">
+					<div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6" data-testid="stats-grid">
+						<div class="stat bg-base-200 rounded-lg" data-testid="total-pokedexes-stat">
 							<div class="stat-title text-xs">Pokédexes</div>
 							<div class="stat-value text-2xl text-primary">{totalStats.totalPokedexes}</div>
 						</div>
 						
-						<div class="stat bg-base-200 rounded-lg">
+						<div class="stat bg-base-200 rounded-lg" data-testid="total-pokemon-stat">
 							<div class="stat-title text-xs">Total Pokémon</div>
 							<div class="stat-value text-2xl">{totalStats.totalPokemon}</div>
 						</div>
 						
-						<div class="stat bg-base-200 rounded-lg">
+						<div class="stat bg-base-200 rounded-lg" data-testid="total-caught-stat">
 							<div class="stat-title text-xs">Caught</div>
 							<div class="stat-value text-2xl text-success">{totalStats.totalCaught}</div>
 						</div>
 						
-						<div class="stat bg-base-200 rounded-lg">
+						<div class="stat bg-base-200 rounded-lg" data-testid="overall-progress-stat">
 							<div class="stat-title text-xs">Overall Progress</div>
 							<div class="stat-value text-2xl text-accent">{totalStats.overallPercentage}%</div>
 						</div>
@@ -150,7 +150,7 @@
 							<span>Overall Progress</span>
 							<span class="font-semibold">{totalStats.totalCaught}/{totalStats.totalPokemon}</span>
 						</div>
-						<div class="progress progress-accent h-3">
+						<div class="progress progress-accent h-3" data-testid="overall-progress-bar">
 							<div 
 								class="progress-bar bg-accent"
 								style="width: {totalStats.overallPercentage}%"
@@ -168,7 +168,7 @@
 								Keep going! You're making great progress on your Living Dex collection.
 							{/if}
 						</div>
-						<a href="/pokedexes" class="btn btn-primary">
+						<a href="/pokedexes" class="btn btn-primary" data-testid="view-pokedexes-button">
 							View Pokédexes
 						</a>
 					</div>
@@ -176,9 +176,9 @@
 			</div>
 
 			<!-- Recent Activity / Tips -->
-			<div class="card bg-base-100 shadow-lg mt-6">
+			<div class="card bg-base-100 shadow-lg mt-6" data-testid="tips-card">
 				<div class="card-body">
-					<h2 class="card-title">Tips & Features</h2>
+					<h2 class="card-title" data-testid="tips-title">Tips & Features</h2>
 					
 					<div class="space-y-4">
 						<div class="flex gap-3">

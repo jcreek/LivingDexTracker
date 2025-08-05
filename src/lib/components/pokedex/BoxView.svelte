@@ -74,13 +74,13 @@
 	})();
 </script>
 
-<div class="bg-base-100 rounded-lg shadow-lg p-6">
+<div class="bg-base-100 rounded-lg shadow-lg p-6" data-testid="box-view-container">
 	<!-- Box Header -->
 	<div class="flex items-center justify-between mb-6">
-		<h2 class="text-xl font-bold">Box {currentBox} of {totalBoxes}</h2>
+		<h2 class="text-xl font-bold" data-testid="box-title">Box {currentBox} of {totalBoxes}</h2>
 		
 		<div class="flex gap-2">
-			<div class="stats stats-horizontal bg-base-200 text-xs">
+			<div class="stats stats-horizontal bg-base-200 text-xs" data-testid="box-stats">
 				<div class="stat py-2 px-3">
 					<div class="stat-title text-xs">Total</div>
 					<div class="stat-value text-sm">{boxStats.total}</div>
@@ -98,11 +98,12 @@
 	</div>
 
 	<!-- Box Navigation -->
-	<div class="flex items-center justify-between mb-6">
+	<div class="flex items-center justify-between mb-6" data-testid="box-navigation">
 		<button 
 			class="btn btn-sm btn-outline"
 			on:click={previousBox}
 			disabled={currentBox <= 1 || loading}
+			data-testid="previous-box-button"
 		>
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
 				<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
@@ -110,12 +111,13 @@
 			Previous
 		</button>
 
-		<div class="join">
+		<div class="join" data-testid="bulk-actions">
 			<button 
 				class="btn btn-sm join-item btn-success"
 				on:click={handleBulkCatch}
 				disabled={loading || boxStats.total === 0}
 				title="Mark all Pokémon in this box as caught"
+				data-testid="catch-all-button"
 			>
 				Catch All
 			</button>
@@ -124,6 +126,7 @@
 				on:click={handleBulkUncatch}
 				disabled={loading || boxStats.caught === 0}
 				title="Mark all Pokémon in this box as not caught"
+				data-testid="clear-all-button"
 			>
 				Clear All
 			</button>
@@ -133,6 +136,7 @@
 			class="btn btn-sm btn-outline"
 			on:click={nextBox}
 			disabled={currentBox >= totalBoxes || loading}
+			data-testid="next-box-button"
 		>
 			Next
 			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
@@ -143,11 +147,11 @@
 
 	<!-- Box Grid -->
 	{#if loading}
-		<div class="flex items-center justify-center h-96">
+		<div class="flex items-center justify-center h-96" data-testid="box-loading">
 			<span class="loading loading-spinner loading-lg"></span>
 		</div>
 	{:else}
-		<div class="grid grid-cols-6 gap-2 bg-base-200 p-4 rounded-lg">
+		<div class="grid grid-cols-6 gap-2 bg-base-200 p-4 rounded-lg" data-testid="pokemon-grid">
 			{#each currentBoxPokemon as pokemon, index}
 				<div class="relative aspect-square">
 					<PokemonSlot
@@ -162,7 +166,7 @@
 	{/if}
 
 	<!-- Box Information -->
-	<div class="mt-4 text-sm text-base-content/70 text-center">
+	<div class="mt-4 text-sm text-base-content/70 text-center" data-testid="box-info">
 		Showing positions {((currentBox - 1) * POKEMON_PER_BOX) + 1} - {Math.min(currentBox * POKEMON_PER_BOX, pokemon.length)} 
 		of {pokemon.filter(p => p !== null).length} total Pokémon
 	</div>

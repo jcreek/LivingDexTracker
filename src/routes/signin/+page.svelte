@@ -46,17 +46,17 @@
 <div class="flex min-h-[80vh] items-center justify-center">
 	<div class="card w-96 bg-base-100 shadow-xl">
 		<div class="card-body">
-			<h2 class="card-title text-2xl font-bold text-center w-full">
+			<h2 class="card-title text-2xl font-bold text-center w-full" data-testid="auth-title">
 				{isSignUp ? 'Create Account' : 'Sign In'}
 			</h2>
 			
 			{#if error}
-				<div class="alert {isSignUp && error.includes('email') ? 'alert-success' : 'alert-error'}">
+				<div class="alert {isSignUp && error.includes('email') ? 'alert-success' : 'alert-error'}" data-testid="auth-error">
 					<span>{error}</span>
 				</div>
 			{/if}
 
-			<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+			<form on:submit|preventDefault={handleSubmit} class="space-y-4" data-testid="auth-form">
 				<div class="form-control">
 					<label class="label" for="email">
 						<span class="label-text">Email</span>
@@ -68,6 +68,7 @@
 						class="input input-bordered"
 						required
 						disabled={loading}
+						data-testid="email-input"
 					/>
 				</div>
 
@@ -83,11 +84,12 @@
 						required
 						disabled={loading}
 						minlength="6"
+						data-testid="password-input"
 					/>
 				</div>
 
 				<div class="form-control mt-6">
-					<button type="submit" class="btn btn-primary" disabled={loading}>
+					<button type="submit" class="btn btn-primary" disabled={loading} data-testid="submit-button">
 						{#if loading}
 							<span class="loading loading-spinner"></span>
 						{/if}
@@ -105,6 +107,7 @@
 						isSignUp = !isSignUp;
 						error = '';
 					}}
+					data-testid="toggle-auth-mode"
 				>
 					{isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
 				</button>

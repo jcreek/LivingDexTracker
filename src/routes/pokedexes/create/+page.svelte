@@ -129,13 +129,13 @@
 
 <div class="max-w-2xl mx-auto">
 	<div class="flex items-center gap-4 mb-8">
-		<a href="/pokedexes" class="btn btn-outline"> ← Back to Pokédexes </a>
-		<h1 class="text-3xl font-bold">Create New Pokédex</h1>
+		<a href="/pokedexes" class="btn btn-outline" data-testid="back-to-pokedexes-button"> ← Back to Pokédexes </a>
+		<h1 class="text-3xl font-bold" data-testid="create-pokedex-title">Create New Pokédex</h1>
 	</div>
 
-	<div class="card bg-base-100 shadow-xl">
+	<div class="card bg-base-100 shadow-xl" data-testid="create-form-card">
 		<div class="card-body">
-			<form on:submit|preventDefault={handleSubmit} class="space-y-6">
+			<form on:submit|preventDefault={handleSubmit} class="space-y-6" data-testid="create-pokedex-form">
 				<!-- Name -->
 				<div class="form-control">
 					<label class="label" for="name">
@@ -150,6 +150,7 @@
 						placeholder="My Living Dex"
 						required
 						disabled={creating}
+						data-testid="pokedex-name-input"
 					/>
 					{#if errors.name}
 						<label class="label">
@@ -171,6 +172,7 @@
 								value="all_games"
 								class="radio radio-primary"
 								disabled={creating}
+								data-testid="national-pokedex-radio"
 							/>
 							<div>
 								<div class="font-medium">National Pokédex (All Games)</div>
@@ -186,6 +188,7 @@
 								value="specific_generation"
 								class="radio radio-primary"
 								disabled={creating}
+								data-testid="regional-pokedex-radio"
 							/>
 							<div>
 								<div class="font-medium">Regional Pokédex</div>
@@ -211,6 +214,7 @@
 							class:select-error={errors.regionalPokedexId}
 							required
 							disabled={creating || loading}
+							data-testid="regional-pokedex-select"
 						>
 							<option value={null}>Select a regional pokédex...</option>
 							{#each Object.entries(groupedPokedexes) as [regionName, pokedexes]}
@@ -249,6 +253,7 @@
 								bind:checked={isShiny}
 								class="checkbox checkbox-primary"
 								disabled={creating}
+								data-testid="shiny-hunt-checkbox"
 							/>
 						</label>
 					</div>
@@ -264,6 +269,7 @@
 								bind:checked={requiresOrigin}
 								class="checkbox checkbox-primary"
 								disabled={creating}
+								data-testid="origin-required-checkbox"
 							/>
 						</label>
 					</div>
@@ -281,6 +287,7 @@
 								bind:checked={includeForms}
 								class="checkbox checkbox-primary"
 								disabled={creating}
+								data-testid="include-forms-checkbox"
 							/>
 						</label>
 					</div>
@@ -321,8 +328,8 @@
 
 				<!-- Actions -->
 				<div class="card-actions justify-end pt-4">
-					<a href="/pokedexes" class="btn btn-outline" class:btn-disabled={creating}> Cancel </a>
-					<button type="submit" class="btn btn-primary" disabled={creating}>
+					<a href="/pokedexes" class="btn btn-outline" class:btn-disabled={creating} data-testid="cancel-button"> Cancel </a>
+					<button type="submit" class="btn btn-primary" disabled={creating} data-testid="create-submit-button">
 						{#if creating}
 							<span class="loading loading-spinner"></span>
 						{/if}

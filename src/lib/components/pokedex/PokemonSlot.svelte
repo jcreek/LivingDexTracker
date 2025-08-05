@@ -55,6 +55,7 @@
 	on:click={handleClick}
 	on:keydown={(e) => e.key === 'Enter' && handleClick()}
 	title={pokemon ? `${pokemon.pokemon}${pokemon.form ? ` (${pokemon.form})` : ''} - #${pokemon.pokedexNumber}` : 'Empty slot'}
+	data-testid={pokemon ? `pokemon-slot-${pokemon.pokedexNumber}` : `empty-slot-${position}`}
 >
 	{#if pokemon}
 		<div class="relative w-full h-full flex items-center justify-center">

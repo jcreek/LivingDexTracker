@@ -98,8 +98,8 @@
 </svelte:head>
 
 <div class="flex items-center justify-between mb-8">
-	<h1 class="text-3xl font-bold">My Pokédexes</h1>
-	<a href="/pokedexes/create" class="btn btn-primary">
+	<h1 class="text-3xl font-bold" data-testid="pokedexes-title">My Pokédexes</h1>
+	<a href="/pokedexes/create" class="btn btn-primary" data-testid="create-pokedex-button">
 		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
 			<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
 		</svg>
@@ -108,11 +108,11 @@
 </div>
 
 {#if loading}
-	<div class="flex items-center justify-center h-64">
+	<div class="flex items-center justify-center h-64" data-testid="loading-spinner">
 		<span class="loading loading-spinner loading-lg"></span>
 	</div>
 {:else if pokedexes.length === 0}
-	<div class="text-center py-16">
+	<div class="text-center py-16" data-testid="no-pokedexes-message">
 		<div class="max-w-md mx-auto">
 			<div class="mb-8">
 				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-24 h-24 mx-auto text-base-content/30">
@@ -124,16 +124,16 @@
 				Create your first Pokédex to start tracking your collection. Choose from National, 
 				Regional, or create a custom tracker for your specific goals.
 			</p>
-			<a href="/pokedexes/create" class="btn btn-primary btn-lg">
+			<a href="/pokedexes/create" class="btn btn-primary btn-lg" data-testid="create-first-pokedex-button">
 				Create Your First Pokédex
 			</a>
 		</div>
 	</div>
 {:else}
-	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" data-testid="pokedex-grid">
 		{#each pokedexes as pokedex}
 			{@const stats = pokedexStats.get(pokedex.id)}
-			<div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+			<div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow" data-testid="pokedex-card">
 				<div class="card-body">
 					<div class="flex items-start justify-between">
 						<div class="flex-1">
@@ -149,16 +149,16 @@
 						</div>
 						
 						<div class="dropdown dropdown-end">
-							<div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+							<div tabindex="0" role="button" class="btn btn-ghost btn-sm" data-testid="pokedex-menu-button">
 								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
 									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
 								</svg>
 							</div>
-							<ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
-								<li><a href="/mydex?id={pokedex.id}">View Pokédex</a></li>
-								<li><a href="/pokedexes/{pokedex.id}/edit">Edit Settings</a></li>
+							<ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52" data-testid="pokedex-menu">
+								<li><a href="/mydex?id={pokedex.id}" data-testid="view-pokedex-link">View Pokédex</a></li>
+								<li><a href="/pokedexes/{pokedex.id}/edit" data-testid="edit-pokedex-link">Edit Settings</a></li>
 								<li>
-									<button class="text-error" on:click={() => deletePokedex(pokedex.id, pokedex.name)}>
+									<button class="text-error" on:click={() => deletePokedex(pokedex.id, pokedex.name)} data-testid="delete-pokedex-button">
 										Delete
 									</button>
 								</li>
@@ -202,7 +202,7 @@
 						<div class="text-xs text-base-content/60">
 							{getGamesList(pokedex)}
 						</div>
-						<a href="/mydex?id={pokedex.id}" class="btn btn-primary btn-sm">
+						<a href="/mydex?id={pokedex.id}" class="btn btn-primary btn-sm" data-testid="open-pokedex-button">
 							Open
 						</a>
 					</div>
