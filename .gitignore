@@ -10,3 +10,20 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 /static/output.css
 .netlify
+
+# Test reports
+reports/
+cucumber_report.json
+cucumber_report.html
+
+# Logs
+*.log
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db

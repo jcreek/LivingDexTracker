@@ -26,6 +26,19 @@ This directory contains comprehensive Behavior-Driven Development (BDD) tests fo
 - Node.js 18.13.0+
 - Chrome browser installed
 - Application dependencies: `npm install`
+- Supabase configured (`.env` file with credentials)
+
+### Environment Setup
+```bash
+# Copy the example and fill in your Supabase details
+cp .env.example .env
+
+# Option 1: Start local Supabase (recommended for testing)
+npm run supabase:start
+
+# Option 2: Use your cloud Supabase project
+# (Make sure your .env points to your cloud instance)
+```
 
 ### Running Tests
 
@@ -50,6 +63,28 @@ node scripts/generate-test-report.js
 ### Test Reports
 - JSON: `reports/cucumber_report.json`
 - HTML: `reports/cucumber_report.html`
+
+#### View Test Reports
+```bash
+# Open HTML report in browser
+open reports/cucumber_report.html
+
+# View JSON report
+cat reports/cucumber_report.json | jq
+```
+
+## 🔐 Authentication Flow
+
+The BDD tests automatically handle authentication:
+
+1. **Automatic Login**: Tests automatically log in as `test@livingdextracker.local`
+2. **Protected Routes**: All protected pages (MyDex, Pokédexes, Profile) automatically authenticate first
+3. **Public Routes**: Home, About, Sign-in pages are tagged as `@public` and don't require auth
+4. **Test User Creation**: If the test user doesn't exist, it will be created automatically
+
+**Test User**: `test@livingdextracker.local`/`testpassword123`
+- For Local Supabase: Created automatically during first test run
+- For Cloud Supabase: Either auto-created or manually create in Supabase Auth dashboard
 
 ## 📁 Project Structure
 
@@ -176,22 +211,53 @@ const randomPokedexName = getRandomPokedexName();
 
 ### Common Issues
 
-1. **ChromeDriver not found**
+1. **"Authentication failed" errors:**
    ```bash
-   # Install ChromeDriver
-   npm install -g chromedriver
+   # Check if Supabase is running
+   curl http://localhost:54321/health
+   
+   # Restart Supabase
+   npm run supabase:stop
+   npm run supabase:start
    ```
 
-2. **Server not running**
-   - Ensure dev server is running on port 5173
-   - Check server logs for errors
+2. **ChromeDriver not found**
+   ```bash
+   # Install ChromeDriver
+   # macOS: Chrome should auto-install ChromeDriver
+   # Linux: sudo apt-get install chromium-chromedriver
+   # Windows: Download ChromeDriver manually
+   ```
 
-3. **Element not found**
-   - Verify CSS selectors in browser dev tools
+3. **"Server not responding":**
+   ```bash
+   # Make sure dev server is running
+   npm run dev
+   
+   # Check server status
+   curl http://localhost:5173
+   ```
+
+4. **Database connection issues:**
+   ```bash
+   # Reset local Supabase
+   npm run supabase:reset
+   
+   # Check .env file has correct credentials
+   cat .env
+   ```
+
+5. **Element not found**
+   - Verify data-testid selectors in browser dev tools
    - Check for dynamic content loading
    - Increase timeout if needed
 
 ### Debug Mode
+```bash
+# Run with verbose output
+DEBUG=* npm run test:bdd-manual
+```
+
 Add `console.log` statements in step definitions:
 ```javascript
 Then('I should see something', async function() {
@@ -244,9 +310,45 @@ By.css('.new-class, [data-testid="element"]')
 5. **Clean up** after each scenario
 6. **Use meaningful assertions** with clear error messages
 
+## 💡 Key Features of Enhanced BDD Tests
+
+### Smart Authentication:
+- Automatically detects if user is logged in
+- Creates test user if needed
+- Handles both local and cloud Supabase
+- Graceful error handling and retries
+
+### Robust Selectors:
+- Uses stable `data-testid` attributes instead of CSS classes
+- Multiple fallback strategies for finding elements
+- Handles dynamic content loading
+- Separation of styling concerns from test concerns
+
+### Comprehensive Coverage:
+- Tests all critical user journeys
+- Validates complex multi-state interactions (3-state catch system)
+- Checks performance under realistic load (1000+ Pokémon)
+- Ensures mobile responsiveness
+
+### Professional Reporting:
+- HTML reports with screenshots on failure
+- JSON reports for CI/CD integration
+- Detailed error messages and stack traces
+- Performance timing information
+
 ## 🎯 Next Steps
 
-To enhance the testing suite:
+Your BDD tests are now ready! They will:
+
+1. ✅ **Automatically authenticate** as needed
+2. ✅ **Test all critical features** including the unique Box View system
+3. ✅ **Validate complex interactions** like multi-regional navigation
+4. ✅ **Check performance** with large datasets
+5. ✅ **Generate detailed reports** for debugging
+
+Run `npm run test:bdd` to get started!
+
+To further enhance the testing suite:
 
 1. **Add visual regression testing** with screenshot comparison
 2. **Implement accessibility testing** with axe-core

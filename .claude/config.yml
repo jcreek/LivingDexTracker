@@ -1,0 +1,36 @@
+# Claude Code project configuration
+project:
+  name: 'SvelteKit Full-Stack App'
+  type: 'sveltekit'
+
+agents:
+  default: 'frontend-specialist'
+  available:
+    - 'frontend-specialist'
+    - 'backend-specialist'
+    - 'ssr-specialist'
+    - 'testing-specialist'
+    - 'deployment-specialist'
+
+tools:
+  allowed:
+    - file_read
+    - file_write
+    - bash
+    - git
+
+context:
+  include_patterns:
+    - 'src/**/*.{svelte,ts,js}'
+    - '*.config.{js,ts}'
+    - 'package.json'
+    - 'README.md'
+  exclude_patterns:
+    - 'node_modules/**'
+    - '.svelte-kit/**'
+    - 'build/**'
+    - 'dist/**'
+
+memory:
+  max_context_tokens: 50000
+  context_compression: true
