@@ -1,60 +1,103 @@
 import { json } from '@sveltejs/kit';
-import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
-import { getOptionalUserId } from '$lib/utils/auth';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { UserPokedexRepository, PokedexEntryRepository, CatchRecordRepository } from '$lib/repositories';
+import type { PokemonWithCatchStatus } from '$lib/types';
 
-export const GET = async (event: RequestEvent) => {
-	const { url } = event;
-	const page = parseInt(url.searchParams.get('page') || '1', 10);
-	const limit = parseInt(url.searchParams.get('limit') || '20', 10);
-	const enableForms = url.searchParams.get('enableForms') === 'true';
-	const region = url.searchParams.get('region') || '';
-	const game = url.searchParams.get('game') || '';
-	const pokedexId = url.searchParams.get('pokedexId') || '';
-	const regionalPokedexName = url.searchParams.get('regionalPokedexName') || 'national';
-	const gameScope = url.searchParams.get('gameScope') || 'all_games';
-	const generation = url.searchParams.get('generation') || '';
+export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
+	const pokedexId = url.searchParams.get('pokedex_id');
+	const page = parseInt(url.searchParams.get('page') || '1');
+	const limit = parseInt(url.searchParams.get('limit') || '20');
+	const search = url.searchParams.get('search') || '';
+	const filter = url.searchParams.get('filter') || 'all';
+
+	if (!pokedexId) {
+		return json({ error: 'pokedex_id is required' }, { status: 400 });
+	}
 
 	try {
-		// Get userId if authenticated, null if not
-		const userId = await getOptionalUserId(event);
+		const userPokedexRepo = new UserPokedexRepository(supabase);
+		const pokedexEntryRepo = new PokedexEntryRepository(supabase);
+		const catchRecordRepo = new CatchRecordRepository(supabase);
 
-		// If user is authenticated, set their session on the Supabase client
-		if (userId) {
-			const { session } = await event.locals.safeGetSession();
-			if (session) {
-				await event.locals.supabase.auth.setSession(session);
+		// Verify ownership
+		const pokedex = await userPokedexRepo.getById(pokedexId);
+		if (!pokedex || pokedex.userId !== user.id) {
+			return json({ error: 'Pokédex not found' }, { status: 404 });
+		}
+
+		// Get Pokémon entries based on pokedex configuration
+		let pokemonEntries: any[];
+		
+		if (pokedex.regionalPokedexId && pokedex.regionalPokedexInfo) {
+			// Get regional pokedex entries
+			pokemonEntries = await pokedexEntryRepo.getByRegionalPokedex(
+				pokedex.regionalPokedexId, 
+				pokedex.regionalPokedexInfo.columnName
+			);
+		} else {
+			// Get all entries for national dex
+			pokemonEntries = pokedex.includeForms 
+				? await pokedexEntryRepo.getFormsIncluded()
+				: await pokedexEntryRepo.getNoForms();
+		}
+
+		// Get catch records for this pokedex
+		const catchRecords = await catchRecordRepo.getByUserPokedex(pokedexId);
+		const catchRecordMap = new Map(catchRecords.map(record => [record.pokedexEntryId, record]));
+
+		// Combine data
+		let combinedData: PokemonWithCatchStatus[] = pokemonEntries.map(entry => ({
+			...entry,
+			catchRecord: catchRecordMap.get(entry.id) || undefined
+		}));
+
+		// Apply search filter
+		if (search) {
+			combinedData = combinedData.filter(pokemon => 
+				pokemon.pokemon.toLowerCase().includes(search.toLowerCase()) ||
+				pokemon.pokedexNumber.toString().includes(search)
+			);
+		}
+
+		// Apply status filter
+		if (filter !== 'all') {
+			combinedData = combinedData.filter(pokemon => {
+				const record = pokemon.catchRecord;
+				switch (filter) {
+					case 'caught':
+						return record?.isCaught === true;
+					case 'not_caught':
+						return !record?.isCaught;
+					case 'ready_to_evolve':
+						return record?.catchStatus === 'ready_to_evolve';
+					default:
+						return true;
+				}
+			});
+		}
+
+		// Pagination
+		const total = combinedData.length;
+		const totalPages = Math.ceil(total / limit);
+		const offset = (page - 1) * limit;
+		const paginatedData = combinedData.slice(offset, offset + limit);
+
+		return json({
+			pokemon: paginatedData,
+			pagination: {
+				page,
+				limit,
+				total,
+				totalPages
 			}
-		}
-
-		const repo = new CombinedDataRepository(event.locals.supabase, userId || '');
-		const combinedData = await repo.findCombinedData(
-			userId || '',
-			page,
-			limit,
-			enableForms,
-			region,
-			game,
-			pokedexId,
-			regionalPokedexName,
-			gameScope,
-			generation
-		);
-
-		// Return empty array instead of 404 for better UX
-		if (combinedData.length === 0) {
-			return json({ combinedData: [], totalPages: 0 });
-		}
-
-		const totalCount = await repo.countCombinedData(enableForms, region, game, regionalPokedexName);
-		const totalPages = Math.ceil(totalCount / limit);
-
-		return json({ combinedData, totalPages });
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+		});
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };

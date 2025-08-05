@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	html {
+		scroll-behavior: smooth;
+	}
+}
+
+@layer components {
+	.pokemon-sprite {
+		@apply w-24 h-24 object-contain;
+		image-rendering: pixelated;
+	}
+
+	.box-slot {
+		@apply w-20 h-20 border border-base-300 rounded-lg flex items-center justify-center cursor-pointer transition-all hover:shadow-md;
+	}
+
+	.box-slot-caught {
+		@apply bg-success/20 border-success;
+	}
+
+	.box-slot-ready-evolve {
+		@apply bg-warning/20 border-warning;
+	}
+
+	.box-slot-empty {
+		@apply bg-base-200;
+	}
+}

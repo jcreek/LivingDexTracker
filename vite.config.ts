@@ -1,19 +1,14 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
-// you don't need to do this if you're using generateSW strategy in your app
-import { generateSW } from './pwa.mjs';
 
 export default defineConfig({
 	plugins: [
 		sveltekit(),
 		SvelteKitPWA({
 			srcDir: './src',
-			mode: 'development',
-			// you don't need to do this if you're using generateSW strategy in your app
-			strategies: generateSW ? 'generateSW' : 'injectManifest',
-			// you don't need to do this if you're using generateSW strategy in your app
-			filename: generateSW ? undefined : 'prompt-sw.ts',
+			mode: 'production',
+			strategies: 'generateSW',
 			scope: '/',
 			base: '/',
 			selfDestroying: process.env.SELF_DESTROYING_SW === 'true',
@@ -23,8 +18,7 @@ export default defineConfig({
 			manifest: {
 				name: 'Living Dex Tracker',
 				short_name: 'Living Dex Tracker',
-				description:
-					'A tool to enable you to track your progress in completing the living Pokédex in Pokémon games.',
+				description: 'Track your complete Pokémon collection across multiple games and regions',
 				icons: [
 					{
 						src: '/android-chrome-192x192.png',
@@ -41,14 +35,41 @@ export default defineConfig({
 				start_url: '/',
 				scope: '/',
 				display: 'standalone',
-				theme_color: '#f00000',
-				background_color: '#f0f0f0'
-			},
-			injectManifest: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}']
+				theme_color: '#ee1515',
+				background_color: '#f0f0f0',
+				categories: ['games', 'utilities'],
+				lang: 'en',
+				orientation: 'portrait-primary'
 			},
 			workbox: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}']
+				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
+				runtimeCaching: [
+					{
+						// Cache Pokémon sprites
+						urlPattern: /^\/sprites\/.*\.png$/,
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'pokemon-sprites',
+							expiration: {
+								maxEntries: 2000,
+								maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+							}
+						}
+					},
+					{
+						// Cache API responses
+						urlPattern: /^\/api\/.*/,
+						handler: 'NetworkFirst',
+						options: {
+							cacheName: 'api-cache',
+							networkTimeoutSeconds: 3,
+							expiration: {
+								maxEntries: 50,
+								maxAgeSeconds: 60 * 10 // 10 minutes
+							}
+						}
+					}
+				]
 			},
 			devOptions: {
 				enabled: false,
@@ -56,7 +77,6 @@ export default defineConfig({
 				type: 'module',
 				navigateFallback: '/'
 			},
-			// if you have shared info in svelte config file put in a separate module and use it also here
 			kit: {
 				includeVersionFile: true
 			}

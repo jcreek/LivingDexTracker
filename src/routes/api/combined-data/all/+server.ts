@@ -1,49 +1,113 @@
 import { json } from '@sveltejs/kit';
-import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
-import { getOptionalUserId } from '$lib/utils/auth';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { UserPokedexRepository, PokedexEntryRepository, CatchRecordRepository } from '$lib/repositories';
+import type { PokemonWithCatchStatus } from '$lib/types';
 
-export const GET = async (event: RequestEvent) => {
-	const { url } = event;
-	const enableForms = url.searchParams.get('enableForms') === 'true';
-	const region = url.searchParams.get('region') || '';
-	const game = url.searchParams.get('game') || '';
-	const pokedexId = url.searchParams.get('pokedexId') || '';
-	const regionalPokedexName = url.searchParams.get('regionalPokedexName') || 'national';
-	const gameScope = url.searchParams.get('gameScope') || 'all_games';
-	const generation = url.searchParams.get('generation') || '';
+export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
+	const pokedexId = url.searchParams.get('pokedex_id');
+
+	if (!pokedexId) {
+		return json({ error: 'pokedex_id is required' }, { status: 400 });
+	}
 
 	try {
-		// Get userId if authenticated, null if not
-		const userId = await getOptionalUserId(event);
+		const userPokedexRepo = new UserPokedexRepository(supabase);
+		const pokedexEntryRepo = new PokedexEntryRepository(supabase);
+		const catchRecordRepo = new CatchRecordRepository(supabase);
 
-		// If user is authenticated, set their session on the Supabase client
-		if (userId) {
-			const { session } = await event.locals.safeGetSession();
-			if (session) {
-				await event.locals.supabase.auth.setSession(session);
+		// Verify ownership
+		const pokedex = await userPokedexRepo.getById(pokedexId);
+		if (!pokedex || pokedex.userId !== user.id) {
+			return json({ error: 'Pokédex not found' }, { status: 404 });
+		}
+
+		// Get Pokémon entries based on pokedex configuration
+		let pokemonEntries: any[];
+		
+		if (pokedex.regionalPokedexId && pokedex.regionalPokedexInfo) {
+			// Get regional pokedex entries
+			pokemonEntries = await pokedexEntryRepo.getByRegionalPokedex(
+				pokedex.regionalPokedexId, 
+				pokedex.regionalPokedexInfo.columnName
+			);
+		} else {
+			// Get all entries for national dex
+			pokemonEntries = pokedex.includeForms 
+				? await pokedexEntryRepo.getFormsIncluded()
+				: await pokedexEntryRepo.getNoForms();
+		}
+
+		// Get catch records for this pokedex
+		const catchRecords = await catchRecordRepo.getByUserPokedex(pokedexId);
+		const catchRecordMap = new Map(catchRecords.map(record => [record.pokedexEntryId, record]));
+
+		// Combine data - for box view we need ALL pokemon with proper positioning
+		const combinedData: (PokemonWithCatchStatus | null)[] = [];
+		
+		if (pokedex.includeForms) {
+			// Use forms box placement
+			const maxBox = Math.max(...pokemonEntries.map(p => p.boxPlacementFormsBox || 1));
+			const maxPosition = maxBox * 30; // 30 slots per box
+			
+			// Initialize array with nulls
+			for (let i = 0; i < maxPosition; i++) {
+				combinedData[i] = null;
+			}
+			
+			// Place pokemon in correct positions
+			for (const entry of pokemonEntries) {
+				if (entry.boxPlacementFormsBox && entry.boxPlacementFormsRow && entry.boxPlacementFormsColumn) {
+					const position = ((entry.boxPlacementFormsBox - 1) * 30) + 
+									((entry.boxPlacementFormsRow - 1) * 6) + 
+									(entry.boxPlacementFormsColumn - 1);
+					
+					combinedData[position] = {
+						...entry,
+						catchRecord: catchRecordMap.get(entry.id) || undefined
+					};
+				}
+			}
+		} else {
+			// Use regular box placement
+			const maxBox = Math.max(...pokemonEntries.map(p => p.boxPlacementBox || 1));
+			const maxPosition = maxBox * 30; // 30 slots per box
+			
+			// Initialize array with nulls
+			for (let i = 0; i < maxPosition; i++) {
+				combinedData[i] = null;
+			}
+			
+			// Place pokemon in correct positions
+			for (const entry of pokemonEntries) {
+				if (entry.boxPlacementBox && entry.boxPlacementRow && entry.boxPlacementColumn) {
+					const position = ((entry.boxPlacementBox - 1) * 30) + 
+									((entry.boxPlacementRow - 1) * 6) + 
+									(entry.boxPlacementColumn - 1);
+					
+					combinedData[position] = {
+						...entry,
+						catchRecord: catchRecordMap.get(entry.id) || undefined
+					};
+				}
 			}
 		}
 
-		const repo = new CombinedDataRepository(event.locals.supabase, userId || '');
-		const combinedData = await repo.findAllCombinedData(
-			userId || '',
-			enableForms,
-			region,
-			game,
-			pokedexId,
-			regionalPokedexName,
-			gameScope,
-			generation
-		);
+		// Calculate total boxes
+		const totalPokemon = combinedData.filter(p => p !== null).length;
+		const totalBoxes = Math.ceil(totalPokemon / 30);
 
-		// Return empty array instead of 404 for better UX
-		return json(combinedData);
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+		return json({
+			pokemon: combinedData,
+			totalBoxes,
+			totalPokemon
+		});
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };

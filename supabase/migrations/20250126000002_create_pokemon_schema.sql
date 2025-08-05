@@ -77,11 +77,11 @@ INSERT INTO regional_pokedex_info (name, display_name, column_name, region, gene
 ('sinnoh', 'Sinnoh Pokédex', 'sinnoh_number', 'sinnoh', 'gen4', '{"diamond", "pearl"}', 151, 5),
 ('sinnoh-extended', 'Extended Sinnoh Pokédex', 'sinnoh_extended_number', 'sinnoh', 'gen4', '{"platinum", "brilliant-diamond", "shining-pearl"}', 210, 6),
 ('unova', 'Unova Pokédex', 'unova_number', 'unova', 'gen5', '{"black", "white"}', 156, 8),
-('unova-updated', 'Updated Unova Pokédx', 'unova_updated_number', 'unova', 'gen5', '{"black-2", "white-2"}', 301, 9),
+('unova-updated', 'Updated Unova Pokédex', 'unova_updated_number', 'unova', 'gen5', '{"black-2", "white-2"}', 301, 9),
 ('kalos-central', 'Kalos Central Pokédex', 'kalos_central_number', 'kalos', 'gen6', '{"x", "y"}', 150, 12),
 ('kalos-coastal', 'Kalos Coastal Pokédex', 'kalos_coastal_number', 'kalos', 'gen6', '{"x", "y"}', 153, 13),
 ('kalos-mountain', 'Kalos Mountain Pokédex', 'kalos_mountain_number', 'kalos', 'gen6', '{"x", "y"}', 147, 14),
-('hoenn-updated', 'Updated Hoenn Pokédx', 'hoenn_updated_number', 'hoenn', 'gen6', '{"omega-ruby", "alpha-sapphire"}', 211, 15),
+('hoenn-updated', 'Updated Hoenn Pokédex', 'hoenn_updated_number', 'hoenn', 'gen6', '{"omega-ruby", "alpha-sapphire"}', 211, 15),
 ('alola', 'Alola Pokédex', 'alola_number', 'alola', 'gen7', '{"sun", "moon"}', 301, 16),
 ('alola-updated', 'Updated Alola Pokédex', 'alola_updated_number', 'alola', 'gen7', '{"ultra-sun", "ultra-moon"}', 403, 21),
 ('melemele', 'Melemele Pokédex', 'melemele_number', 'alola', 'gen7', '{"sun", "moon", "ultra-sun", "ultra-moon"}', 120, 17),
@@ -94,7 +94,7 @@ INSERT INTO regional_pokedex_info (name, display_name, column_name, region, gene
 ('hisui', 'Hisui Pokédex', 'hisui_number', 'hisui', 'gen8', '{"legends-arceus"}', 242, 30),
 ('paldea', 'Paldea Pokédex', 'paldea_number', 'paldea', 'gen9', '{"scarlet", "violet"}', 400, 31),
 ('kitakami', 'Kitakami Pokédex', 'kitakami_number', 'paldea', 'gen9', '{"scarlet", "violet"}', 200, 32),
-('blueberry', 'Blueberry Academy Pokédx', 'blueberry_number', 'paldea', 'gen9', '{"scarlet", "violet"}', 243, 33);
+('blueberry', 'Blueberry Academy Pokédex', 'blueberry_number', 'paldea', 'gen9', '{"scarlet", "violet"}', 243, 33);
 
 -- User pokédexes table
 CREATE TABLE user_pokedexes (

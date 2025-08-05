@@ -1,327 +1,112 @@
 <svelte:head>
-	<title>About Us</title>
-	<meta name="description" content="About this app" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-	<link
-		href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap"
-		rel="stylesheet"
-	/>
-
-	<link
-		href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Staatliches&display=swap"
-		rel="stylesheet"
-	/>
+	<title>About - Living Dex Tracker</title>
 </svelte:head>
 
-<div class="content h-full bg-base inline-block">
-	<div id="grad">
-		<div id="banner-content">
-			<p class=" text-xs opacity-70 tracking-wide">Learn</p>
-			<h2 class=" mt-0 pt-0 text-5xl tracking-widest text-center font-bold p-24">
-				About<br /> Us
-			</h2>
-		</div>
-	</div>
-
-	<div id="introduction">
-		<p class="font-semibold text-xl mb-5 ml-5">
-			Introducing <span class="typewriter-text underline decoration-accent">Living Dex Tracker</span
-			>
-		</p>
-		<p class="text-base mt-10 mb-5 ml-5 mr-5">
-			<img src="/placeholder-bulb.png" alt="bulb" class="float-right w-28" />
-			Living Dex Tracker is dolor sit amet, consectetur adipiscing elit. Proin dignissim risus eu quam
-			feugiat malesuada. Vivamus arcu sapien, feugiat sed lacus ut, malesuada congue nibh. In lacinia
-			lacus quis bibendum pulvinar. Aliquam in suscipit risus. Aliquam ut justo dolor.
+<div class="max-w-4xl mx-auto">
+	<h1 class="text-4xl font-bold mb-8">About Living Dex Tracker</h1>
+	
+	<div class="prose prose-lg max-w-none">
+		<p class="text-xl leading-relaxed mb-8">
+			Living Dex Tracker is the ultimate tool for Pokémon collectors who want to build a complete
+			"Living Dex" - a collection containing every single Pokémon species stored in their games.
 		</p>
 
-		<p class="font-semibold text-xl mt-20 mb-5 ml-5">Features</p>
+		<h2 class="text-2xl font-bold mb-4">What is a Living Dex?</h2>
+		<p class="mb-6">
+			A Living Dex (Living Pokédex) is a collection where you have at least one of every Pokémon
+			species stored in your game, rather than just having seen them to complete the Pokédex. It's
+			the ultimate goal for many Pokémon collectors and requires significant dedication and organization.
+		</p>
 
-		<!-- TODO (#41) - Make this a card carousel -->
-		<div class="card md:card-side bg-base-00 shadow-m">
-			<figure>
-				<img src="/OIG3.jpeg" alt="Album" />
-			</figure>
-			<div class="card-body">
-				<p class="card-title">Player Dex Search</p>
-				<p>Find and explore your friends' Pokémon collections effortlessly.</p>
-			</div>
-		</div>
-
-		<div class="bg-neutral pb-20">
-			<p class="font-semibold text-white text-xl mt-0 mb-5 ml-5">Meet The Team</p>
-			<div class="avatar flex items-center justify-end mb-20">
-				<p class="text-m mb-5 ml-5 mr-5">Team Member 1</p>
-				<div class="w-24 rounded-full flex justify-end">
-					<img src="/OIG5.jpg" alt="profile" />
-				</div>
-			</div>
-			<div class="avatar">
-				<div class="w-24 rounded-full">
-					<img src="/OIG5.jpg" alt="profile " />
-				</div>
-
-				<p class="text-m mb-5 ml-5 mr-5">Team Member 2</p>
-			</div>
-		</div>
-
-		<div id="project-details">
-			<p class="font-semibold text-xl mt-10 mb-5 ml-5">The Developement</p>
-			<p class="text-sm mb-5 ml-5 mr-5">
-				Share insights into the development process, challenges faced, and any interesting anecdotes
-				or milestones achieved during the project's journey.
+		<h2 class="text-2xl font-bold mb-4">Why Use Living Dex Tracker?</h2>
+		<div class="mb-6">
+			<h3 class="text-xl font-semibold mb-2">Unique Box View System</h3>
+			<p class="mb-4">
+				Our signature feature is the Box View that displays your Pokémon in a 6×5 grid, just like
+				the PC boxes in the games. Each Pokémon knows exactly which box and position it belongs in,
+				making it incredibly easy to organize your actual in-game storage.
 			</p>
 
-			<ul class="timeline timeline-vertical">
-				<li>
-					<div class="timeline-start timeline-box">Example</div>
-					<div class="timeline-middle">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							class="w-5 h-5 text-primary"
-							><path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-								clip-rule="evenodd"
-							/></svg
-						>
-					</div>
-					<hr class="bg-primary" />
-				</li>
-				<li>
-					<hr class="bg-primary" />
-					<div class="timeline-middle">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							class="w-5 h-5 text-primary"
-							><path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-								clip-rule="evenodd"
-							/></svg
-						>
-					</div>
-					<div class="timeline-end timeline-box">Example</div>
-					<hr class="bg-primary" />
-				</li>
-				<li>
-					<hr class="bg-primary" />
-					<div class="timeline-start timeline-box">Example</div>
-					<div class="timeline-middle">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							class="w-5 h-5 text-primary"
-							><path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-								clip-rule="evenodd"
-							/></svg
-						>
-					</div>
-					<hr />
-				</li>
-				<li>
-					<hr />
-					<div class="timeline-middle">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							class="w-5 h-5"
-							><path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-								clip-rule="evenodd"
-							/></svg
-						>
-					</div>
-					<div class="timeline-end timeline-box">Example</div>
-					<hr />
-				</li>
-				<li>
-					<hr />
-					<div class="timeline-start timeline-box">Example</div>
-					<div class="timeline-middle">
-						<svg
-							xmlns="http://www.w3.org/2000/svg"
-							viewBox="0 0 20 20"
-							fill="currentColor"
-							class="w-5 h-5"
-							><path
-								fill-rule="evenodd"
-								d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 10-1.06 1.061l2.5 2.5a.75.75 0 001.137-.089l4-5.5z"
-								clip-rule="evenodd"
-							/></svg
-						>
-					</div>
-				</li>
+			<h3 class="text-xl font-semibold mb-2">Multiple Regional Pokédexes</h3>
+			<p class="mb-4">
+				Track any of the 27 regional Pokédexes from Kanto to Paldea, or work on the complete National
+				Dex with over 1000+ Pokémon. Create separate trackers for different games or regions.
+			</p>
+
+			<h3 class="text-xl font-semibold mb-2">Advanced Tracking Features</h3>
+			<ul class="list-disc list-inside mb-4 space-y-1">
+				<li>Mark Pokémon as caught, ready to evolve, or stored in HOME</li>
+				<li>Track shiny collections with dedicated shiny hunting mode</li>
+				<li>Include alternate forms and regional variants</li>
+				<li>Add personal notes for specific catches</li>
+				<li>See completion percentages and statistics</li>
 			</ul>
-		</div>
 
-		<p class="font-semibold text-xl mt-10 mb-5 ml-5">Join Us On Discord!</p>
-
-		<div id="contact-information ">
-			<a href="https://discord.gg/2ytj4pkUPY">
-				<button
-					class="relative inline-flex items-center justify-center w-16 p-0.5 ml-5 mb-20 me-2 overflow-hidden text-sm font-medium text-gray-900 rounded-lg group bg-gradient-to-br from-cyan-500 to-blue-500 group-hover:from-cyan-500 group-hover:to-blue-500 hover:text-white dark:text-white focus:ring-4 focus:outline-none focus:ring-cyan-200 dark:focus:ring-cyan-800"
-				>
-					<img src="/discord1.svg" class="w-12" /></button
-				>
-			</a>
-		</div>
-
-		<div class="contact-form">
-			<p class="font-semibold text-xl mt-0 mb-5 text-white pt-10">Contact Form</p>
-			<input type="text" name="first" placeholder="First Name" autocomplete="off" required />
-			<input type="text" name="last" placeholder="Last Name" autocomplete="off" required />
-			<input type="email" name="Email" placeholder="Email Address" autocomplete="off" required />
-			<textarea
-				rows="5"
-				cols="50"
-				name="message"
-				placeholder="Enter text"
-				autocomplete="off"
-				required
-			/>
-			<button type="submit" id="submit-button">Send Message</button>
-		</div>
-
-		<div id="legal-information">
-			<p class="font-semibold text-xl mt-0 mb-5 ml-5 text-white pt-10">Legal</p>
-
-			<p class="text-sm mb-5 ml-5 mr-5">
-				Living Dex Tracker is a fan-made website dedicated to providing information about Pokemon
-				creatures. We do not claim ownership of any Pokemon characters, images, or other content
-				featured on this website.
-			</p>
-			<p class="text-sm mb-5 ml-5 mr-5">
-				We do not generate revenue from the use of Pokemon content. Any advertisements or sponsored
-				content on this website are unrelated to Pokemon and are used solely to support the
-				maintenance and operation of the website.
+			<h3 class="text-xl font-semibold mb-2">Bulk Operations</h3>
+			<p class="mb-4">
+				Mark entire boxes as caught or perform bulk operations to speed up your tracking process.
+				Perfect for when you're transferring large numbers of Pokémon from HOME or other games.
 			</p>
 		</div>
 
-		<div id="Acknowledgments">
-			<p class="font-semibold text-xl mt-0 mb-5 ml-5 text-white pt-10">Acknowledgments</p>
-			<p class="text-sm mb-5 ml-5 mr-5">
-				Express gratitude to any individuals or organisations that have contributed to the project's
-				success, including sponsors, supporters, or open-source contributors.
-			</p>
+		<h2 class="text-2xl font-bold mb-4">Supported Games & Regions</h2>
+		<div class="grid md:grid-cols-2 gap-4 mb-6">
+			<div>
+				<h4 class="font-semibold mb-2">Kanto (Gen 1)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Red, Blue, Yellow, FireRed, LeafGreen, Let's Go Pikachu/Eevee</p>
+				
+				<h4 class="font-semibold mb-2">Johto (Gen 2)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Gold, Silver, Crystal, HeartGold, SoulSilver</p>
+				
+				<h4 class="font-semibold mb-2">Hoenn (Gen 3)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Ruby, Sapphire, Emerald, Omega Ruby, Alpha Sapphire</p>
+				
+				<h4 class="font-semibold mb-2">Sinnoh (Gen 4)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Diamond, Pearl, Platinum, Brilliant Diamond, Shining Pearl</p>
+			</div>
+			
+			<div>
+				<h4 class="font-semibold mb-2">Unova (Gen 5)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Black, White, Black 2, White 2</p>
+				
+				<h4 class="font-semibold mb-2">Kalos (Gen 6)</h4>
+				<p class="text-sm text-base-content/70 mb-3">X, Y (Central, Coastal, Mountain)</p>
+				
+				<h4 class="font-semibold mb-2">Alola (Gen 7)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Sun, Moon, Ultra Sun, Ultra Moon</p>
+				
+				<h4 class="font-semibold mb-2">Galar (Gen 8)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Sword, Shield, Isle of Armor, Crown Tundra</p>
+				
+				<h4 class="font-semibold mb-2">Hisui (Gen 8)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Legends: Arceus</p>
+				
+				<h4 class="font-semibold mb-2">Paldea (Gen 9)</h4>
+				<p class="text-sm text-base-content/70 mb-3">Scarlet, Violet, Teal Mask, Indigo Disk</p>
+			</div>
+		</div>
+
+		<h2 class="text-2xl font-bold mb-4">Getting Started</h2>
+		<ol class="list-decimal list-inside space-y-2 mb-6">
+			<li><strong>Create an Account:</strong> Sign up to start tracking your collection</li>
+			<li><strong>Create a Pokédex:</strong> Choose your target region and game scope</li>
+			<li><strong>Start Tracking:</strong> Use Box View or List View to mark your catches</li>
+			<li><strong>Organize:</strong> Use the box placement info to organize your in-game PC</li>
+			<li><strong>Complete:</strong> Work towards that 100% completion!</li>
+		</ol>
+
+		<div class="card bg-primary/10 border border-primary/20">
+			<div class="card-body">
+				<h3 class="card-title text-primary">Ready to Start Your Living Dex?</h3>
+				<p class="mb-4">
+					Join thousands of trainers who are using Living Dex Tracker to organize and complete
+					their Pokémon collections. Whether you're just starting or already have hundreds of
+					Pokémon, we'll help you reach that coveted 100% completion.
+				</p>
+				<div class="card-actions">
+					<a href="/signin" class="btn btn-primary">Get Started Today</a>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
-
-<style>
-	#banner-content {
-		padding-top: 170px;
-	}
-	#grad {
-		font-family: 'Pixelify Sans', sans-serif;
-		font-weight: 400;
-		font-style: normal;
-
-		width: 100%;
-		height: 422px;
-		margin: 0 auto;
-		background: linear-gradient(45deg, #d2001a, #7462ff, #f48e21, #23d5ab);
-		color: #fff;
-		background-size: 300% 300%;
-		animation: color 12s ease-in-out infinite;
-		text-align: center;
-	}
-	@keyframes color {
-		0% {
-			background-position: 0 50%;
-		}
-		50% {
-			background-position: 100% 50%;
-		}
-		100% {
-			background-position: 0 50%;
-		}
-	}
-
-	#introduction .font-semibold {
-		font-family: 'Staatliches', sans-serif;
-		font-weight: 400;
-		font-style: normal;
-		font-size: 25px;
-		padding-top: 20px;
-	}
-
-	.avatar {
-		margin-left: 10px;
-		margin-right: 10px;
-	}
-
-	.contact-form {
-		background-color: rgb(216, 224, 178);
-		width: 380px;
-		height: 590px;
-		border-radius: 20px;
-		margin-bottom: 40px;
-		margin-left: 10px;
-		margin-right: 10px;
-	}
-
-	.contact-form > p {
-		margin-left: 9px;
-	}
-	input {
-		background-color: rgb(156, 186, 139);
-		width: 70%;
-		margin-left: 12%;
-		padding: 16px 16px;
-		border-radius: 10px;
-		border-color: rgb(131, 167, 124);
-		border-width: 2px;
-		margin-bottom: 20px;
-		font-family: 'Staatliches', sans-serif;
-	}
-
-	textarea {
-		background-color: rgb(156, 186, 139);
-		width: 70%;
-		margin-left: 12%;
-		padding: 16px 16px;
-		border-radius: 10px;
-		border-color: rgb(83, 145, 50);
-		margin-bottom: 25px;
-		font-family: 'Staatliches', sans-serif;
-	}
-
-	input:focus-within {
-		outline: none;
-		border-color: rgb(169, 227, 157);
-		border-width: 3px;
-		font-family: 'Staatliches', sans-serif;
-	}
-	textarea:focus-within {
-		outline: none;
-		border-color: rgb(169, 227, 157);
-		border-width: 3px;
-	}
-
-	#submit-button {
-		background-color: rgb(185, 201, 135);
-		border-radius: 20px;
-		border-color: #fff;
-		padding: 10px 18px;
-		text-align: center;
-		display: flex;
-		margin: auto;
-		margin-bottom: 20px;
-	}
-
-	button:hover {
-		opacity: 80%;
-		cursor: pointer;
-	}
-</style>

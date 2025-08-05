@@ -1,69 +1,50 @@
 import { json } from '@sveltejs/kit';
-import UserPokedexRepository from '$lib/repositories/UserPokedexRepository';
-import { requireAuth } from '$lib/utils/auth';
-import type { CreatePokedexRequest } from '$lib/models/UserPokedex';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { UserPokedexRepository } from '$lib/repositories';
 
-export const GET = async (event: RequestEvent) => {
+export const GET: RequestHandler = async ({ locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
 	try {
-		const userId = await requireAuth(event);
-
-		// Get the user's session and set it on the Supabase client
-		const { session } = await event.locals.safeGetSession();
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
-		}
-
-		const repo = new UserPokedexRepository(event.locals.supabase, userId);
-		const pokedexes = await repo.findAll();
-
+		const repo = new UserPokedexRepository(supabase);
+		const pokedexes = await repo.getByUserId(user.id);
+		
 		return json({ pokedexes });
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };
 
-export const POST = async (event: RequestEvent) => {
+export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
 	try {
-		const userId = await requireAuth(event);
-
-		// Get the user's session and set it on the Supabase client
-		const { session } = await event.locals.safeGetSession();
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
-		}
-
-		const data: CreatePokedexRequest = await event.request.json();
-
-		// Validation
-		if (!data.name || data.name.trim().length === 0) {
-			return json({ error: 'Name is required' }, { status: 400 });
-		}
-
-		if (data.gameScope === 'specific_generation' && !data.generation) {
-			return json(
-				{ error: 'Generation is required for specific generation scope' },
-				{ status: 400 }
-			);
-		}
-
-		if (data.gameScope === 'specific_generation' && data.requireOrigin) {
-			return json({ error: 'Origin requirement only applies to all games scope' }, { status: 400 });
-		}
-
-		const repo = new UserPokedexRepository(event.locals.supabase, userId);
-		const pokedex = await repo.create(data);
-
+		const data = await request.json();
+		const repo = new UserPokedexRepository(supabase);
+		
+		const pokedex = await repo.create({
+			userId: user.id,
+			name: data.name,
+			gameScope: data.gameScope || 'all_games',
+			regionalPokedexId: data.regionalPokedexId || null,
+			isShiny: data.isShiny || false,
+			requiresOrigin: data.requiresOrigin || false,
+			includeForms: data.includeForms || false,
+			region: data.region || null,
+			games: data.games || null,
+			generation: data.generation || null
+		});
+		
 		return json({ pokedex }, { status: 201 });
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Failed to create pokédex' }, { status: 500 });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };

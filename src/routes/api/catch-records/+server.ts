@@ -1,119 +1,73 @@
 import { json } from '@sveltejs/kit';
-import { type CatchRecord } from '$lib/models/CatchRecord';
-import CatchRecordRepository from '$lib/repositories/CatchRecordRepository';
-import UserPokedexRepository from '$lib/repositories/UserPokedexRepository';
-import { requireAuth } from '$lib/utils/auth';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { UserPokedexRepository, CatchRecordRepository } from '$lib/repositories';
 
-export const GET = async (event: RequestEvent) => {
+export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
 	try {
-		const userId = await requireAuth(event);
+		const data = await request.json();
+		const userPokedexRepo = new UserPokedexRepository(supabase);
+		const catchRecordRepo = new CatchRecordRepository(supabase);
 
-		// Get the user's session and set it on the Supabase client
-		const { session } = await event.locals.safeGetSession();
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
+		// Verify ownership of the pokedex
+		const pokedex = await userPokedexRepo.getById(data.userPokedexId);
+		if (!pokedex || pokedex.userId !== user.id) {
+			return json({ error: 'Pokédex not found' }, { status: 404 });
 		}
 
-		const repo = new CatchRecordRepository(event.locals.supabase, userId);
-		const catchData = await repo.findByUserId(userId);
-		// order by pokedexEntryId property, ascending
-		const sortedData = catchData.sort(
-			(a, b) => Number(a.pokedexEntryId) - Number(b.pokedexEntryId)
-		);
-		return json(sortedData);
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+		const record = await catchRecordRepo.upsert({
+			userPokedexId: data.userPokedexId,
+			pokedexEntryId: data.pokedexEntryId,
+			isCaught: data.isCaught || false,
+			catchStatus: data.catchStatus || 'not_caught',
+			catchLocation: data.catchLocation || 'none',
+			originRegion: data.originRegion || null,
+			gameCaughtIn: data.gameCaughtIn || null,
+			isGigantamax: data.isGigantamax || false,
+			notes: data.notes || null
+		});
+
+		return json({ record }, { status: 201 });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };
 
-export const PUT = async (event: RequestEvent) => {
-	try {
-		// Check if we can get a session first
-		const { session } = await event.locals.safeGetSession();
-
-		const userId = await requireAuth(event);
-
-		const data: Partial<CatchRecord> = await event.request.json();
-
-		// Get the user's session and set it on the Supabase client
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
-		}
-
-		// Ensure the userId is set to the authenticated user
-		data.userId = userId;
-
-		// If no pokedexId provided, get the user's first pokédex
-		if (!data.pokedexId) {
-			const pokedexRepo = new UserPokedexRepository(event.locals.supabase, userId);
-			const userPokedexes = await pokedexRepo.findAll();
-			if (userPokedexes.length === 0) {
-				return json({ error: 'No pokédex found for user' }, { status: 400 });
-			}
-			data.pokedexId = userPokedexes[0].id;
-		}
-
-		const repo = new CatchRecordRepository(event.locals.supabase, userId);
-		const upsertedRecord = await repo.upsert(data);
-		return json(upsertedRecord);
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
-};
 
-export const POST = async (event: RequestEvent) => {
 	try {
-		const userId = await requireAuth(event);
-		const records: Partial<CatchRecord>[] = await event.request.json();
+		const data = await request.json();
+		const userPokedexRepo = new UserPokedexRepository(supabase);
+		const catchRecordRepo = new CatchRecordRepository(supabase);
 
-		// Get the user's session and set it on the Supabase client
-		const { session } = await event.locals.safeGetSession();
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
+		// Verify ownership of the pokedex
+		const pokedex = await userPokedexRepo.getById(data.userPokedexId);
+		if (!pokedex || pokedex.userId !== user.id) {
+			return json({ error: 'Pokédex not found' }, { status: 404 });
 		}
 
-		const repo = new CatchRecordRepository(event.locals.supabase, userId);
+		const record = await catchRecordRepo.update(data.id, {
+			isCaught: data.isCaught,
+			catchStatus: data.catchStatus,
+			catchLocation: data.catchLocation,
+			originRegion: data.originRegion,
+			gameCaughtIn: data.gameCaughtIn,
+			isGigantamax: data.isGigantamax,
+			notes: data.notes
+		});
 
-		// Get user's first pokédx if needed for records without pokedexId
-		let defaultPokedexId: string | null = null;
-
-		const insertedRecords = [];
-		for (const record of records) {
-			// Ensure the userId is set to the authenticated user
-			record.userId = userId;
-
-			// If no pokedexId provided, get the user's first pokédex
-			if (!record.pokedexId) {
-				if (!defaultPokedexId) {
-					const pokedexRepo = new UserPokedexRepository(event.locals.supabase, userId);
-					const userPokedexes = await pokedexRepo.findAll();
-					if (userPokedexes.length === 0) {
-						return json({ error: 'No pokédex found for user' }, { status: 400 });
-					}
-					defaultPokedexId = userPokedexes[0].id;
-				}
-				record.pokedexId = defaultPokedexId;
-			}
-
-			const upsertedRecord = await repo.upsert(record);
-			insertedRecords.push(upsertedRecord);
-		}
-
-		return json(insertedRecords);
-	} catch (err) {
-		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
-		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+		return json({ record });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };

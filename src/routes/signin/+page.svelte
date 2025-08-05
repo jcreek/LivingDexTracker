@@ -1,38 +1,114 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
-	import { user } from '$lib/stores/user.js';
-	import { type User } from '@supabase/auth-js';
-	import SignIn from '$lib/components/SignIn.svelte';
 	import { goto } from '$app/navigation';
+	import type { PageData } from './$types';
 
-	export let data;
-	let { supabase } = data;
-	$: ({ supabase } = data);
+	export let data: PageData;
+	
+	let email = '';
+	let password = '';
+	let loading = false;
+	let error = '';
+	let isSignUp = false;
 
-	let localUser: User | null;
-	const unsubscribe = user.subscribe((value) => {
-		localUser = value;
-	});
-	onDestroy(unsubscribe);
+	async function handleSubmit() {
+		loading = true;
+		error = '';
 
-	async function getUser() {
 		try {
-			const {
-				data: { session }
-			} = await supabase.auth.getSession();
+			const { error: authError } = isSignUp
+				? await data.supabase.auth.signUp({
+						email,
+						password,
+						options: {
+							emailRedirectTo: `${window.location.origin}/auth/confirm`
+						}
+					})
+				: await data.supabase.auth.signInWithPassword({
+						email,
+						password
+					});
 
-			if (session) {
-				localUser = session.user;
-				user.set(localUser);
-				await goto('/mydex', { replace: true });
+			if (authError) throw authError;
+
+			if (isSignUp) {
+				error = 'Check your email to confirm your account!';
 			} else {
-				localUser = null;
-				user.set(localUser);
+				await goto('/pokedexes');
 			}
-		} catch (error) {
-			console.error('Error getting user session:', error);
+		} catch (err: any) {
+			error = err.message;
+		} finally {
+			loading = false;
 		}
 	}
 </script>
 
-<SignIn {supabase} on:signedIn={getUser} />
+<div class="flex min-h-[80vh] items-center justify-center">
+	<div class="card w-96 bg-base-100 shadow-xl">
+		<div class="card-body">
+			<h2 class="card-title text-2xl font-bold text-center w-full">
+				{isSignUp ? 'Create Account' : 'Sign In'}
+			</h2>
+			
+			{#if error}
+				<div class="alert {isSignUp && error.includes('email') ? 'alert-success' : 'alert-error'}">
+					<span>{error}</span>
+				</div>
+			{/if}
+
+			<form on:submit|preventDefault={handleSubmit} class="space-y-4">
+				<div class="form-control">
+					<label class="label" for="email">
+						<span class="label-text">Email</span>
+					</label>
+					<input
+						id="email"
+						type="email"
+						bind:value={email}
+						class="input input-bordered"
+						required
+						disabled={loading}
+					/>
+				</div>
+
+				<div class="form-control">
+					<label class="label" for="password">
+						<span class="label-text">Password</span>
+					</label>
+					<input
+						id="password"
+						type="password"
+						bind:value={password}
+						class="input input-bordered"
+						required
+						disabled={loading}
+						minlength="6"
+					/>
+				</div>
+
+				<div class="form-control mt-6">
+					<button type="submit" class="btn btn-primary" disabled={loading}>
+						{#if loading}
+							<span class="loading loading-spinner"></span>
+						{/if}
+						{isSignUp ? 'Sign Up' : 'Sign In'}
+					</button>
+				</div>
+			</form>
+
+			<div class="divider">OR</div>
+
+			<div class="text-center">
+				<button
+					class="btn btn-link"
+					on:click={() => {
+						isSignUp = !isSignUp;
+						error = '';
+					}}
+				>
+					{isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

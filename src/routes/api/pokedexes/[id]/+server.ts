@@ -1,43 +1,73 @@
 import { json } from '@sveltejs/kit';
-import UserPokedexRepository from '$lib/repositories/UserPokedexRepository';
-import { requireAuth } from '$lib/utils/auth';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import { UserPokedexRepository } from '$lib/repositories';
 
-export const DELETE = async (event: RequestEvent) => {
+export const GET: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
 	try {
-		const userId = await requireAuth(event);
-		const pokedexId = event.params.id;
-
-		if (!pokedexId) {
-			return json({ error: 'PokÈdex ID is required' }, { status: 400 });
-		}
-
-		// Get the user's session and set it on the Supabase client
-		const { session } = await event.locals.safeGetSession();
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
-		}
-
-		const repo = new UserPokedexRepository(event.locals.supabase, userId);
+		const repo = new UserPokedexRepository(supabase);
+		const pokedex = await repo.getById(params.id);
 		
-		// Verify the pokÈdex belongs to the user before deleting
-		const pokedex = await repo.findById(pokedexId);
-		if (!pokedex) {
-			return json({ error: 'PokÈdex not found' }, { status: 404 });
+		if (!pokedex || pokedex.userId !== user.id) {
+			return json({ error: 'Pok√©dex not found' }, { status: 404 });
 		}
-
-		const success = await repo.delete(pokedexId);
 		
-		if (success) {
-			return json({ success: true });
-		} else {
-			return json({ error: 'Failed to delete pokÈdex' }, { status: 500 });
+		return json({ pokedex });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
+	}
+};
+
+export const PUT: RequestHandler = async ({ params, request, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
+	try {
+		const data = await request.json();
+		const repo = new UserPokedexRepository(supabase);
+		
+		// First verify ownership
+		const existing = await repo.getById(params.id);
+		if (!existing || existing.userId !== user.id) {
+			return json({ error: 'Pok√©dex not found' }, { status: 404 });
 		}
-	} catch (err) {
-		console.error('Error deleting pokÈdex:', err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
+		
+		const pokedex = await repo.update(params.id, data);
+		
+		return json({ pokedex });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
+	}
+};
+
+export const DELETE: RequestHandler = async ({ params, locals: { supabase, safeGetSession } }) => {
+	const { session, user } = await safeGetSession();
+	
+	if (!session || !user) {
+		return json({ error: 'Unauthorized' }, { status: 401 });
+	}
+
+	try {
+		const repo = new UserPokedexRepository(supabase);
+		
+		// First verify ownership
+		const existing = await repo.getById(params.id);
+		if (!existing || existing.userId !== user.id) {
+			return json({ error: 'Pok√©dex not found' }, { status: 404 });
 		}
-		return json({ error: 'Internal Server Error' }, { status: 500 });
+		
+		await repo.delete(params.id);
+		
+		return json({ success: true });
+	} catch (error: any) {
+		return json({ error: error.message }, { status: 500 });
 	}
 };

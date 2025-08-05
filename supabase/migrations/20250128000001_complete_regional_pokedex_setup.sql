@@ -1,7 +1,7 @@
--- Complete regional pokédx setup with full PokéAPI data
--- This creates the normalized structure and populates with all official regional pokédx entries
+-- Complete regional pokédex setup with full PokéAPI data
+-- This creates the normalized structure and populates with all official regional pokédex entries
 
--- Create the normalized regional pokédx entries table
+-- Create the normalized regional pokédex entries table
 CREATE TABLE regional_pokedex_entries (
   id BIGSERIAL PRIMARY KEY,
   pokedex_entry_id BIGINT NOT NULL REFERENCES pokedex_entries(id) ON DELETE CASCADE,
@@ -34,7 +34,7 @@ CREATE TEMP TABLE temp_regional_data (
     pokemon_name TEXT
 );
 
--- Insert all regional pokédx data from PokéAPI
+-- Insert all regional pokédex data from PokéAPI
 INSERT INTO temp_regional_data VALUES
 ('kanto', 1, 'bulbasaur'),
 ('kanto', 2, 'ivysaur'),
@@ -5247,7 +5247,7 @@ BEGIN
     SELECT COUNT(*) INTO blueberry_count FROM regional_pokedex_entries WHERE regional_pokedex_name = 'blueberry';
     SELECT COUNT(*) INTO kanto_count FROM regional_pokedex_entries WHERE regional_pokedex_name = 'kanto';
     
-    RAISE NOTICE 'Regional pokédx population complete:';
+    RAISE NOTICE 'Regional pokédex population complete:';
     RAISE NOTICE '  Paldea: % entries', paldea_count;
     RAISE NOTICE '  Kitakami: % entries', kitakami_count;
     RAISE NOTICE '  Blueberry: % entries', blueberry_count;

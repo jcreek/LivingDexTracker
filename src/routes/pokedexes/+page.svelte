@@ -1,265 +1,225 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { userPokedexes, loadUserPokedexes } from '$lib/stores/currentPokedexStore';
-	import CreatePokedexModal from '$lib/components/CreatePokedexModal.svelte';
-	import PokedexCard from '$lib/components/PokedexCard.svelte';
 	import type { PageData } from './$types';
-	import type { UserPokedex } from '$lib/models/UserPokedex';
+	import type { UserPokedex, PokedexStats } from '$lib/types';
 
 	export let data: PageData;
+	// data is used for type safety and SSR
 
+	let pokedexes: UserPokedex[] = [];
+	let pokedexStats: Map<string, PokedexStats> = new Map();
+	let loading = true;
+	let creating = false;
 	let showCreateModal = false;
-	let isDeleting = false;
-	let sortBy: 'name' | 'completion' | 'created' = 'name';
-	let sortDirection: 'asc' | 'desc' = 'asc';
-	let completionStats: Record<
-		string,
-		{ caught: number; total: number; readyToEvolve: number } | null
-	> = {};
-	let loadingStats = false;
 
-	// Initialize the store with data from the server
-	$userPokedexes = data.pokedexes;
+	onMount(async () => {
+		await loadPokedexes();
+	});
 
-	function openCreateModal() {
-		showCreateModal = true;
+	async function loadPokedexes() {
+		loading = true;
+		try {
+			const response = await fetch('/api/pokedexes');
+			const result = await response.json();
+			
+			if (response.ok) {
+				pokedexes = result.pokedexes;
+				await loadStats();
+			} else {
+				console.error('Failed to load pokédexes:', result.error);
+			}
+		} catch (error) {
+			console.error('Error loading pokédexes:', error);
+		} finally {
+			loading = false;
+		}
 	}
 
-	function closeCreateModal() {
-		showCreateModal = false;
-	}
-
-	async function handleCreatePokedex() {
-		closeCreateModal();
-		// Reload the pokedexes after creation
-		await loadUserPokedexes();
-		// Load stats for new pokédxes
-		await loadCompletionStats();
-	}
-
-	async function loadCompletionStats() {
-		if ($userPokedexes.length === 0) return;
-
-		loadingStats = true;
-		completionStats = {};
-
-		const statsPromises = $userPokedexes.map(async (pokedex) => {
+	async function loadStats() {
+		const statsPromises = pokedexes.map(async (pokedex) => {
 			try {
 				const response = await fetch(`/api/pokedexes/${pokedex.id}/stats`);
+				const result = await response.json();
+				
 				if (response.ok) {
-					const stats = await response.json();
-					completionStats[pokedex.id] = stats;
-				} else {
-					completionStats[pokedex.id] = null;
+					pokedexStats.set(pokedex.id, result.stats);
 				}
 			} catch (error) {
-				console.error(`Error loading stats for pokédx ${pokedex.id}:`, error);
-				completionStats[pokedex.id] = null;
+				console.error(`Error loading stats for ${pokedex.id}:`, error);
 			}
 		});
 
 		await Promise.all(statsPromises);
-		completionStats = { ...completionStats }; // Trigger reactivity
-		loadingStats = false;
+		pokedexStats = pokedexStats; // Trigger reactivity
 	}
 
-	function getSortedPokedexes(): UserPokedex[] {
-		const sorted = [...$userPokedexes].sort((a, b) => {
-			let compareValue = 0;
-
-			switch (sortBy) {
-				case 'name':
-					compareValue = a.name.localeCompare(b.name);
-					break;
-				case 'completion':
-					const aStats = completionStats[a.id];
-					const bStats = completionStats[b.id];
-					const aPercentage = aStats
-						? aStats.total > 0
-							? (aStats.caught / aStats.total) * 100
-							: 0
-						: 0;
-					const bPercentage = bStats
-						? bStats.total > 0
-							? (bStats.caught / bStats.total) * 100
-							: 0
-						: 0;
-					compareValue = aPercentage - bPercentage;
-					break;
-				case 'created':
-					compareValue = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-					break;
-			}
-
-			return sortDirection === 'asc' ? compareValue : -compareValue;
-		});
-
-		return sorted;
-	}
-
-	function handleSort(newSortBy: 'name' | 'completion' | 'created') {
-		if (sortBy === newSortBy) {
-			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
-		} else {
-			sortBy = newSortBy;
-			sortDirection = 'asc';
-		}
-	}
-
-	async function handleDeletePokedex(pokedexId: string) {
-		if (isDeleting) return;
-
-		if (!confirm('Are you sure you want to delete this pokedex? This action cannot be undone.')) {
+	async function deletePokedex(id: string, name: string) {
+		if (!confirm(`Are you sure you want to delete "${name}"? This cannot be undone.`)) {
 			return;
 		}
 
-		isDeleting = true;
 		try {
-			const response = await fetch(`/api/pokedexes/${pokedexId}`, {
+			const response = await fetch(`/api/pokedexes/${id}`, {
 				method: 'DELETE'
 			});
 
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.error || 'Failed to delete pokedex');
+			if (response.ok) {
+				await loadPokedexes();
+			} else {
+				const result = await response.json();
+				alert('Failed to delete pokédex: ' + result.error);
 			}
-
-			// Reload the pokedexes after deletion
-			await loadUserPokedexes();
-			await loadCompletionStats();
 		} catch (error) {
-			console.error('Error deleting pokedex:', error);
-			alert(error instanceof Error ? error.message : 'Failed to delete pokedex');
-		} finally {
-			isDeleting = false;
+			console.error('Error deleting pokédex:', error);
+			alert('Error deleting pokédex');
 		}
 	}
 
-	function handleSelectPokedex(pokedexId: string) {
-		goto(`/mydex?pokedexId=${pokedexId}`);
+	function getRegionDisplayName(pokedex: UserPokedex): string {
+		if (pokedex.regionalPokedexInfo) {
+			return pokedex.regionalPokedexInfo.displayName;
+		}
+		return 'Custom Pokédex';
 	}
 
-	// Load completion stats when the page loads
-	onMount(async () => {
-		if ($userPokedexes.length > 0) {
-			await loadCompletionStats();
+	function getGamesList(pokedex: UserPokedex): string {
+		if (pokedex.games && pokedex.games.length > 0) {
+			return pokedex.games.join(', ');
 		}
-	});
-
-	// Reactive statement to load stats when pokedexes change
-	$: if ($userPokedexes.length > 0 && Object.keys(completionStats).length === 0 && !loadingStats) {
-		loadCompletionStats();
+		if (pokedex.regionalPokedexInfo?.games) {
+			return pokedex.regionalPokedexInfo.games.join(', ');
+		}
+		return 'All Games';
 	}
 </script>
 
 <svelte:head>
-	<title>My Pokedexes - Living Dex Tracker</title>
+	<title>My Pokédexes - Living Dex Tracker</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8">
-	<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-		<div>
-			<h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">My Pokedexes</h1>
-			<p class="text-gray-600 dark:text-gray-300">
-				Manage your different pokedex challenges and track your progress.
-			</p>
-		</div>
-		<button class="btn btn-primary mt-4 md:mt-0" on:click={openCreateModal} disabled={isDeleting}>
-			<svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-			</svg>
-			Create New Pokedex
-		</button>
-	</div>
-
-	{#if $userPokedexes.length === 0}
-		<div class="text-center py-12">
-			<div class="max-w-md mx-auto">
-				<div
-					class="w-24 h-24 mx-auto mb-4 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center"
-				>
-					<svg
-						class="w-12 h-12 text-gray-400"
-						fill="none"
-						stroke="currentColor"
-						viewBox="0 0 24 24"
-					>
-						<path
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-						/>
-					</svg>
-				</div>
-				<h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">No Pokedexes Yet</h3>
-				<p class="text-gray-600 dark:text-gray-300 mb-6">
-					Create your first pokedex to start tracking your Pokemon collection!
-				</p>
-				<button class="btn btn-primary" on:click={openCreateModal}>
-					Create Your First Pokedex
-				</button>
-			</div>
-		</div>
-	{:else}
-		<!-- Sorting Controls -->
-		<div class="flex flex-wrap items-center justify-between mb-6 gap-4">
-			<div class="flex items-center space-x-2">
-				<span class="text-sm font-medium text-base-content/70">Sort by:</span>
-				<div class="join">
-					<button
-						class="btn btn-sm join-item {sortBy === 'name' ? 'btn-active' : 'btn-outline'}"
-						on:click={() => handleSort('name')}
-					>
-						Name
-						{#if sortBy === 'name'}
-							<span class="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-						{/if}
-					</button>
-					<button
-						class="btn btn-sm join-item {sortBy === 'completion' ? 'btn-active' : 'btn-outline'}"
-						on:click={() => handleSort('completion')}
-					>
-						Completion
-						{#if sortBy === 'completion'}
-							<span class="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-						{/if}
-					</button>
-					<button
-						class="btn btn-sm join-item {sortBy === 'created' ? 'btn-active' : 'btn-outline'}"
-						on:click={() => handleSort('created')}
-					>
-						Created
-						{#if sortBy === 'created'}
-							<span class="ml-1">{sortDirection === 'asc' ? '↑' : '↓'}</span>
-						{/if}
-					</button>
-				</div>
-			</div>
-
-			{#if loadingStats}
-				<div class="flex items-center space-x-2 text-sm text-base-content/60">
-					<span class="loading loading-spinner loading-sm"></span>
-					<span>Loading statistics...</span>
-				</div>
-			{/if}
-		</div>
-
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each getSortedPokedexes() as pokedex (pokedex.id)}
-				<PokedexCard
-					{pokedex}
-					canDelete={!isDeleting}
-					completionStats={completionStats[pokedex.id]}
-					on:select={() => handleSelectPokedex(pokedex.id)}
-					on:delete={() => handleDeletePokedex(pokedex.id)}
-				/>
-			{/each}
-		</div>
-	{/if}
+<div class="flex items-center justify-between mb-8">
+	<h1 class="text-3xl font-bold">My Pokédexes</h1>
+	<a href="/pokedexes/create" class="btn btn-primary">
+		<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+			<path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+		</svg>
+		Create New Pokédex
+	</a>
 </div>
 
-{#if showCreateModal}
-	<CreatePokedexModal on:cancel={closeCreateModal} on:create={handleCreatePokedex} />
+{#if loading}
+	<div class="flex items-center justify-center h-64">
+		<span class="loading loading-spinner loading-lg"></span>
+	</div>
+{:else if pokedexes.length === 0}
+	<div class="text-center py-16">
+		<div class="max-w-md mx-auto">
+			<div class="mb-8">
+				<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" class="w-24 h-24 mx-auto text-base-content/30">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0118 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+				</svg>
+			</div>
+			<h2 class="text-2xl font-bold mb-4">No Pokédexes Yet</h2>
+			<p class="text-base-content/70 mb-8">
+				Create your first Pokédex to start tracking your collection. Choose from National, 
+				Regional, or create a custom tracker for your specific goals.
+			</p>
+			<a href="/pokedexes/create" class="btn btn-primary btn-lg">
+				Create Your First Pokédex
+			</a>
+		</div>
+	</div>
+{:else}
+	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		{#each pokedexes as pokedex}
+			{@const stats = pokedexStats.get(pokedex.id)}
+			<div class="card bg-base-100 shadow-lg hover:shadow-xl transition-shadow">
+				<div class="card-body">
+					<div class="flex items-start justify-between">
+						<div class="flex-1">
+							<h3 class="card-title text-lg mb-2">
+								{pokedex.name}
+								{#if pokedex.isShiny}
+									<div class="badge badge-warning badge-sm">✨ Shiny</div>
+								{/if}
+							</h3>
+							<p class="text-sm text-base-content/70 mb-3">
+								{getRegionDisplayName(pokedex)}
+							</p>
+						</div>
+						
+						<div class="dropdown dropdown-end">
+							<div tabindex="0" role="button" class="btn btn-ghost btn-sm">
+								<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+									<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 12.75a.75.75 0 110-1.5.75.75 0 010 1.5zM12 18.75a.75.75 0 110-1.5.75.75 0 010 1.5z" />
+								</svg>
+							</div>
+							<ul class="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52">
+								<li><a href="/mydex?id={pokedex.id}">View Pokédex</a></li>
+								<li><a href="/pokedexes/{pokedex.id}/edit">Edit Settings</a></li>
+								<li>
+									<button class="text-error" on:click={() => deletePokedex(pokedex.id, pokedex.name)}>
+										Delete
+									</button>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					{#if stats}
+						<div class="mb-4">
+							<div class="flex items-center justify-between text-sm mb-2">
+								<span>Progress</span>
+								<span class="font-semibold">{stats.caught}/{stats.total} ({stats.percentComplete}%)</span>
+							</div>
+							<div class="progress progress-success h-2">
+								<div 
+									class="progress-bar bg-success"
+									style="width: {stats.percentComplete}%"
+								></div>
+							</div>
+						</div>
+
+						<div class="stats stats-vertical bg-base-200 text-xs">
+							<div class="stat py-2 px-3">
+								<div class="stat-title text-xs">Caught</div>
+								<div class="stat-value text-sm text-success">{stats.caught}</div>
+							</div>
+							<div class="stat py-2 px-3">
+								<div class="stat-title text-xs">Ready to Evolve</div>
+								<div class="stat-value text-sm text-warning">{stats.readyToEvolve}</div>
+							</div>
+							<div class="stat py-2 px-3">
+								<div class="stat-title text-xs">Remaining</div>
+								<div class="stat-value text-sm">{stats.total - stats.caught}</div>
+							</div>
+						</div>
+					{:else}
+						<div class="skeleton h-20 mb-4"></div>
+					{/if}
+
+					<div class="card-actions justify-between mt-4">
+						<div class="text-xs text-base-content/60">
+							{getGamesList(pokedex)}
+						</div>
+						<a href="/mydex?id={pokedex.id}" class="btn btn-primary btn-sm">
+							Open
+						</a>
+					</div>
+				</div>
+			</div>
+		{/each}
+	</div>
 {/if}
+
+<style>
+	.progress {
+		background: rgba(0, 0, 0, 0.1);
+	}
+	
+	.progress-bar {
+		height: 100%;
+		border-radius: inherit;
+		transition: width 0.3s ease;
+	}
+</style>

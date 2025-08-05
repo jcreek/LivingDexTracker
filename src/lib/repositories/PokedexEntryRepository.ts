@@ -1,153 +1,87 @@
-import { type PokedexEntry, type PokedexEntryDB } from '$lib/models/PokedexEntry';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { BaseRepository } from './BaseRepository';
+import type { PokedexEntry } from '$lib/types';
 
-class PokedexEntryRepository {
-	constructor(private supabase: SupabaseClient) {}
-
-	// Transform Supabase data to match frontend expectations (minimal transformation)
-	private transformPokedexEntry(entry: PokedexEntryDB): PokedexEntry {
-		return {
-			_id: entry.id.toString(),
-			pokedexNumber: entry.pokedexNumber,
-			pokemon: entry.pokemon,
-			form: entry.form || '',
-			canGigantamax: entry.canGigantamax,
-			regionToCatchIn: entry.regionToCatchIn || '',
-			gamesToCatchIn: entry.gamesToCatchIn || [],
-			regionToEvolveIn: entry.regionToEvolveIn || '',
-			evolutionInformation: entry.evolutionInformation || '',
-			catchInformation: entry.catchInformation || [],
-			boxPlacementForms: {
-				box: entry.boxPlacementFormsBox || Math.ceil(entry.pokedexNumber / 30), // 30 per box
-				row: entry.boxPlacementFormsRow || Math.ceil((entry.pokedexNumber % 30 || 30) / 6), // 6 per row
-				column: entry.boxPlacementFormsColumn || ((entry.pokedexNumber - 1) % 6) + 1 // 1-6 columns
-			},
-			boxPlacement: {
-				box: entry.boxPlacementBox || Math.ceil(entry.pokedexNumber / 30), // 30 per box
-				row: entry.boxPlacementRow || Math.ceil((entry.pokedexNumber % 30 || 30) / 6), // 6 per row
-				column: entry.boxPlacementColumn || ((entry.pokedexNumber - 1) % 6) + 1 // 1-6 columns
-			},
-			// Regional numbers
-			kantoNumber: entry.kanto_number || undefined,
-			johtoNumber: entry.johto_number || undefined,
-			hoennNumber: entry.hoenn_number || undefined,
-			sinnohNumber: entry.sinnoh_number || undefined,
-			sinnohExtendedNumber: entry.sinnoh_extended_number || undefined,
-			unovaNumber: entry.unova_number || undefined,
-			unovaUpdatedNumber: entry.unova_updated_number || undefined,
-			kalosCentralNumber: entry.kalos_central_number || undefined,
-			kalosCoastalNumber: entry.kalos_coastal_number || undefined,
-			kalosMountainNumber: entry.kalos_mountain_number || undefined,
-			hoennUpdatedNumber: entry.hoenn_updated_number || undefined,
-			alolaNumber: entry.alola_number || undefined,
-			alolaUpdatedNumber: entry.alola_updated_number || undefined,
-			melemeleNumber: entry.melemele_number || undefined,
-			akalaNumber: entry.akala_number || undefined,
-			ulaulaNumber: entry.ulaula_number || undefined,
-			poniNumber: entry.poni_number || undefined,
-			galarNumber: entry.galar_number || undefined,
-			isleArmorNumber: entry.isle_armor_number || undefined,
-			crownTundraNumber: entry.crown_tundra_number || undefined,
-			hisuiNumber: entry.hisui_number || undefined,
-			paldeaNumber: entry.paldea_number || undefined,
-			kitakamiNumber: entry.kitakami_number || undefined,
-			blueberryNumber: entry.blueberry_number || undefined
-		};
-	}
-
-	async findById(id: string): Promise<PokedexEntry | null> {
-		const { data, error } = await this.supabase
-			.from('pokedex_entries')
-			.select('*')
-			.eq('id', id)
-			.single();
-
-		if (error || !data) return null;
-		return this.transformPokedexEntry(data);
-	}
-
-	async findAll(): Promise<PokedexEntry[]> {
+export class PokedexEntryRepository extends BaseRepository {
+	async getAll(): Promise<PokedexEntry[]> {
 		const { data, error } = await this.supabase
 			.from('pokedex_entries')
 			.select('*')
 			.order('pokedexNumber', { ascending: true });
 
-		if (error || !data) return [];
-		return data.map((entry) => this.transformPokedexEntry(entry));
+		if (error) this.handleError(error);
+		return this.toCamelCase(data || []);
 	}
 
-	async create(data: Partial<PokedexEntry>): Promise<PokedexEntry> {
-		// Transform to database format (minimal transformation needed)
-		const dbData: Partial<PokedexEntryDB> = {};
-		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
-		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
-		if (data.form !== undefined) dbData.form = data.form;
-		if (data.canGigantamax !== undefined) dbData.canGigantamax = data.canGigantamax;
-		if (data.regionToCatchIn !== undefined) dbData.regionToCatchIn = data.regionToCatchIn;
-		if (data.gamesToCatchIn !== undefined) dbData.gamesToCatchIn = data.gamesToCatchIn;
-		if (data.regionToEvolveIn !== undefined) dbData.regionToEvolveIn = data.regionToEvolveIn;
-		if (data.evolutionInformation !== undefined)
-			dbData.evolutionInformation = data.evolutionInformation;
-		if (data.catchInformation !== undefined) dbData.catchInformation = data.catchInformation;
-		if (data.boxPlacementForms?.box !== undefined)
-			dbData.boxPlacementFormsBox = data.boxPlacementForms.box;
-		if (data.boxPlacementForms?.row !== undefined)
-			dbData.boxPlacementFormsRow = data.boxPlacementForms.row;
-		if (data.boxPlacementForms?.column !== undefined)
-			dbData.boxPlacementFormsColumn = data.boxPlacementForms.column;
-		if (data.boxPlacement?.box !== undefined) dbData.boxPlacementBox = data.boxPlacement.box;
-		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
-		if (data.boxPlacement?.column !== undefined)
-			dbData.boxPlacementColumn = data.boxPlacement.column;
-
-		const { data: result, error } = await this.supabase
+	async getById(id: number): Promise<PokedexEntry | null> {
+		const { data, error } = await this.supabase
 			.from('pokedex_entries')
-			.insert(dbData)
-			.select()
-			.single();
-
-		if (error || !result) throw new Error('Failed to create pokedex entry');
-		return this.transformPokedexEntry(result);
-	}
-
-	async update(id: string, data: Partial<PokedexEntry>): Promise<PokedexEntry | null> {
-		// Transform to database format (minimal transformation needed)
-		const dbData: Partial<PokedexEntryDB> = {};
-		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
-		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
-		if (data.form !== undefined) dbData.form = data.form;
-		if (data.canGigantamax !== undefined) dbData.canGigantamax = data.canGigantamax;
-		if (data.regionToCatchIn !== undefined) dbData.regionToCatchIn = data.regionToCatchIn;
-		if (data.gamesToCatchIn !== undefined) dbData.gamesToCatchIn = data.gamesToCatchIn;
-		if (data.regionToEvolveIn !== undefined) dbData.regionToEvolveIn = data.regionToEvolveIn;
-		if (data.evolutionInformation !== undefined)
-			dbData.evolutionInformation = data.evolutionInformation;
-		if (data.catchInformation !== undefined) dbData.catchInformation = data.catchInformation;
-		if (data.boxPlacementForms?.box !== undefined)
-			dbData.boxPlacementFormsBox = data.boxPlacementForms.box;
-		if (data.boxPlacementForms?.row !== undefined)
-			dbData.boxPlacementFormsRow = data.boxPlacementForms.row;
-		if (data.boxPlacementForms?.column !== undefined)
-			dbData.boxPlacementFormsColumn = data.boxPlacementForms.column;
-		if (data.boxPlacement?.box !== undefined) dbData.boxPlacementBox = data.boxPlacement.box;
-		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
-		if (data.boxPlacement?.column !== undefined)
-			dbData.boxPlacementColumn = data.boxPlacement.column;
-
-		const { data: result, error } = await this.supabase
-			.from('pokedex_entries')
-			.update(dbData)
+			.select('*')
 			.eq('id', id)
-			.select()
 			.single();
 
-		if (error || !result) return null;
-		return this.transformPokedexEntry(result);
+		if (error) {
+			if (error.code === 'PGRST116') return null;
+			this.handleError(error);
+		}
+		return this.toCamelCase(data);
 	}
 
-	async delete(id: string): Promise<void> {
-		await this.supabase.from('pokedex_entries').delete().eq('id', id);
+	async getByNationalDexNumber(nationalDexNumber: number): Promise<PokedexEntry[]> {
+		const { data, error } = await this.supabase
+			.from('pokedex_entries')
+			.select('*')
+			.eq('pokedexNumber', nationalDexNumber)
+			.order('form', { ascending: true });
+
+		if (error) this.handleError(error);
+		return this.toCamelCase(data || []);
+	}
+
+	async getByRegionalPokedex(regionalPokedexId: number, columnName: string): Promise<PokedexEntry[]> {
+		const { data, error } = await this.supabase
+			.from('pokedex_entries')
+			.select('*')
+			.not(columnName, 'is', null)
+			.order(columnName, { ascending: true });
+
+		if (error) this.handleError(error);
+		return this.toCamelCase(data || []);
+	}
+
+	async getFormsIncluded(): Promise<PokedexEntry[]> {
+		const { data, error } = await this.supabase
+			.from('pokedex_entries')
+			.select('*')
+			.order('boxPlacementFormsBox', { ascending: true })
+			.order('boxPlacementFormsRow', { ascending: true })
+			.order('boxPlacementFormsColumn', { ascending: true });
+
+		if (error) this.handleError(error);
+		return this.toCamelCase(data || []);
+	}
+
+	async getNoForms(): Promise<PokedexEntry[]> {
+		const { data, error } = await this.supabase
+			.from('pokedex_entries')
+			.select('*')
+			.or('form.is.null,form.eq.')
+			.order('boxPlacementBox', { ascending: true })
+			.order('boxPlacementRow', { ascending: true })
+			.order('boxPlacementColumn', { ascending: true });
+
+		if (error) this.handleError(error);
+		return this.toCamelCase(data || []);
+	}
+
+	async searchByName(searchTerm: string): Promise<PokedexEntry[]> {
+		const { data, error } = await this.supabase
+			.from('pokedex_entries')
+			.select('*')
+			.ilike('pokemon', `%${searchTerm}%`)
+			.order('pokedexNumber', { ascending: true })
+			.limit(20);
+
+		if (error) this.handleError(error);
+		return this.toCamelCase(data || []);
 	}
 }
-
-export default PokedexEntryRepository;

@@ -1,11 +1,19 @@
-export const load = async ({ url, parent }) => {
-	const { supabase, session } = await parent();
+import { redirect } from '@sveltejs/kit';
+import type { PageLoad } from './$types';
 
-	// Get the pokedexId from URL parameters
-	const pokedexId = url.searchParams.get('pokedexId');
+export const load: PageLoad = async ({ parent, url }) => {
+	const { session } = await parent();
+	
+	if (!session) {
+		throw redirect(303, '/signin');
+	}
+
+	const pokedexId = url.searchParams.get('id');
+	if (!pokedexId) {
+		throw redirect(303, '/pokedexes');
+	}
 
 	return {
-		supabase,
 		session,
 		pokedexId
 	};

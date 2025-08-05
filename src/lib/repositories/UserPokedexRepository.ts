@@ -1,100 +1,113 @@
-import type { UserPokedex, UserPokedexDB, CreatePokedexRequest } from '$lib/models/UserPokedex';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import { BaseRepository } from './BaseRepository';
+import type { UserPokedex } from '$lib/types';
 
-class UserPokedexRepository {
-	constructor(
-		private supabase: SupabaseClient,
-		private userId: string
-	) {}
-
-	private transformFromDB(record: UserPokedexDB): UserPokedex {
-		return {
-			id: record.id,
-			userId: record.user_id,
-			name: record.name,
-			gameScope: record.game_scope,
-			generation: record.generation,
-			regionalPokedexName: record.regional_pokedex_name,
-			isShiny: record.is_shiny,
-			requireOrigin: record.require_origin,
-			includeForms: record.include_forms,
-			createdAt: record.created_at,
-			updatedAt: record.updated_at
-		};
-	}
-
-	private transformToDB(data: CreatePokedexRequest): Partial<UserPokedexDB> {
-		return {
-			name: data.name,
-			game_scope: data.gameScope,
-			generation: data.generation,
-			regional_pokedex_name: data.regionalPokedexName,
-			is_shiny: data.isShiny,
-			require_origin: data.requireOrigin,
-			include_forms: data.includeForms
-		};
-	}
-
-	async findAll(): Promise<UserPokedex[]> {
+export class UserPokedexRepository extends BaseRepository {
+	async getByUserId(userId: string): Promise<UserPokedex[]> {
 		const { data, error } = await this.supabase
 			.from('user_pokedexes')
-			.select('*')
-			.eq('user_id', this.userId)
-			.order('created_at', { ascending: true });
+			.select(`
+				*,
+				regional_pokedex_info (*)
+			`)
+			.eq('user_id', userId)
+			.order('created_at', { ascending: false });
 
-		if (error || !data) return [];
-		return data.map((record) => this.transformFromDB(record));
+		if (error) this.handleError(error);
+		
+		return this.toCamelCase(data || []).map((pokedex: any) => ({
+			...pokedex,
+			regionalPokedexInfo: pokedex.regionalPokedexInfo
+		}));
 	}
 
-	async findById(id: string): Promise<UserPokedex | null> {
+	async getById(id: string): Promise<UserPokedex | null> {
 		const { data, error } = await this.supabase
 			.from('user_pokedexes')
-			.select('*')
+			.select(`
+				*,
+				regional_pokedex_info (*)
+			`)
 			.eq('id', id)
-			.eq('user_id', this.userId)
 			.single();
 
-		if (error || !data) return null;
-		return this.transformFromDB(data);
+		if (error) {
+			if (error.code === 'PGRST116') return null;
+			this.handleError(error);
+		}
+
+		const result = this.toCamelCase(data);
+		if (!result) return null;
+		
+		return {
+			...result,
+			regionalPokedexInfo: result.regionalPokedexInfo
+		};
 	}
 
-	async create(pokedexData: CreatePokedexRequest): Promise<UserPokedex> {
-		const dbData = {
-			user_id: this.userId,
-			...this.transformToDB(pokedexData)
-		};
-
+	async create(pokedex: Omit<UserPokedex, 'id' | 'createdAt' | 'updatedAt'>): Promise<UserPokedex> {
+		const dbData = this.toSnakeCase(pokedex);
+		
 		const { data, error } = await this.supabase
 			.from('user_pokedexes')
 			.insert(dbData)
-			.select()
+			.select(`
+				*,
+				regional_pokedex_info (*)
+			`)
 			.single();
 
-		if (error || !data) {
-			throw new Error(`Failed to create pokédex: ${error?.message}`);
-		}
-
-		return this.transformFromDB(data);
+		if (error) this.handleError(error);
+		
+		const result = this.toCamelCase(data);
+		return {
+			...result,
+			regionalPokedexInfo: result.regionalPokedexInfo
+		};
 	}
 
-	async delete(id: string): Promise<boolean> {
+	async update(id: string, updates: Partial<UserPokedex>): Promise<UserPokedex> {
+		const dbData = this.toSnakeCase(updates);
+		delete dbData.id;
+		delete dbData.created_at;
+		
+		const { data, error } = await this.supabase
+			.from('user_pokedexes')
+			.update({
+				...dbData,
+				updated_at: new Date().toISOString()
+			})
+			.eq('id', id)
+			.select(`
+				*,
+				regional_pokedex_info (*)
+			`)
+			.single();
+
+		if (error) this.handleError(error);
+		
+		const result = this.toCamelCase(data);
+		return {
+			...result,
+			regionalPokedexInfo: result.regionalPokedexInfo
+		};
+	}
+
+	async delete(id: string): Promise<void> {
 		const { error } = await this.supabase
 			.from('user_pokedexes')
 			.delete()
-			.eq('id', id)
-			.eq('user_id', this.userId);
+			.eq('id', id);
 
-		return !error;
+		if (error) this.handleError(error);
 	}
 
-	async getPokedexCount(): Promise<number> {
-		const { count, error } = await this.supabase
-			.from('user_pokedexes')
-			.select('*', { count: 'exact', head: true })
-			.eq('user_id', this.userId);
+	async getStats(id: string): Promise<{ total: number; caught: number; readyToEvolve: number }> {
+		const { data, error } = await this.supabase.rpc('get_pokedex_stats', {
+			pokedex_id: id
+		});
 
-		return error ? 0 : count || 0;
+		if (error) this.handleError(error);
+		
+		return this.toCamelCase(data || { total: 0, caught: 0, readyToEvolve: 0 });
 	}
 }
-
-export default UserPokedexRepository;

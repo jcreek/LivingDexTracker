@@ -2,6 +2,19 @@ import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/publi
 import { createServerClient } from '@supabase/ssr';
 import type { Handle } from '@sveltejs/kit';
 
+// Suppress Supabase server-side warnings
+const originalWarn = console.warn;
+console.warn = (...args) => {
+	const message = args[0];
+	if (typeof message === 'string' && 
+		(message.includes('supabase.auth.getSession()') || 
+		 message.includes('Using the user object as returned from supabase.auth.getSession()') ||
+		 message.includes('could be insecure'))) {
+		return; // Suppress Supabase auth warnings
+	}
+	originalWarn.apply(console, args);
+};
+
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {
