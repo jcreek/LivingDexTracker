@@ -3,6 +3,10 @@ import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
+	server: {
+		host: '0.0.0.0', // Bind to all interfaces for testing
+		port: 5173
+	},
 	plugins: [
 		sveltekit(),
 		SvelteKitPWA({

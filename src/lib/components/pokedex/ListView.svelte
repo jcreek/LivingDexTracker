@@ -1,13 +1,31 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 	import type { PokemonWithCatchStatus } from '$lib/types';
-	import { getSpriteUrl } from '$lib/utils/sprites';
+	import { getSpriteUrl, getRegionalPokedexNumber } from '$lib/utils/sprites';
 
 	export let pokemon: PokemonWithCatchStatus[] = [];
 	export let currentPage: number = 1;
 	export let totalPages: number = 1;
 	export let isShiny: boolean = false;
 	export let loading: boolean = false;
+	export let regionalColumnName: string | null = null;
+
+	// Action to handle image errors
+	function handleImgError(node: HTMLImageElement) {
+		const handleError = () => {
+			if (!node.src.endsWith('/0.png')) {
+				node.src = '/sprites/home/0.png';
+			}
+		};
+
+		node.addEventListener('error', handleError);
+
+		return {
+			destroy() {
+				node.removeEventListener('error', handleError);
+			}
+		};
+	}
 	export let searchQuery: string = '';
 	export let filterStatus: 'all' | 'caught' | 'not_caught' | 'ready_to_evolve' = 'all';
 
@@ -52,7 +70,7 @@
 		if (!isCaught) {
 			return { class: 'badge-outline', text: 'Not Caught' };
 		}
-		
+
 		switch (catchStatus) {
 			case 'ready_to_evolve':
 				return { class: 'badge-warning', text: 'Ready to Evolve' };
@@ -79,16 +97,16 @@
 		const pages = [];
 		const startPage = Math.max(1, currentPage - 2);
 		const endPage = Math.min(totalPages, currentPage + 2);
-		
+
 		for (let i = startPage; i <= endPage; i++) {
 			pages.push(i);
 		}
-		
+
 		return pages;
 	})();
 </script>
 
-<div class="bg-base-100 rounded-lg shadow-lg p-6">
+<div class="bg-base-100 rounded-lg shadow-lg p-6 list-view" data-testid="list-view-container">
 	<!-- Search and Filter Header -->
 	<div class="flex flex-col sm:flex-row gap-4 mb-6">
 		<div class="flex-1">
@@ -98,15 +116,12 @@
 				class="input input-bordered w-full"
 				value={searchQuery}
 				on:input={handleSearchChange}
+				data-testid="pokemon-search-input"
 			/>
 		</div>
-		
+
 		<div class="flex gap-2">
-			<select
-				class="select select-bordered"
-				value={filterStatus}
-				on:change={handleFilterChange}
-			>
+			<select class="select select-bordered" value={filterStatus} on:change={handleFilterChange} data-testid="pokemon-filter-select">
 				<option value="all">All Status</option>
 				<option value="caught">Caught</option>
 				<option value="not_caught">Not Caught</option>
@@ -125,26 +140,32 @@
 			<p class="text-base-content/70">No Pokémon found matching your criteria.</p>
 		</div>
 	{:else}
-		<div class="space-y-2">
+		<div class="space-y-2 table" data-testid="pokemon-list">
 			{#each pokemon as pkmn}
 				{@const catchRecord = pkmn.catchRecord}
-				{@const statusBadge = getStatusBadge(catchRecord?.catchStatus || 'not_caught', catchRecord?.isCaught || false)}
+				{@const statusBadge = getStatusBadge(
+					catchRecord?.catchStatus || 'not_caught',
+					catchRecord?.isCaught || false
+				)}
+				{@const displayNumber = getRegionalPokedexNumber(pkmn, regionalColumnName)}
 				<div
-					class="card card-side bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-base-300 hover:border-primary/50"
+					class="card card-side bg-base-100 shadow-sm hover:shadow-md transition-shadow cursor-pointer border border-base-300 hover:border-primary/50 pokemon-item"
 					role="button"
 					tabindex="0"
 					on:click={() => handlePokemonClick(pkmn)}
 					on:keydown={(e) => e.key === 'Enter' && handlePokemonClick(pkmn)}
+					data-testid="pokemon-list-item"
 				>
 					<figure class="w-20 h-20 p-2">
 						<img
 							src={getSpriteUrl(pkmn.pokedexNumber, pkmn.form, isShiny)}
 							alt={pkmn.pokemon}
 							class="pokemon-sprite"
+							use:handleImgError
 							loading="lazy"
 						/>
 					</figure>
-					
+
 					<div class="card-body py-4 px-4 flex-1">
 						<div class="flex items-center justify-between">
 							<div>
@@ -154,9 +175,9 @@
 										<span class="text-sm text-base-content/70">({pkmn.form})</span>
 									{/if}
 								</h3>
-								<p class="text-sm text-base-content/70">#{pkmn.pokedexNumber}</p>
+								<p class="text-sm text-base-content/70">#{displayNumber}</p>
 							</div>
-							
+
 							<div class="flex flex-col items-end gap-1">
 								<span class="badge {statusBadge.class}">{statusBadge.text}</span>
 								{#if catchRecord?.catchLocation && catchRecord.catchLocation !== 'none'}
@@ -169,7 +190,7 @@
 								{/if}
 							</div>
 						</div>
-						
+
 						{#if catchRecord?.notes}
 							<p class="text-sm text-base-content/60 mt-1 line-clamp-2">
 								{catchRecord.notes}
@@ -183,7 +204,7 @@
 
 	<!-- Pagination -->
 	{#if totalPages > 1}
-		<div class="flex items-center justify-center mt-8">
+		<div class="flex items-center justify-center mt-8" data-testid="pagination-controls">
 			<div class="join">
 				<button
 					class="join-item btn btn-sm"
@@ -193,14 +214,14 @@
 				>
 					«
 				</button>
-				
+
 				{#if pageNumbers[0] > 1}
 					<button class="join-item btn btn-sm" on:click={() => goToPage(1)}>1</button>
 					{#if pageNumbers[0] > 2}
 						<button class="join-item btn btn-sm btn-disabled">...</button>
 					{/if}
 				{/if}
-				
+
 				{#each pageNumbers as pageNum}
 					<button
 						class="join-item btn btn-sm"
@@ -210,14 +231,16 @@
 						{pageNum}
 					</button>
 				{/each}
-				
+
 				{#if pageNumbers[pageNumbers.length - 1] < totalPages}
 					{#if pageNumbers[pageNumbers.length - 1] < totalPages - 1}
 						<button class="join-item btn btn-sm btn-disabled">...</button>
 					{/if}
-					<button class="join-item btn btn-sm" on:click={() => goToPage(totalPages)}>{totalPages}</button>
+					<button class="join-item btn btn-sm" on:click={() => goToPage(totalPages)}
+						>{totalPages}</button
+					>
 				{/if}
-				
+
 				<button
 					class="join-item btn btn-sm"
 					class:btn-disabled={currentPage >= totalPages}
@@ -228,7 +251,7 @@
 				</button>
 			</div>
 		</div>
-		
+
 		<div class="text-center text-sm text-base-content/70 mt-2">
 			Page {currentPage} of {totalPages}
 		</div>

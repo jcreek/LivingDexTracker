@@ -10,10 +10,10 @@ BEGIN
   WITH pokedex_info AS (
     SELECT 
       up.include_forms,
-      up.regional_pokedex_id,
+      up.regional_pokedex_name,
       rpi.column_name
     FROM user_pokedexes up
-    LEFT JOIN regional_pokedex_info rpi ON up.regional_pokedex_id = rpi.id
+    LEFT JOIN regional_pokedex_info rpi ON up.regional_pokedex_name = rpi.name
     WHERE up.id = pokedex_id
   ),
   relevant_pokemon AS (
@@ -22,7 +22,7 @@ BEGIN
     CROSS JOIN pokedex_info pi
     WHERE 
       CASE 
-        WHEN pi.regional_pokedex_id IS NOT NULL THEN
+        WHEN pi.regional_pokedex_name IS NOT NULL THEN
           -- Regional pokédex: filter by the appropriate column
           CASE pi.column_name
             WHEN 'pokedexNumber' THEN pe."pokedexNumber" IS NOT NULL
@@ -62,10 +62,10 @@ BEGIN
   ),
   catch_stats AS (
     SELECT 
-      COUNT(*) FILTER (WHERE cr.is_caught = true) as caught_count,
+      COUNT(*) FILTER (WHERE cr.caught = true) as caught_count,
       COUNT(*) FILTER (WHERE cr.catch_status = 'ready_to_evolve') as ready_evolve_count
     FROM relevant_pokemon rp
-    LEFT JOIN catch_records cr ON rp.id = cr.pokedex_entry_id AND cr.user_pokedex_id = pokedex_id
+    LEFT JOIN catch_records cr ON rp.id = cr."pokedexEntryId" AND cr.pokedex_id = get_pokedex_stats.pokedex_id
   )
   SELECT 
     (SELECT COUNT(*)::INTEGER FROM relevant_pokemon) as total,

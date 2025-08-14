@@ -109,6 +109,7 @@ API routes in `src/routes/api/`:
 ### Box View System
 
 The unique **Box View** system mimics Pokémon game PC storage:
+
 - Each box displays exactly 30 Pokémon in a 6×5 grid
 - Supports 3-state catch system: not caught, caught, ready to evolve
 - Bulk operations for catching/uncatching entire boxes
@@ -117,6 +118,7 @@ The unique **Box View** system mimics Pokémon game PC storage:
 ### BDD Testing Framework
 
 Comprehensive Cucumber.js BDD tests in `features/` directory:
+
 - **50+ scenarios** across 7 feature files covering all user journeys
 - **Auto-authentication** with test user `test@livingdextracker.local`
 - **data-testid selectors** for stable test automation (80+ implemented)

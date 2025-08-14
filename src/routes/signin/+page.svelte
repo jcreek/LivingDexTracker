@@ -3,7 +3,7 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	
+
 	let email = '';
 	let password = '';
 	let loading = false;
@@ -49,9 +49,12 @@
 			<h2 class="card-title text-2xl font-bold text-center w-full" data-testid="auth-title">
 				{isSignUp ? 'Create Account' : 'Sign In'}
 			</h2>
-			
+
 			{#if error}
-				<div class="alert {isSignUp && error.includes('email') ? 'alert-success' : 'alert-error'}" data-testid="auth-error">
+				<div
+					class="alert {isSignUp && error.includes('email') ? 'alert-success' : 'alert-error'}"
+					data-testid="auth-error"
+				>
 					<span>{error}</span>
 				</div>
 			{/if}
@@ -89,7 +92,12 @@
 				</div>
 
 				<div class="form-control mt-6">
-					<button type="submit" class="btn btn-primary" disabled={loading} data-testid="submit-button">
+					<button
+						type="submit"
+						class="btn btn-primary"
+						disabled={loading}
+						data-testid="submit-button"
+					>
 						{#if loading}
 							<span class="loading loading-spinner"></span>
 						{/if}
@@ -100,16 +108,28 @@
 
 			<div class="divider">OR</div>
 
-			<div class="text-center">
+			<div class="tabs tabs-boxed justify-center">
 				<button
-					class="btn btn-link"
+					class="tab"
+					class:tab-active={!isSignUp}
 					on:click={() => {
-						isSignUp = !isSignUp;
+						isSignUp = false;
 						error = '';
 					}}
-					data-testid="toggle-auth-mode"
+					data-testid="signin-tab"
 				>
-					{isSignUp ? 'Already have an account? Sign In' : "Don't have an account? Sign Up"}
+					Sign In
+				</button>
+				<button
+					class="tab"
+					class:tab-active={isSignUp}
+					on:click={() => {
+						isSignUp = true;
+						error = '';
+					}}
+					data-testid="signup-tab"
+				>
+					Sign Up
 				</button>
 			</div>
 		</div>

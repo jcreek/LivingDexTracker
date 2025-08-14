@@ -13,13 +13,12 @@
 
 	// Form fields
 	let name = '';
+	let description = '';
 	let gameScope: 'all_games' | 'specific_generation' = 'all_games';
-	let regionalPokedexId: number | null = null;
+	let regionalPokedexName: string = 'national';
 	let isShiny = false;
-	let requiresOrigin = false;
+	let requireOrigin = false;
 	let includeForms = false;
-	let region: string | null = null;
-	let games: string[] = [];
 	let generation: string | null = null;
 
 	let errors: Record<string, string> = {};
@@ -47,17 +46,13 @@
 	}
 
 	function handleRegionalPokedexChange() {
-		if (regionalPokedexId) {
-			const selected = regionalPokedexes.find((p) => p.id === regionalPokedexId);
+		if (regionalPokedexName && regionalPokedexName !== 'national') {
+			const selected = regionalPokedexes.find((p) => p.name === regionalPokedexName);
 			if (selected) {
-				region = selected.region;
 				generation = selected.generation;
-				games = selected.games || [];
 			}
 		} else {
-			region = null;
 			generation = null;
-			games = [];
 		}
 	}
 
@@ -68,8 +63,8 @@
 			errors.name = 'Name is required';
 		}
 
-		if (gameScope === 'specific_generation' && !regionalPokedexId) {
-			errors.regionalPokedexId = 'Please select a regional pokédex';
+		if (gameScope === 'specific_generation' && !regionalPokedexName) {
+			errors.regionalPokedexName = 'Please select a regional pokédex';
 		}
 
 		return Object.keys(errors).length === 0;
@@ -85,13 +80,12 @@
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					name: name.trim(),
+					description: description.trim(),
 					gameScope,
-					regionalPokedexId: gameScope === 'specific_generation' ? regionalPokedexId : null,
+					regionalPokedexName: gameScope === 'specific_generation' ? regionalPokedexName : null,
 					isShiny,
-					requiresOrigin,
+					requireOrigin,
 					includeForms,
-					region,
-					games,
 					generation
 				})
 			});
@@ -129,13 +123,19 @@
 
 <div class="max-w-2xl mx-auto">
 	<div class="flex items-center gap-4 mb-8">
-		<a href="/pokedexes" class="btn btn-outline" data-testid="back-to-pokedexes-button"> ← Back to Pokédexes </a>
+		<a href="/pokedexes" class="btn btn-outline" data-testid="back-to-pokedexes-button">
+			← Back to Pokédexes
+		</a>
 		<h1 class="text-3xl font-bold" data-testid="create-pokedex-title">Create New Pokédex</h1>
 	</div>
 
 	<div class="card bg-base-100 shadow-xl" data-testid="create-form-card">
 		<div class="card-body">
-			<form on:submit|preventDefault={handleSubmit} class="space-y-6" data-testid="create-pokedex-form">
+			<form
+				on:submit|preventDefault={handleSubmit}
+				class="space-y-6"
+				data-testid="create-pokedex-form"
+			>
 				<!-- Name -->
 				<div class="form-control">
 					<label class="label" for="name">
@@ -153,10 +153,26 @@
 						data-testid="pokedex-name-input"
 					/>
 					{#if errors.name}
-						<label class="label">
+						<div class="label">
 							<span class="label-text-alt text-error">{errors.name}</span>
-						</label>
+						</div>
 					{/if}
+				</div>
+
+				<!-- Description -->
+				<div class="form-control">
+					<label class="label" for="description">
+						<span class="label-text">Description</span>
+					</label>
+					<textarea
+						id="description"
+						bind:value={description}
+						class="textarea textarea-bordered"
+						placeholder="Describe your pokédex goals or collection rules..."
+						disabled={creating}
+						data-testid="pokedex-description-input"
+						name="description"
+					></textarea>
 				</div>
 
 				<!-- Game Scope -->
@@ -208,19 +224,19 @@
 						</label>
 						<select
 							id="regionalPokedex"
-							bind:value={regionalPokedexId}
+							bind:value={regionalPokedexName}
 							on:change={handleRegionalPokedexChange}
 							class="select select-bordered"
-							class:select-error={errors.regionalPokedexId}
+							class:select-error={errors.regionalPokedexName}
 							required
 							disabled={creating || loading}
 							data-testid="regional-pokedex-select"
 						>
-							<option value={null}>Select a regional pokédex...</option>
+							<option value="">Select a regional pokédex...</option>
 							{#each Object.entries(groupedPokedexes) as [regionName, pokedexes]}
 								<optgroup label={regionName.charAt(0).toUpperCase() + regionName.slice(1)}>
 									{#each pokedexes as pokedex}
-										<option value={pokedex.id}>
+										<option value={pokedex.name}>
 											{pokedex.displayName}
 											{#if pokedex.totalPokemon}
 												({pokedex.totalPokemon} Pokémon)
@@ -230,9 +246,9 @@
 								</optgroup>
 							{/each}
 						</select>
-						{#if errors.regionalPokedexId}
+						{#if errors.regionalPokedexName}
 							<label class="label">
-								<span class="label-text-alt text-error">{errors.regionalPokedexId}</span>
+								<span class="label-text-alt text-error">{errors.regionalPokedexName}</span>
 							</label>
 						{/if}
 					</div>
@@ -266,7 +282,7 @@
 							</span>
 							<input
 								type="checkbox"
-								bind:checked={requiresOrigin}
+								bind:checked={requireOrigin}
 								class="checkbox checkbox-primary"
 								disabled={creating}
 								data-testid="origin-required-checkbox"
@@ -294,8 +310,8 @@
 				</div>
 
 				<!-- Summary -->
-				{#if regionalPokedexId && gameScope === 'specific_generation'}
-					{@const selectedPokedex = regionalPokedexes.find((p) => p.id === regionalPokedexId)}
+				{#if regionalPokedexName && gameScope === 'specific_generation'}
+					{@const selectedPokedex = regionalPokedexes.find((p) => p.name === regionalPokedexName)}
 					{#if selectedPokedex}
 						<div class="alert alert-info">
 							<svg
@@ -328,8 +344,20 @@
 
 				<!-- Actions -->
 				<div class="card-actions justify-end pt-4">
-					<a href="/pokedexes" class="btn btn-outline" class:btn-disabled={creating} data-testid="cancel-button"> Cancel </a>
-					<button type="submit" class="btn btn-primary" disabled={creating} data-testid="create-submit-button">
+					<a
+						href="/pokedexes"
+						class="btn btn-outline"
+						class:btn-disabled={creating}
+						data-testid="cancel-button"
+					>
+						Cancel
+					</a>
+					<button
+						type="submit"
+						class="btn btn-primary"
+						disabled={creating}
+						data-testid="create-submit-button"
+					>
 						{#if creating}
 							<span class="loading loading-spinner"></span>
 						{/if}
