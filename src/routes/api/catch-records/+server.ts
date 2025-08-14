@@ -4,7 +4,7 @@ import { UserPokedexRepository, CatchRecordRepository } from '$lib/repositories'
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
-	
+
 	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
@@ -21,15 +21,14 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		}
 
 		const record = await catchRecordRepo.upsert({
-			userPokedexId: data.userPokedexId,
+			userId: user.id, // This is the actual user ID for RLS
+			userPokedexId: data.userPokedexId, // This maps to pokedex_id
 			pokedexEntryId: data.pokedexEntryId,
-			isCaught: data.isCaught || false,
-			catchStatus: data.catchStatus || 'not_caught',
-			catchLocation: data.catchLocation || 'none',
-			originRegion: data.originRegion || null,
-			gameCaughtIn: data.gameCaughtIn || null,
-			isGigantamax: data.isGigantamax || false,
-			notes: data.notes || null
+			caught: data.caught || false,
+			haveToEvolve: data.haveToEvolve || false,
+			inHome: data.inHome || false,
+			hasGigantamaxed: data.hasGigantamaxed || false,
+			personalNotes: data.personalNotes || null
 		});
 
 		return json({ record }, { status: 201 });
@@ -40,7 +39,7 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
-	
+
 	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
@@ -57,13 +56,12 @@ export const PUT: RequestHandler = async ({ request, locals: { supabase, safeGet
 		}
 
 		const record = await catchRecordRepo.update(data.id, {
-			isCaught: data.isCaught,
-			catchStatus: data.catchStatus,
-			catchLocation: data.catchLocation,
-			originRegion: data.originRegion,
-			gameCaughtIn: data.gameCaughtIn,
-			isGigantamax: data.isGigantamax,
-			notes: data.notes
+			userId: user.id, // Ensure RLS compliance
+			caught: data.caught,
+			haveToEvolve: data.haveToEvolve,
+			inHome: data.inHome,
+			hasGigantamaxed: data.hasGigantamaxed,
+			personalNotes: data.personalNotes
 		});
 
 		return json({ record });

@@ -1,11 +1,15 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { UserPokedexRepository, PokedexEntryRepository, CatchRecordRepository } from '$lib/repositories';
+import {
+	UserPokedexRepository,
+	PokedexEntryRepository,
+	CatchRecordRepository
+} from '$lib/repositories';
 import type { PokemonWithCatchStatus } from '$lib/types';
 
 export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
-	
+
 	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
@@ -33,41 +37,45 @@ export const GET: RequestHandler = async ({ url, locals: { supabase, safeGetSess
 
 		// Get Pokémon entries based on pokedex configuration
 		let pokemonEntries: any[];
-		
-		if (pokedex.regionalPokedexId && pokedex.regionalPokedexInfo) {
-			// Get regional pokedex entries
+
+		if (pokedex.regionalPokedexName && pokedex.regionalPokedexName !== 'national') {
+			// Get regional pokedex entries using the new method
+			pokemonEntries = await pokedexEntryRepo.getByRegionalPokedexName(pokedex.regionalPokedexName);
+		} else if (pokedex.regionalPokedexInfo) {
+			// Fallback to old method for backwards compatibility
 			pokemonEntries = await pokedexEntryRepo.getByRegionalPokedex(
-				pokedex.regionalPokedexId, 
+				pokedex.regionalPokedexInfo.id,
 				pokedex.regionalPokedexInfo.columnName
 			);
 		} else {
 			// Get all entries for national dex
-			pokemonEntries = pokedex.includeForms 
+			pokemonEntries = pokedex.includeForms
 				? await pokedexEntryRepo.getFormsIncluded()
 				: await pokedexEntryRepo.getNoForms();
 		}
 
 		// Get catch records for this pokedex
 		const catchRecords = await catchRecordRepo.getByUserPokedex(pokedexId);
-		const catchRecordMap = new Map(catchRecords.map(record => [record.pokedexEntryId, record]));
+		const catchRecordMap = new Map(catchRecords.map((record) => [record.pokedexEntryId, record]));
 
 		// Combine data
-		let combinedData: PokemonWithCatchStatus[] = pokemonEntries.map(entry => ({
+		let combinedData: PokemonWithCatchStatus[] = pokemonEntries.map((entry) => ({
 			...entry,
 			catchRecord: catchRecordMap.get(entry.id) || undefined
 		}));
 
 		// Apply search filter
 		if (search) {
-			combinedData = combinedData.filter(pokemon => 
-				pokemon.pokemon.toLowerCase().includes(search.toLowerCase()) ||
-				pokemon.pokedexNumber.toString().includes(search)
+			combinedData = combinedData.filter(
+				(pokemon) =>
+					pokemon.pokemon.toLowerCase().includes(search.toLowerCase()) ||
+					pokemon.pokedexNumber.toString().includes(search)
 			);
 		}
 
 		// Apply status filter
 		if (filter !== 'all') {
-			combinedData = combinedData.filter(pokemon => {
+			combinedData = combinedData.filter((pokemon) => {
 				const record = pokemon.catchRecord;
 				switch (filter) {
 					case 'caught':

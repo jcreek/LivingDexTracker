@@ -16,7 +16,7 @@ export abstract class BaseRepository {
 	protected toCamelCase(obj: any): any {
 		if (obj === null || obj === undefined) return obj;
 		if (obj instanceof Date) return obj;
-		if (Array.isArray(obj)) return obj.map(item => this.toCamelCase(item));
+		if (Array.isArray(obj)) return obj.map((item) => this.toCamelCase(item));
 		if (typeof obj !== 'object') return obj;
 
 		const converted: any = {};
@@ -30,12 +30,12 @@ export abstract class BaseRepository {
 	protected toSnakeCase(obj: any): any {
 		if (obj === null || obj === undefined) return obj;
 		if (obj instanceof Date) return obj;
-		if (Array.isArray(obj)) return obj.map(item => this.toSnakeCase(item));
+		if (Array.isArray(obj)) return obj.map((item) => this.toSnakeCase(item));
 		if (typeof obj !== 'object') return obj;
 
 		const converted: any = {};
 		for (const key in obj) {
-			const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+			const snakeKey = key.replace(/[A-Z]/g, (letter) => `_${letter.toLowerCase()}`);
 			converted[snakeKey] = this.toSnakeCase(obj[key]);
 		}
 		return converted;

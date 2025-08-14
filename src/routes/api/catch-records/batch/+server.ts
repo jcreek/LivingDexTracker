@@ -4,7 +4,7 @@ import { UserPokedexRepository, CatchRecordRepository } from '$lib/repositories'
 
 export const POST: RequestHandler = async ({ request, locals: { supabase, safeGetSession } }) => {
 	const { session, user } = await safeGetSession();
-	
+
 	if (!session || !user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}
@@ -25,18 +25,16 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 		if (operation === 'bulk_catch' || operation === 'bulk_uncatch') {
 			// Bulk operations for entire box
 			const isCaught = operation === 'bulk_catch';
-			const catchStatus = isCaught ? 'caught' : 'not_caught';
-			
+
 			const batchUpdates = updates.map((pokedexEntryId: number) => ({
+				userId: user.id, // Required for RLS policy
 				userPokedexId,
 				pokedexEntryId,
-				isCaught,
-				catchStatus,
-				catchLocation: 'none',
-				originRegion: null,
-				gameCaughtIn: null,
-				isGigantamax: false,
-				notes: null
+				caught: isCaught,
+				haveToEvolve: false,
+				inHome: false,
+				hasGigantamaxed: false,
+				personalNotes: null
 			}));
 
 			records = await catchRecordRepo.batchUpsert(batchUpdates);

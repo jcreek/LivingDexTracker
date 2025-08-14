@@ -9,7 +9,7 @@ export interface PokedexEntry {
 	regionToEvolveIn?: string | null;
 	evolutionInformation?: string | null;
 	catchInformation?: string[] | null;
-	
+
 	// Regional pokedex numbers
 	kantoNumber?: number | null;
 	johtoNumber?: number | null;
@@ -35,7 +35,7 @@ export interface PokedexEntry {
 	paldeaNumber?: number | null;
 	kitakamiNumber?: number | null;
 	blueberryNumber?: number | null;
-	
+
 	// Box placement
 	boxPlacementFormsBox?: number | null;
 	boxPlacementFormsRow?: number | null;
@@ -43,9 +43,12 @@ export interface PokedexEntry {
 	boxPlacementBox?: number | null;
 	boxPlacementRow?: number | null;
 	boxPlacementColumn?: number | null;
-	
+
 	createdAt?: string;
 	updatedAt?: string;
+	
+	// For regional pokedexes - the regional number in that specific pokedex
+	regionalNumber?: number;
 }
 
 export interface RegionalPokedexInfo {
@@ -66,12 +69,10 @@ export interface UserPokedex {
 	userId: string;
 	name: string;
 	gameScope: 'all_games' | 'specific_generation';
-	regionalPokedexId?: number | null;
+	regionalPokedexName: string;
 	isShiny: boolean;
-	requiresOrigin: boolean;
+	requireOrigin: boolean;
 	includeForms: boolean;
-	region?: string | null;
-	games?: string[] | null;
 	generation?: string | null;
 	createdAt?: string;
 	updatedAt?: string;
@@ -81,15 +82,14 @@ export interface UserPokedex {
 
 export interface CatchRecord {
 	id: string;
+	userId: string;
 	userPokedexId: string;
 	pokedexEntryId: number;
-	isCaught: boolean;
-	catchStatus: 'not_caught' | 'caught' | 'ready_to_evolve';
-	catchLocation: 'none' | 'in_game' | 'in_home';
-	originRegion?: string | null;
-	gameCaughtIn?: string | null;
-	isGigantamax: boolean;
-	notes?: string | null;
+	caught: boolean;
+	haveToEvolve: boolean;
+	inHome: boolean;
+	hasGigantamaxed: boolean;
+	personalNotes?: string | null;
 	createdAt?: string;
 	updatedAt?: string;
 }

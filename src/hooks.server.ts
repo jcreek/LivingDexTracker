@@ -6,10 +6,12 @@ import type { Handle } from '@sveltejs/kit';
 const originalWarn = console.warn;
 console.warn = (...args) => {
 	const message = args[0];
-	if (typeof message === 'string' && 
-		(message.includes('supabase.auth.getSession()') || 
-		 message.includes('Using the user object as returned from supabase.auth.getSession()') ||
-		 message.includes('could be insecure'))) {
+	if (
+		typeof message === 'string' &&
+		(message.includes('supabase.auth.getSession()') ||
+			message.includes('Using the user object as returned from supabase.auth.getSession()') ||
+			message.includes('could be insecure'))
+	) {
 		return; // Suppress Supabase auth warnings
 	}
 	originalWarn.apply(console, args);
@@ -44,14 +46,55 @@ export const handle: Handle = async ({ event, resolve }) => {
 			data: { user },
 			error
 		} = await event.locals.supabase.auth.getUser();
+		
 		if (error) {
-			return { session: null, user: null };
+			// Enhanced logging for debugging auth issues
+			if (error.message !== 'Auth session missing!' && error.message !== 'JWT expired') {
+				console.log('Auth error in safeGetSession:', error.message);
+			}
+			
+			// Clear any potentially corrupt auth cookies
+			if (error.message.includes('JWT') || error.message.includes('invalid') || error.message.includes('malformed')) {
+				// Clear common Supabase auth cookies by name
+				const authCookieNames = [
+					'sb-access-token',
+					'sb-refresh-token', 
+					'supabase-auth-token',
+					'supabase.auth.token',
+					'sb-localhost-auth-token'
+				];
+				
+				for (const cookieName of authCookieNames) {
+					event.cookies.delete(cookieName, { path: '/' });
+				}
+			}
+			
+			return { session: null, user: null, error: error.message };
 		}
 
 		const {
-			data: { session }
+			data: { session },
+			error: sessionError
 		} = await event.locals.supabase.auth.getSession();
-		return { session, user };
+		
+		if (sessionError) {
+			console.log('Session error:', sessionError.message);
+			return { session: null, user: null, error: sessionError.message };
+		}
+		
+		// Additional validation - ensure session matches user
+		if (session && session.user && session.user.id !== user.id) {
+			console.log('Session/user mismatch detected');
+			return { session: null, user: null, error: 'Session user mismatch' };
+		}
+		
+		// Check if session is expired
+		if (session && session.expires_at && new Date(session.expires_at * 1000) < new Date()) {
+			console.log('Session expired detected in safeGetSession');
+			return { session: null, user: null, error: 'Session expired' };
+		}
+		
+		return { session, user, error: null };
 	};
 
 	return resolve(event, {
