@@ -49,55 +49,83 @@ When('I click on the same ready-to-evolve Pokémon slot', async function () {
 });
 
 Then('I should see the placeholder indicator', async function () {
-	const placeholder = await this.findElements(By.css('.placeholder, .uncaught, .empty-slot'));
+	const placeholder = await this.findElements(By.css('[data-status="not_caught"]'));
 	expect(placeholder.length).to.be.greaterThan(0);
 });
 
 // Catch management modal
 Given('I have a caught Pokémon in the current box', async function () {
 	// Ensure we have at least one caught Pokémon
+	// First, look for an uncaught Pokémon and click it to mark as caught
 	try {
+		// Try to find an uncaught Pokémon first
 		const uncaughtSlot = await this.findElement(
-			By.css('.uncaught, .empty-slot, .pokemon-slot:first-child')
+			By.css('[data-status="not_caught"]')
 		);
 		await uncaughtSlot.click();
-		await new Promise((resolve) => setTimeout(resolve, 500));
+		// Wait for the catch status to update
+		await new Promise((resolve) => setTimeout(resolve, 1000));
 	} catch (error) {
-		console.log('No uncaught Pokémon found to mark as caught');
+		// If no uncaught found, try to find any pokemon slot
+		try {
+			const pokemonSlot = await this.findElement(
+				By.css('[data-testid="pokemon-slot"]:first-child')
+			);
+			await pokemonSlot.click();
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+		} catch (innerError) {
+			console.log('No Pokémon found to mark as caught, proceeding with existing caught Pokémon');
+		}
 	}
 });
 
 When('I right-click on the caught Pokémon', async function () {
-	const caughtPokemon = await this.waitForElementVisible(
-		By.css('.caught, [data-status="caught"], .pokemon-slot:first-child')
-	);
-	await this.driver.actions().contextClick(caughtPokemon).perform();
+	// Wait a bit for the previous action to complete
+	await new Promise((resolve) => setTimeout(resolve, 500));
+	
+	// Try to find a caught Pokémon or any pokemon slot
+	try {
+		// First try to find a caught Pokémon
+		const caughtPokemon = await this.waitForElementVisible(
+			By.css('[data-status="caught"]'),
+			10000
+		);
+		await this.driver.actions().contextClick(caughtPokemon).perform();
+	} catch (error) {
+		// If no caught found, try the first pokemon slot
+		const pokemonSlot = await this.waitForElementVisible(
+			By.css('[data-testid="pokemon-slot"]:first-child'),
+			10000
+		);
+		await this.driver.actions().contextClick(pokemonSlot).perform();
+	}
 });
 
 Then('I should see a catch management modal', async function () {
 	const modal = await this.waitForElement(
-		By.css('.modal, .catch-modal, [data-testid="catch-modal"]')
+		By.css('[data-testid="catch-management-modal"]'),
+		10000
 	);
 	expect(modal).to.exist;
 });
 
 Then('I should see catch status options', async function () {
-	const statusOptions = await this.findElements(
-		By.css('.status-option, input[name="catch_status"], [data-testid="status-option"]')
+	const statusSelect = await this.waitForElement(
+		By.css('[data-testid="catch-status-select"]')
 	);
-	expect(statusOptions.length).to.be.greaterThan(0);
+	expect(statusSelect).to.exist;
 });
 
 Then('I should see catch location options', async function () {
 	const locationOptions = await this.findElements(
-		By.css('.location-option, input[name="catch_location"], [data-testid="location-option"]')
+		By.css('[data-testid="location-in-game-radio"], [data-testid="location-in-home-radio"]')
 	);
 	expect(locationOptions.length).to.be.greaterThan(0);
 });
 
 Then('I should see a notes textarea', async function () {
 	const notesTextarea = await this.waitForElement(
-		By.css('textarea[name="notes"], textarea[placeholder*="notes"], [data-testid="notes-textarea"]')
+		By.css('[data-testid="notes-textarea"]')
 	);
 	expect(notesTextarea).to.exist;
 });
@@ -125,7 +153,7 @@ Given('I have the catch management modal open', async function () {
 	} catch (error) {
 		console.log('No uncaught pokemon to click');
 	}
-	
+
 	// Now right-click on the first pokemon slot (should be caught now)
 	try {
 		const pokemonSlot = await this.waitForElementVisible(
@@ -133,12 +161,9 @@ Given('I have the catch management modal open', async function () {
 			5000
 		);
 		await this.driver.actions().contextClick(pokemonSlot).perform();
-		
+
 		// Wait for modal to appear
-		await this.waitForElement(
-			By.css('[data-testid="catch-management-modal"]'),
-			5000
-		);
+		await this.waitForElement(By.css('[data-testid="catch-management-modal"]'), 5000);
 	} catch (error) {
 		console.log('Error opening modal:', error.message);
 		throw error;
@@ -156,7 +181,7 @@ When('I select {string} as the catch location', async function (location) {
 		// Fallback to searching by text
 		selector = `//label[contains(text(), '${location}')]//input[@type='radio']`;
 	}
-	
+
 	const locationOption = await this.waitForElementVisible(
 		selector.startsWith('[') ? By.css(selector) : By.xpath(selector),
 		5000
@@ -170,24 +195,45 @@ Then('the location should be saved as {string}', async function (expectedValue) 
 });
 
 Then('I should see a HOME icon overlay on the Pokémon sprite', async function () {
-	const homeIcon = await this.findElements(By.css('.home-icon, [data-testid="home-indicator"]'));
+	// First, save and close the modal if it's open
+	try {
+		const saveButton = await this.findElement(
+			By.css('[data-testid="modal-save-button"]')
+		);
+		if (saveButton) {
+			await saveButton.click();
+			await new Promise((resolve) => setTimeout(resolve, 1000));
+		}
+	} catch (error) {
+		// Modal might already be closed
+	}
+	
+	// Now check for the HOME icon on the Pokémon sprite
+	const homeIcon = await this.findElements(By.css('[data-testid="home-indicator"]'));
 	expect(homeIcon.length).to.be.greaterThan(0);
 });
 
 // Notes management
 When('I enter {string} in the notes field', async function (noteText) {
 	const notesField = await this.waitForElementVisible(
-		By.css('textarea[name="notes"], textarea[placeholder*="notes"], [data-testid="notes-textarea"]')
+		By.css('[data-testid="notes-textarea"]')
 	);
 	await notesField.clear();
 	await notesField.sendKeys(noteText);
 });
 
 When('I click {string}', async function (buttonText) {
-	const button = await this.waitForElementVisible(
-		By.xpath(`//button[contains(text(), '${buttonText}')]`)
-	);
-	await button.click();
+	if (buttonText === 'Save') {
+		const button = await this.waitForElementVisible(
+			By.css('[data-testid="modal-save-button"]')
+		);
+		await button.click();
+	} else {
+		const button = await this.waitForElementVisible(
+			By.xpath(`//button[contains(text(), '${buttonText}')]`)
+		);
+		await button.click();
+	}
 });
 
 Then('the notes should be saved to the catch record', async function () {
@@ -200,24 +246,37 @@ When('I reopen the modal for the same Pokémon', async function () {
 	// Close modal first if open
 	try {
 		const closeButton = await this.findElement(
-			By.css('.modal-close, .close, [data-testid="close-modal"]')
+			By.css('[data-testid="modal-cancel-button"], [data-testid="modal-save-button"], .modal-close')
 		);
 		await closeButton.click();
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	} catch (error) {
-		// Modal might not be open
+		// Modal might already be closed after save
+		console.log('Modal already closed');
 	}
 
-	// Reopen the modal
+	// Wait for the modal to fully close and page to stabilize
+	await new Promise((resolve) => setTimeout(resolve, 1000));
+
+	// Find the first pokemon slot (it should be caught now)
 	const pokemon = await this.waitForElementVisible(
-		By.css('.caught, [data-status="caught"], .pokemon-slot:first-child')
+		By.css('.pokemon-slot:first-child, [data-testid="pokemon-slot"]:first-child'),
+		10000
 	);
+	
+	// Right-click to reopen the modal
 	await this.driver.actions().contextClick(pokemon).perform();
+	
+	// Wait for modal to appear
+	await this.waitForElement(
+		By.css('[data-testid="catch-management-modal"]'),
+		5000
+	);
 });
 
 Then('I should see my saved notes', async function () {
 	const notesField = await this.waitForElement(
-		By.css('textarea[name="notes"], textarea[placeholder*="notes"], [data-testid="notes-textarea"]')
+		By.css('[data-testid="notes-textarea"]')
 	);
 	const notesValue = await notesField.getAttribute('value');
 	expect(notesValue).to.include('Caught in Route 1');
@@ -225,21 +284,61 @@ Then('I should see my saved notes', async function () {
 
 // Gigantamax management
 Given('I have a Gigantamax-capable Pokémon in the catch modal', async function () {
-	// This assumes the modal is open and the Pokémon supports Gigantamax
-	const gigantamaxCheckbox = await this.findElements(
-		By.css('input[name="is_gigantamax"], [data-testid="gigantamax-checkbox"]')
-	);
-	if (gigantamaxCheckbox.length === 0) {
-		console.log('No Gigantamax checkbox found - Pokémon may not support Gigantamax');
+	// We need to find a Gigantamax-capable Pokémon
+	// From the component, Charizard (#6), Pikachu (#25), etc. can Gigantamax
+	// Let's try to find Pikachu (should be in first box for Kanto)
+	
+	try {
+		// Look for Pikachu specifically (pokemon #25)
+		let pikachuSlot = await this.findElement(
+			By.css('[data-pokemon-number="25"]')
+		);
+		
+		if (!pikachuSlot) {
+			// If not found, try first pokemon slot as fallback
+			pikachuSlot = await this.findElement(
+				By.css('.pokemon-slot:first-child, [data-testid="pokemon-slot"]:first-child')
+			);
+		}
+		
+		// Ensure it's caught first
+		await pikachuSlot.click();
+		await new Promise((resolve) => setTimeout(resolve, 500));
+		
+		// Right-click to open modal
+		await this.driver.actions().contextClick(pikachuSlot).perform();
+		
+		// Wait for modal to appear
+		await this.waitForElement(
+			By.css('[data-testid="catch-management-modal"]'),
+			5000
+		);
+		
+		// Verify Gigantamax checkbox exists
+		const gigantamaxCheckbox = await this.findElements(
+			By.css('[data-testid="gigantamax-checkbox"]')
+		);
+		
+		if (gigantamaxCheckbox.length === 0) {
+			console.log('Warning: No Gigantamax checkbox found - Pokémon may not support Gigantamax');
+		}
+	} catch (error) {
+		console.log('Error setting up Gigantamax-capable Pokémon:', error.message);
+		throw error;
 	}
 });
 
 When('I check the {string} checkbox', async function (checkboxName) {
-	const checkbox = await this.waitForElementVisible(
-		By.xpath(
+	let selector;
+	if (checkboxName.toLowerCase() === 'gigantamax') {
+		selector = By.css('[data-testid="gigantamax-checkbox"]');
+	} else {
+		selector = By.xpath(
 			`//*[contains(text(), '${checkboxName}')]/ancestor-or-self::label//input | //input[@name='${checkboxName.toLowerCase()}']`
-		)
-	);
+		);
+	}
+
+	const checkbox = await this.waitForElementVisible(selector);
 	const isChecked = await checkbox.isSelected();
 	if (!isChecked) {
 		await checkbox.click();
@@ -271,9 +370,7 @@ When('I select {string} as the origin region', async function (region) {
 });
 
 When('I select {string} as the game caught in', async function (game) {
-	const gameSelect = await this.waitForElementVisible(
-		By.css('select[name="game_caught_in"], [data-testid="game-select"]')
-	);
+	const gameSelect = await this.waitForElementVisible(By.css('[data-testid="game-caught-select"]'));
 	await gameSelect.click();
 	const gameOption = await this.waitForElementVisible(
 		By.xpath(`//option[contains(text(), '${game}')]`)
@@ -350,14 +447,14 @@ When('I select all Pokémon in the current box', async function () {
 	}
 });
 
-Then('the previously ready-to-evolve Pokémon should remain as {string}', async function (status) {
+Then('the previously ready-to-evolve Pokémon should remain as {string}', async function () {
 	const readyToEvolve = await this.findElements(
 		By.css('.ready-to-evolve, [data-status="ready_to_evolve"]')
 	);
 	expect(readyToEvolve.length).to.be.greaterThan(0);
 });
 
-Then('only the uncaught Pokémon should change to {string}', async function (status) {
+Then('only the uncaught Pokémon should change to {string}', async function () {
 	const caughtPokemon = await this.findElements(By.css('.caught, [data-status="caught"]'));
 	expect(caughtPokemon.length).to.be.greaterThan(0);
 });

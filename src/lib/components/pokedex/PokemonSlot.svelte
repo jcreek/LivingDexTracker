@@ -111,6 +111,7 @@
 				<div
 					class="absolute top-0 right-0 w-3 h-3 bg-blue-500 rounded-full border border-white"
 					title="In HOME"
+					data-testid="home-indicator"
 				></div>
 			{/if}
 
