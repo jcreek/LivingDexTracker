@@ -24,9 +24,13 @@
 		"test-inject-manifest": "npm run build-inject-manifest && vitest run && playwright test",
 		"test-inject-manifest-node": "npm run build-inject-manifest-node && NODE_ADAPTER=true vitest run && NODE_ADAPTER=true playwright test",
 		"test": "npm run test-generate-sw && npm run test-generate-sw-node && npm run test-inject-manifest && npm run test-inject-manifest-node",
-		"test:bdd": "(pkill -f 'vite dev' || true) && (supabase status | grep 'supabase local development setup is running' || supabase start) && npm run dev & sleep 5 && cucumber-js --config cucumber.config.js --parallel 4 --retry 0 && pkill -f 'vite dev'",
-		"test:bdd-smoke": "(pkill -f 'vite dev' || true) && (supabase status | grep 'supabase local development setup is running' || supabase start) && npm run dev & sleep 5 && cucumber-js --profile smoke --parallel 4 && pkill -f 'vite dev'",
-		"test:bdd-manual": "cucumber-js --config cucumber.config.js",
+		"test:bdd": "npm run test:bdd-start && npm run test:bdd-run; npm run test:bdd-stop",
+		"test:bdd-start": "npm run test:bdd-seed && npm run dev &",
+		"test:bdd-run": "wait-on http://localhost:5173 -t 60000 && cucumber-js --config cucumber.config.js --parallel 4",
+		"test:bdd-stop": "pkill -f 'vite dev' || true",
+		"test:bdd-smoke": "npm run test:bdd-start && wait-on http://localhost:5173 -t 60000 && cucumber-js --profile smoke --parallel 4; npm run test:bdd-stop",
+		"test:bdd-seed": "(supabase status | grep 'supabase local development setup is running' || supabase start) && supabase db reset && supabase db seed",
+		"test:bdd-manual": "wait-on http://localhost:5173 -t 5000 && cucumber-js --config cucumber.config.js --parallel 4",
 		"supabase:start": "supabase start",
 		"supabase:stop": "supabase stop",
 		"supabase:reset": "supabase db reset",
@@ -68,7 +72,8 @@
 		"tailwindcss": "^3.4.3",
 		"tslib": "^2.6.2",
 		"typescript": "^5.3.3",
-		"vitest": "^1.0.4"
+		"vitest": "^1.0.4",
+		"wait-on": "^8.0.4"
 	},
 	"type": "module",
 	"dependencies": {

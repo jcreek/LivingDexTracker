@@ -5,6 +5,7 @@ This directory contains comprehensive Behavior-Driven Development (BDD) tests fo
 ## 🎯 Test Coverage
 
 ### Features Tested
+
 - **Authentication**: Sign-in, sign-up, validation
 - **Pokédex Management**: Creating, viewing, and managing pokédexes
 - **Box View Interaction**: 6×5 grid, catch status, bulk operations
@@ -14,6 +15,7 @@ This directory contains comprehensive Behavior-Driven Development (BDD) tests fo
 - **Enhanced Catch Management**: Advanced catch tracking and bulk operations
 
 ### Test Scenarios
+
 - ✅ 50+ comprehensive scenarios
 - ✅ Real browser automation with Chrome
 - ✅ Tests against local development server
@@ -23,12 +25,14 @@ This directory contains comprehensive Behavior-Driven Development (BDD) tests fo
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 18.13.0+
 - Chrome browser installed
 - Application dependencies: `npm install`
 - Supabase configured (`.env` file with credentials)
 
 ### Environment Setup
+
 ```bash
 # Copy the example and fill in your Supabase details
 cp .env.example .env
@@ -43,12 +47,14 @@ npm run supabase:start
 ### Running Tests
 
 #### Option 1: Automated (Recommended)
+
 ```bash
 # Starts dev server, runs tests, generates report, cleans up
 npm run test:bdd
 ```
 
 #### Option 2: Manual Control
+
 ```bash
 # Terminal 1: Start development server
 npm run dev
@@ -61,10 +67,12 @@ node scripts/generate-test-report.js
 ```
 
 ### Test Reports
+
 - JSON: `reports/cucumber_report.json`
 - HTML: `reports/cucumber_report.html`
 
 #### View Test Reports
+
 ```bash
 # Open HTML report in browser
 open reports/cucumber_report.html
@@ -83,6 +91,7 @@ The BDD tests automatically handle authentication:
 4. **Test User Creation**: If the test user doesn't exist, it will be created automatically
 
 **Test User**: `test@livingdextracker.local`/`testpassword123`
+
 - For Local Supabase: Created automatically during first test run
 - For Cloud Supabase: Either auto-created or manually create in Supabase Auth dashboard
 
@@ -110,23 +119,27 @@ features/
 ## 🔧 Configuration
 
 ### Browser Configuration
+
 Tests use Chrome by default. Configure in `features/support/world.js`:
 
 ```javascript
 this.driver = await new Builder()
-  .forBrowser(Browser.CHROME)  // Change to FIREFOX, EDGE, etc.
-  .build();
+	.forBrowser(Browser.CHROME) // Change to FIREFOX, EDGE, etc.
+	.build();
 ```
 
 ### Server Configuration
+
 Default server: `http://localhost:5173` (Vite dev server)
 
 Change in `features/support/world.js`:
+
 ```javascript
 this.baseUrl = 'http://localhost:3000'; // Your custom port
 ```
 
 ### Timeouts
+
 - Default scenario timeout: 30 seconds
 - Element wait timeout: 10 seconds
 - Implicit wait: 5 seconds
@@ -134,7 +147,9 @@ this.baseUrl = 'http://localhost:3000'; // Your custom port
 ## 📝 Writing New Tests
 
 ### 1. Add Feature File
+
 Create `features/new_feature.feature`:
+
 ```gherkin
 Feature: New Feature
   As a user
@@ -148,23 +163,25 @@ Feature: New Feature
 ```
 
 ### 2. Implement Step Definitions
+
 Create `features/step_definitions/new_feature_steps.js`:
+
 ```javascript
 import { Given, When, Then } from '@cucumber/cucumber';
 import { By } from 'selenium-webdriver';
 import { expect } from 'chai';
 
-Given('I am on the page', async function() {
-  await this.navigateTo('/path');
+Given('I am on the page', async function () {
+	await this.navigateTo('/path');
 });
 
-When('I click something', async function() {
-  await this.click(By.css('.button'));
+When('I click something', async function () {
+	await this.click(By.css('.button'));
 });
 
-Then('I should see the result', async function() {
-  const element = await this.waitForElement(By.css('.result'));
-  expect(element).to.exist;
+Then('I should see the result', async function () {
+	const element = await this.waitForElement(By.css('.result'));
+	expect(element).to.exist;
 });
 ```
 
@@ -212,16 +229,18 @@ const randomPokedexName = getRandomPokedexName();
 ### Common Issues
 
 1. **"Authentication failed" errors:**
+
    ```bash
    # Check if Supabase is running
    curl http://localhost:54321/health
-   
+
    # Restart Supabase
    npm run supabase:stop
    npm run supabase:start
    ```
 
 2. **ChromeDriver not found**
+
    ```bash
    # Install ChromeDriver
    # macOS: Chrome should auto-install ChromeDriver
@@ -230,19 +249,21 @@ const randomPokedexName = getRandomPokedexName();
    ```
 
 3. **"Server not responding":**
+
    ```bash
    # Make sure dev server is running
    npm run dev
-   
+
    # Check server status
    curl http://localhost:5173
    ```
 
 4. **Database connection issues:**
+
    ```bash
    # Reset local Supabase
    npm run supabase:reset
-   
+
    # Check .env file has correct credentials
    cat .env
    ```
@@ -253,28 +274,31 @@ const randomPokedexName = getRandomPokedexName();
    - Increase timeout if needed
 
 ### Debug Mode
+
 ```bash
 # Run with verbose output
 DEBUG=* npm run test:bdd-manual
 ```
 
 Add `console.log` statements in step definitions:
+
 ```javascript
-Then('I should see something', async function() {
-  console.log('Current URL:', await this.driver.getCurrentUrl());
-  console.log('Page title:', await this.driver.getTitle());
+Then('I should see something', async function () {
+	console.log('Current URL:', await this.driver.getCurrentUrl());
+	console.log('Page title:', await this.driver.getTitle());
 });
 ```
 
 ## 📊 CI/CD Integration
 
 ### GitHub Actions Example
+
 ```yaml
 - name: Run BDD Tests
   run: |
     npm install
     npm run test:bdd
-    
+
 - name: Upload Test Reports
   uses: actions/upload-artifact@v3
   with:
@@ -285,16 +309,19 @@ Then('I should see something', async function() {
 ## 🔄 Maintenance
 
 ### Updating Selectors
+
 When UI changes, update selectors in step definitions:
+
 ```javascript
 // Old
-By.css('.old-class')
+By.css('.old-class');
 
 // New
-By.css('.new-class, [data-testid="element"]')
+By.css('.new-class, [data-testid="element"]');
 ```
 
 ### Adding New Scenarios
+
 1. Identify user journey
 2. Write Gherkin scenario
 3. Implement step definitions
@@ -313,24 +340,28 @@ By.css('.new-class, [data-testid="element"]')
 ## 💡 Key Features of Enhanced BDD Tests
 
 ### Smart Authentication:
+
 - Automatically detects if user is logged in
 - Creates test user if needed
 - Handles both local and cloud Supabase
 - Graceful error handling and retries
 
 ### Robust Selectors:
+
 - Uses stable `data-testid` attributes instead of CSS classes
 - Multiple fallback strategies for finding elements
 - Handles dynamic content loading
 - Separation of styling concerns from test concerns
 
 ### Comprehensive Coverage:
+
 - Tests all critical user journeys
 - Validates complex multi-state interactions (3-state catch system)
 - Checks performance under realistic load (1000+ Pokémon)
 - Ensures mobile responsiveness
 
 ### Professional Reporting:
+
 - HTML reports with screenshots on failure
 - JSON reports for CI/CD integration
 - Detailed error messages and stack traces
@@ -353,7 +384,7 @@ To further enhance the testing suite:
 1. **Add visual regression testing** with screenshot comparison
 2. **Implement accessibility testing** with axe-core
 3. **Add performance testing** with Lighthouse
-4. **Create mobile-specific scenarios** 
+4. **Create mobile-specific scenarios**
 5. **Add database state verification**
 6. **Implement parallel test execution**
 

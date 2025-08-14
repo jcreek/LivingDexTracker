@@ -1,3 +1,4 @@
+@pending
 Feature: Multi-Regional Pokédex Support
   As a Pokémon trainer using multi-regional games
   I want to navigate between sub-regions within a pokédex

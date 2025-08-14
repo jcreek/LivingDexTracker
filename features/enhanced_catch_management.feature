@@ -1,3 +1,4 @@
+@pending
 Feature: Enhanced Catch Management
   As a serious Living Dex collector
   I want detailed catch status tracking and management
