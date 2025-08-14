@@ -22,16 +22,25 @@ export const POST: RequestHandler = async ({ request, locals: { supabase, safeGe
 
 		let records;
 
-		if (operation === 'bulk_catch' || operation === 'bulk_uncatch') {
+		if (operation === 'bulk_catch' || operation === 'bulk_uncatch' || operation === 'bulk_ready_to_evolve') {
 			// Bulk operations for entire box
-			const isCaught = operation === 'bulk_catch';
+			let caught = false;
+			let haveToEvolve = false;
+
+			if (operation === 'bulk_catch') {
+				caught = true;
+				haveToEvolve = false;
+			} else if (operation === 'bulk_ready_to_evolve') {
+				caught = true;
+				haveToEvolve = true;
+			}
 
 			const batchUpdates = updates.map((pokedexEntryId: number) => ({
 				userId: user.id, // Required for RLS policy
 				userPokedexId,
 				pokedexEntryId,
-				caught: isCaught,
-				haveToEvolve: false,
+				caught,
+				haveToEvolve,
 				inHome: false,
 				hasGigantamaxed: false,
 				personalNotes: null

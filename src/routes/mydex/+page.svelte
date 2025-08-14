@@ -232,6 +232,31 @@
 			console.error('Error bulk uncatching:', error);
 		}
 	}
+
+	async function handleBulkReadyToEvolve(event: CustomEvent<{ boxNumber: number }>) {
+		const boxNumber = event.detail.boxNumber;
+		const startIndex = (boxNumber - 1) * 30;
+		const endIndex = startIndex + 30;
+		const boxPokemon = allPokemon.slice(startIndex, endIndex).filter((p) => p !== null);
+
+		try {
+			const response = await fetch('/api/catch-records/batch', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					userPokedexId: pokedexId,
+					operation: 'bulk_ready_to_evolve',
+					updates: boxPokemon.map((p) => p!.id)
+				})
+			});
+
+			if (response.ok) {
+				await loadData();
+			}
+		} catch (error) {
+			console.error('Error bulk ready to evolve:', error);
+		}
+	}
 	
 	async function handlePokemonUpdate(event: CustomEvent) {
 		const { pokemon, catchStatus, catchLocation, isGigantamax, originRegion, gameCaught, notes } = event.detail;
@@ -383,6 +408,7 @@
 			on:pokemonClick={handlePokemonClick}
 			on:bulkCatch={handleBulkCatch}
 			on:bulkUncatch={handleBulkUncatch}
+			on:bulkReadyToEvolve={handleBulkReadyToEvolve}
 			on:pokemonUpdate={handlePokemonUpdate}
 		/>
 	{:else}

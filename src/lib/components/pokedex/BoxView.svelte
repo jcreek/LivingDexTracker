@@ -94,6 +94,10 @@
 		dispatch('bulkUncatch', { boxNumber: currentBox });
 	}
 
+	function handleBulkReadyToEvolve() {
+		dispatch('bulkReadyToEvolve', { boxNumber: currentBox });
+	}
+
 	// For testing purposes, add selection functionality
 	let selectedSlots = new Set<number>();
 
@@ -158,8 +162,19 @@
 			<!-- Instructions -->
 			<div class="flex-1">
 				<h3 class="font-semibold text-sm mb-2 flex items-center gap-2">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-4 h-4"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
+						/>
 					</svg>
 					How to Use
 				</h3>
@@ -173,8 +188,19 @@
 			<!-- Status Legend -->
 			<div class="flex-1">
 				<h3 class="font-semibold text-sm mb-2 flex items-center gap-2">
-					<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z" />
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor"
+						class="w-4 h-4"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z"
+						/>
 					</svg>
 					Status Legend
 				</h3>
@@ -229,7 +255,7 @@
 			</button>
 			<button
 				class="btn btn-sm join-item btn-warning"
-				on:click={() => {}}
+				on:click={handleBulkReadyToEvolve}
 				disabled={loading || boxStats.total === 0}
 				title="Mark all Pokémon in this box as ready to evolve"
 				data-testid="ready-to-evolve-button"
