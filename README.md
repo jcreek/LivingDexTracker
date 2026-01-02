@@ -4,18 +4,19 @@ A web app to track completion of a living Pokédex.
 
 ## Developing
 
-Cloned the repository you can install the dependencies with `npm install`, and start a development server:
+1. Clone the repository
+2. Install the dependencies with `npm install`
+3. Ensure that Docker is running
+4. An example `.env` file is provided in the repository. You will need to copy `.env.example` to `.env` and fill in the values with your own credentials. For local development with Supabase running in Docker, you can use the following values:
 
-```bash
-npm run dev
+   - The `PUBLIC_SUPABASE_URL` will be `"http://127.0.0.1:54321"`
+   - The `PUBLIC_SUPABASE_ANON_KEY` will be the 'Publishable' authentication key displayed when you run Supabase in the terminal.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-An example `.env` file is provided in the repository. You will need to copy `.env.example` to `.env` and fill in the values with your own credentials.
-
-Once you have done this, you can seed the Pokédex data using the /api/seed endpoint. You will need to comment out the `return;` at the beginning of the `GET` function in `/src/routes/api/seed.ts` to do this. Make sure you remember to uncomment it afterwards.
+5. Start local Supabase and a development server with `npm run dev:supabase`
+6. The Pokédex data is automatically seeded via database migrations when Supabase starts
+7. Create an account using the sign-up form and access the email it sends in [MailPit](http://127.0.0.1:54324/) to verify your email address.
+   N.B. All local emails are captured by MailPit when running Supabase in Docker.
+8. You can now use [the app](http://localhost:5173/).
 
 ## Building
 
