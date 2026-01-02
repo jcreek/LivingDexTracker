@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import dex from '$lib/helpers/pokedex.json';
 import RegionGameMappingJson from '$lib/helpers/region-game-mapping.json';
 
@@ -10,7 +11,8 @@ export const GET = async () => {
 		return json({ message: 'Seeding not allowed in production' }, { status: 403 });
 	}
 
-	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+	// Use service role key to bypass RLS for seeding operations
+	const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 	try {
 		// Seed Pokédex entries
