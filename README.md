@@ -10,7 +10,8 @@ A web app to track completion of a living Pokédex.
 4. An example `.env` file is provided in the repository. You will need to copy `.env.example` to `.env` and fill in the values with your own credentials. For local development with Supabase running in Docker, you can use the following values:
 
    - The `PUBLIC_SUPABASE_URL` will be `"http://127.0.0.1:54321"`
-   - The `PUBLIC_SUPABASE_ANON_KEY` will be the 'Publishable' authentication key displayed when you run Supabase in the terminal.
+   - The `PUBLIC_SUPABASE_ANON_KEY` will be the 'Publishable' authentication key displayed when you run Supabase in the terminal
+   - The `SUPABASE_SERVICE_ROLE_KEY` will be the 'Secret' authentication key displayed when you run Supabase in the terminal
 
 5. Start local Supabase and a development server with `npm run dev:supabase`
 6. The Pokédex data is automatically seeded via database migrations when Supabase starts
