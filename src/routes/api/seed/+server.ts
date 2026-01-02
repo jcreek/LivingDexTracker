@@ -1,6 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { PUBLIC_SUPABASE_URL } from '$env/static/public';
+import { SUPABASE_SERVICE_ROLE_KEY } from '$env/static/private';
 import dex from '$lib/helpers/pokedex.json';
 import RegionGameMappingJson from '$lib/helpers/region-game-mapping.json';
 
@@ -10,20 +11,21 @@ export const GET = async () => {
 		return json({ message: 'Seeding not allowed in production' }, { status: 403 });
 	}
 
-	const supabase = createClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+	// Use service role key to bypass RLS for seeding operations
+	const supabase = createClient(PUBLIC_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
 	try {
 		// Seed Pokédex entries
-		const { data: existingEntries, error: countError } = await supabase
+		const { count: entriesCount, error: countError } = await supabase
 			.from('pokedex_entries')
-			.select('id', { count: 'exact', head: true });
+			.select('*', { count: 'exact', head: true });
 
 		if (countError) {
 			throw new Error(`Failed to check existing entries: ${countError.message}`);
 		}
 
 		// Only seed if table is empty
-		if (!existingEntries || existingEntries.length === 0) {
+		if (!entriesCount || entriesCount === 0) {
 			console.log('Seeding Pokédex entries...');
 
 			// Transform data to match database schema
@@ -57,11 +59,11 @@ export const GET = async () => {
 		}
 
 		// Seed region-game mappings (check if table exists first)
-		const { data: existingMappings, error: mappingCountError } = await supabase
+		const { count: mappingsCount, error: mappingCountError } = await supabase
 			.from('region_game_mappings')
-			.select('id', { count: 'exact', head: true });
+			.select('*', { count: 'exact', head: true });
 
-		if (!mappingCountError && (!existingMappings || existingMappings.length === 0)) {
+		if (!mappingCountError && (!mappingsCount || mappingsCount === 0)) {
 			console.log('Seeding region-game mappings...');
 
 			const { error: mappingInsertError } = await supabase
@@ -80,9 +82,8 @@ export const GET = async () => {
 		return json({
 			message: 'Seeding completed successfully',
 			seeded: {
-				pokemonEntries: !existingEntries || existingEntries.length === 0,
-				regionGameMappings:
-					!mappingCountError && (!existingMappings || existingMappings.length === 0)
+				pokemonEntries: !entriesCount || entriesCount === 0,
+				regionGameMappings: !mappingCountError && (!mappingsCount || mappingsCount === 0)
 			}
 		});
 	} catch (error) {
