@@ -26,7 +26,23 @@ class PokedexEntryRepository {
 				box: entry.boxPlacementBox || 0,
 				row: entry.boxPlacementRow || 0,
 				column: entry.boxPlacementColumn || 0
-			}
+			},
+			kantoDexNumber: entry.kanto_dex_number ?? undefined,
+			johtoDexNumber: entry.johto_dex_number ?? undefined,
+			hoennDexNumber: entry.hoenn_dex_number ?? undefined,
+			sinnohDexNumber: entry.sinnoh_dex_number ?? undefined,
+			unovaBwDexNumber: entry.unova_bw_dex_number ?? undefined,
+			unovaB2w2DexNumber: entry.unova_b2w2_dex_number ?? undefined,
+			kalosCentralDexNumber: entry.kalos_central_dex_number ?? undefined,
+			kalosCoastalDexNumber: entry.kalos_coastal_dex_number ?? undefined,
+			kalosMountainDexNumber: entry.kalos_mountain_dex_number ?? undefined,
+			alolaSmDexNumber: entry.alola_sm_dex_number ?? undefined,
+			alolaUsumDexNumber: entry.alola_usum_dex_number ?? undefined,
+			galarDexNumber: entry.galar_dex_number ?? undefined,
+			galarIsleOfArmorDexNumber: entry.galar_isle_of_armor_dex_number ?? undefined,
+			galarCrownTundraDexNumber: entry.galar_crown_tundra_dex_number ?? undefined,
+			hisuiDexNumber: entry.hisui_dex_number ?? undefined,
+			paldeaDexNumber: entry.paldea_dex_number ?? undefined
 		};
 	}
 
@@ -74,6 +90,7 @@ class PokedexEntryRepository {
 		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
 		if (data.boxPlacement?.column !== undefined)
 			dbData.boxPlacementColumn = data.boxPlacement.column;
+		if (data.regionalDexNumbers !== undefined) dbData.regionalDexNumbers = data.regionalDexNumbers;
 
 		const { data: result, error } = await this.supabase
 			.from('pokedex_entries')
@@ -108,6 +125,7 @@ class PokedexEntryRepository {
 		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
 		if (data.boxPlacement?.column !== undefined)
 			dbData.boxPlacementColumn = data.boxPlacement.column;
+		if (data.regionalDexNumbers !== undefined) dbData.regionalDexNumbers = data.regionalDexNumbers;
 
 		const { data: result, error } = await this.supabase
 			.from('pokedex_entries')

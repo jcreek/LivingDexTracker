@@ -6,8 +6,9 @@
 	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	export let showShiny = false;
+	export let showForms = true;
 	export let combinedData: CombinedData[] | null;
-	export let boxNumbers = Array<number>;
+	export let boxNumbers: number[] = [];
 	export let currentPlacement = 'boxPlacementForms';
 	export let creatingRecords = false;
 	export let totalRecordsCreated = 0;
@@ -33,7 +34,8 @@
 		if (catchRecord?.caught || catchRecord?.haveToEvolve) {
 			return '';
 		} else {
-			if (pokedexEntry[currentPlacement].column % 2 === 0) {
+			const placement = showForms ? pokedexEntry.boxPlacementForms : pokedexEntry.boxPlacement;
+			if (placement.column % 2 === 0) {
 				return 'background-color: #ffffff';
 			} else {
 				return 'background-color: #f9f9f9;';
@@ -67,11 +69,13 @@
 							>
 							<div class="grid grid-cols-6">
 								{#each combinedData as { pokedexEntry, catchRecord }}
-									{#if pokedexEntry[currentPlacement].box === boxNumber}
+									{@const placement = showForms
+										? pokedexEntry.boxPlacementForms
+										: pokedexEntry.boxPlacement}
+									{#if placement.box === boxNumber}
 										<div
 											class="pokemon-box {cellBackgroundColourClass(catchRecord)}"
-											style="grid-column-start: {pokedexEntry[currentPlacement]
-												.column}; grid-row-start: {pokedexEntry[currentPlacement].row};
+											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
                                         {cellBackgroundColourStyle(pokedexEntry, catchRecord)}"
 										>
 											<Tooltip>
