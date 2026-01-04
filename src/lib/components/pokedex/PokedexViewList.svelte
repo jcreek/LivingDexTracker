@@ -12,6 +12,7 @@
 	export let updateACatch = (event: any) => {};
 	export let createCatchRecords = () => {};
 	export let userId: string | null = null;
+	export let pokedexId: string;
 </script>
 
 <main class="flex-1 p-4 w-full">
@@ -24,6 +25,7 @@
 					{showForms}
 					{showShiny}
 					{userId}
+					{pokedexId}
 					bind:catchRecord
 					on:updateCatch={updateACatch}
 				/>

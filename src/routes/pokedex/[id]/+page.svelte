@@ -12,7 +12,9 @@
 
 	export let data: PageData;
 
-	$: ({ supabase, session } = data);
+	// Get pokédex from server load
+	$: pokedex = data.pokedex;
+	$: pokedexId = pokedex._id;
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
@@ -64,20 +66,24 @@
 		if (setCombinedDataToNull) {
 			combinedData = null;
 		}
-		let endpoint = viewAsBoxes
-			? `/api/combined-data/all?enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`
-			: `/api/combined-data?page=${currentPage}&limit=${itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`;
+		// Use new pokédex-scoped endpoint
+		let endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${currentPage}&limit=${viewAsBoxes ? 9999 : itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`;
+
 		const response = await fetch(endpoint);
-		const data = await response.json();
-		if (data.error) {
+		const fetchedData = await response.json();
+		if (fetchedData.error) {
 			failedToLoad = true;
 			return;
 		}
-		combinedData = viewAsBoxes ? data : data.combinedData;
-		totalPages = data.totalPages || 0;
+		combinedData = fetchedData.combinedData;
+		totalPages = fetchedData.totalPages || 0;
 		if (viewAsBoxes) {
 			boxNumbers = [
-				...new Set(combinedData.map(({ pokedexEntry }) => pokedexEntry[currentPlacement].box))
+				...new Set(
+					combinedData.map(({ pokedexEntry }) =>
+						showForms ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box
+					)
+				)
 			].filter(Boolean);
 		}
 	}
@@ -99,7 +105,8 @@
 		};
 
 		try {
-			const response = await fetch('/api/catch-records', requestOptions);
+			// Use new pokédex-scoped endpoint
+			const response = await fetch(`/api/pokedexes/${pokedexId}/catch-records`, requestOptions);
 			if (!response.ok) {
 				const errorText = await response.text();
 				console.error('Server response:', response.status, errorText);
@@ -121,13 +128,17 @@
 		inHome: boolean | null = null
 	) {
 		let catchRecordsToUpdate = combinedData
-			.filter(({ pokedexEntry }) => pokedexEntry[currentPlacement].box === boxNumber)
+			.filter(({ pokedexEntry }) =>
+				(showForms ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box) ===
+				boxNumber
+			)
 			.map(({ pokedexEntry, catchRecord }) => {
 				// Create default record if null
 				const baseRecord = catchRecord || {
 					_id: '',
 					userId: localUser?.id || '',
 					pokedexEntryId: pokedexEntry._id,
+					pokedexId: pokedexId,
 					haveToEvolve: false,
 					caught: false,
 					inHome: false,
@@ -150,7 +161,8 @@
 				}
 				return updatedRecord;
 			});
-		await fetch('/api/catch-records', {
+		// Use new pokédex-scoped endpoint
+		await fetch(`/api/pokedexes/${pokedexId}/catch-records`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
@@ -198,6 +210,7 @@
 			const newCatchRecords = pokedexEntries.map((entry: PokedexEntry) => ({
 				userId: localUser?.id,
 				pokedexEntryId: entry._id,
+				pokedexId: pokedexId,
 				haveToEvolve: false,
 				caught: false,
 				inHome: false,
@@ -221,7 +234,8 @@
 				};
 
 				try {
-					const response = await fetch('/api/catch-records', requestOptions);
+					// Use new pokédex-scoped endpoint
+					const response = await fetch(`/api/pokedexes/${pokedexId}/catch-records`, requestOptions);
 					if (!response.ok) {
 						throw new Error('Failed to create catch records');
 					}
@@ -253,7 +267,7 @@
 </script>
 
 <svelte:head>
-	<title>Living Dex Tracker - My Dex</title>
+	<title>{pokedex.name} - Living Dex Tracker</title>
 </svelte:head>
 
 {#if !localUser}
@@ -272,6 +286,7 @@
 			{#if viewAsBoxes}
 				<PokedexViewBoxes
 					bind:showShiny
+					bind:showForms
 					bind:combinedData
 					bind:boxNumbers
 					bind:currentPlacement
@@ -293,6 +308,7 @@
 					bind:totalRecordsCreated
 					bind:failedToLoad
 					userId={localUser?.id}
+					pokedexId={pokedexId}
 					{updateACatch}
 					{createCatchRecords}
 				/>
@@ -301,6 +317,7 @@
 		<div class="drawer-side lg:relative">
 			<label for="my-drawer" class="drawer-overlay lg:hidden"></label>
 			<PokedexSidebar
+				{pokedex}
 				bind:viewAsBoxes
 				bind:currentPage
 				bind:itemsPerPage

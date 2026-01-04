@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Pagination from '$lib/components/Pagination.svelte';
+	import type { Pokedex } from '$lib/models/Pokedex';
 
+	export let pokedex: Pokedex | null = null;
 	export let viewAsBoxes = false;
 	export let currentPage = 1;
 	export let itemsPerPage = 20;
@@ -15,11 +17,36 @@
 	export let toggleShiny = () => {};
 	export let getData = () => {};
 	export let toggleViewAsBoxes = () => {};
+
+	// Get active type badges
+	$: typeBadges = pokedex
+		? [
+				pokedex.isLivingDex && 'Living',
+				pokedex.isShinyDex && 'Shiny',
+				pokedex.isOriginDex && 'Origin',
+				pokedex.isFormDex && 'Form'
+			].filter(Boolean)
+		: [];
 </script>
 
 <aside
 	class="menu bg-gray-800 text-white min-h-full w-64 p-4 lg:fixed xs:top-0 lg:left-0 h-full lg:h-5/6"
 >
+	<!-- Pokédex Info Section -->
+	{#if pokedex}
+		<div class="mb-6 pb-4 border-b border-gray-700">
+			<h2 class="text-xl font-semibold mb-2">{pokedex.name}</h2>
+			<div class="flex flex-wrap gap-1 mb-2">
+				{#each typeBadges as badge}
+					<span class="badge badge-sm badge-primary">{badge}</span>
+				{/each}
+			</div>
+			{#if pokedex.gameScope}
+				<p class="text-sm text-gray-400">Game: {pokedex.gameScope}</p>
+			{/if}
+			<a href="/my-pokedexes" class="btn btn-ghost btn-sm mt-2 w-full"> Manage Pokédexes </a>
+		</div>
+	{/if}
 	<h2 class="text-2xl font-semibold mb-4">Views</h2>
 	<ul>
 		<li class="mb-2">

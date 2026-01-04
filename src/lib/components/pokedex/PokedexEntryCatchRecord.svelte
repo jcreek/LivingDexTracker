@@ -10,6 +10,7 @@
 	export let showForms: boolean;
 	export let showShiny: boolean;
 	export let userId: string | null = null;
+	export let pokedexId: string;
 
 	// Create a default catch record if none exists
 	$: if (!catchRecord) {
@@ -17,6 +18,7 @@
 			_id: '', // Empty string, not temp ID - will be created by server
 			userId: userId || '',
 			pokedexEntryId: pokedexEntry._id,
+			pokedexId: pokedexId,
 			haveToEvolve: false,
 			caught: false,
 			inHome: false,
@@ -83,74 +85,76 @@
 		</div>
 	</div>
 
-	<div class="dex-column catch-record-container bg-white text-black rounded-lg p-4 mb-4 md:mb-0">
-		<div class="flex items-center">
-			<div class="form-control">
-				<label class="cursor-pointer label">
-					<span class="block font-bold mr-2">Caught:</span>
-					<input
-						type="checkbox"
-						bind:checked={catchRecord.caught}
-						class="checkbox checkbox-primary border-black"
-						on:change={updateCatchRecord}
-					/>
-				</label>
-			</div>
-		</div>
-		<div class="flex items-center">
-			<div class="form-control">
-				<label class="cursor-pointer label">
-					<span class="block font-bold mr-2">Needs to evolve:</span>
-					<input
-						type="checkbox"
-						bind:checked={catchRecord.haveToEvolve}
-						class="checkbox checkbox-primary border-black"
-						on:change={updateCatchRecord}
-					/>
-				</label>
-			</div>
-		</div>
-		<div class="flex items-center">
-			<div class="form-control">
-				<label class="cursor-pointer label">
-					<span class="block font-bold mr-2">In home:</span>
-					<input
-						type="checkbox"
-						bind:checked={catchRecord.inHome}
-						class="checkbox checkbox-primary border-black"
-						on:change={updateCatchRecord}
-					/>
-				</label>
-			</div>
-		</div>
-		{#if pokedexEntry.canGigantamax && showForms}
+	{#if catchRecord}
+		<div class="dex-column catch-record-container bg-white text-black rounded-lg p-4 mb-4 md:mb-0">
 			<div class="flex items-center">
 				<div class="form-control">
 					<label class="cursor-pointer label">
-						<span class="block font-bold mr-2">Has Gigantamaxed:</span>
+						<span class="block font-bold mr-2">Caught:</span>
 						<input
 							type="checkbox"
-							bind:checked={catchRecord.hasGigantamaxed}
+							bind:checked={catchRecord.caught}
 							class="checkbox checkbox-primary border-black"
 							on:change={updateCatchRecord}
 						/>
 					</label>
 				</div>
 			</div>
-		{/if}
-		<p>
-			<label
-				class="block font-bold mb-1"
-				for={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}>Notes:</label
-			>
-			<textarea
-				bind:value={catchRecord.personalNotes}
-				id={`personalNotesInput-${catchRecord?._id || pokedexEntry._id}`}
-				class="form-textarea w-full p-2 border rounded"
-				on:change={updateCatchRecord}
-			></textarea>
-		</p>
-	</div>
+			<div class="flex items-center">
+				<div class="form-control">
+					<label class="cursor-pointer label">
+						<span class="block font-bold mr-2">Needs to evolve:</span>
+						<input
+							type="checkbox"
+							bind:checked={catchRecord.haveToEvolve}
+							class="checkbox checkbox-primary border-black"
+							on:change={updateCatchRecord}
+						/>
+					</label>
+				</div>
+			</div>
+			<div class="flex items-center">
+				<div class="form-control">
+					<label class="cursor-pointer label">
+						<span class="block font-bold mr-2">In home:</span>
+						<input
+							type="checkbox"
+							bind:checked={catchRecord.inHome}
+							class="checkbox checkbox-primary border-black"
+							on:change={updateCatchRecord}
+						/>
+					</label>
+				</div>
+			</div>
+			{#if pokedexEntry.canGigantamax && showForms}
+				<div class="flex items-center">
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="block font-bold mr-2">Has Gigantamaxed:</span>
+							<input
+								type="checkbox"
+								bind:checked={catchRecord.hasGigantamaxed}
+								class="checkbox checkbox-primary border-black"
+								on:change={updateCatchRecord}
+							/>
+						</label>
+					</div>
+				</div>
+			{/if}
+			<p>
+				<label
+					class="block font-bold mb-1"
+					for={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}>Notes:</label
+				>
+				<textarea
+					bind:value={catchRecord.personalNotes}
+					id={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}
+					class="form-textarea w-full p-2 border rounded"
+					on:change={updateCatchRecord}
+				></textarea>
+			</p>
+		</div>
+	{/if}
 
 	<div class="dex-column additional-details-container">
 		{#if showOrigins}

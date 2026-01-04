@@ -4,7 +4,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 class CatchRecordRepository {
 	constructor(
 		private supabase: SupabaseClient,
-		private userId: string
+		private userId: string,
+		private pokedexId: string
 	) {}
 
 	// Transform Supabase data to frontend format (minimal transformation)
@@ -13,6 +14,7 @@ class CatchRecordRepository {
 			_id: record.id,
 			userId: record.userId,
 			pokedexEntryId: record.pokedexEntryId.toString(),
+			pokedexId: record.pokedexId,
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
 			inHome: record.inHome,
@@ -31,6 +33,7 @@ class CatchRecordRepository {
 			}
 			dbData.pokedexEntryId = numericId;
 		}
+		if (data.pokedexId !== undefined) dbData.pokedexId = data.pokedexId;
 		if (data.haveToEvolve !== undefined) dbData.haveToEvolve = data.haveToEvolve;
 		if (data.caught !== undefined) dbData.caught = data.caught;
 		if (data.inHome !== undefined) dbData.inHome = data.inHome;
@@ -46,6 +49,7 @@ class CatchRecordRepository {
 			.select('*')
 			.eq('id', id)
 			.eq('userId', this.userId)
+			.eq('pokedexId', this.pokedexId)
 			.single();
 
 		if (error || !data) return null;
@@ -56,7 +60,8 @@ class CatchRecordRepository {
 		const { data, error } = await this.supabase
 			.from('catch_records')
 			.select('*')
-			.eq('userId', this.userId);
+			.eq('userId', this.userId)
+			.eq('pokedexId', this.pokedexId);
 
 		if (error || !data) return [];
 		return data.map((record) => this.transformCatchRecord(record));
@@ -66,7 +71,8 @@ class CatchRecordRepository {
 		const { data, error } = await this.supabase
 			.from('catch_records')
 			.select('*')
-			.eq('userId', userId);
+			.eq('userId', userId)
+			.eq('pokedexId', this.pokedexId);
 
 		if (error || !data) return [];
 		return data.map((record) => this.transformCatchRecord(record));
@@ -75,6 +81,7 @@ class CatchRecordRepository {
 	async create(data: Partial<CatchRecord>): Promise<CatchRecord> {
 		const dbData = {
 			userId: this.userId,
+			pokedexId: this.pokedexId,
 			...this.transformToDatabase(data)
 		};
 
@@ -104,6 +111,7 @@ class CatchRecordRepository {
 			.update(dbData)
 			.eq('id', id)
 			.eq('userId', this.userId)
+			.eq('pokedexId', this.pokedexId)
 			.select()
 			.single();
 
@@ -116,7 +124,8 @@ class CatchRecordRepository {
 			.from('catch_records')
 			.delete()
 			.eq('id', id)
-			.eq('userId', this.userId);
+			.eq('userId', this.userId)
+			.eq('pokedexId', this.pokedexId);
 
 		if (error) {
 			console.error('Error deleting catch record:', error);
@@ -128,8 +137,8 @@ class CatchRecordRepository {
 		if (data._id) {
 			return this.update(data._id, data);
 		} else if (data.pokedexEntryId) {
-			// Try to find existing record for this user and pokemon
-			const existing = await this.findByUserAndPokemon(this.userId, data.pokedexEntryId);
+			// Try to find existing record for this user, pokemon, and pokedex
+			const existing = await this.findByUserAndPokemon(this.userId, data.pokedexEntryId, this.pokedexId);
 			if (existing) {
 				return this.update(existing._id, data);
 			} else {
@@ -139,7 +148,7 @@ class CatchRecordRepository {
 		return this.create(data);
 	}
 
-	async findByUserAndPokemon(userId: string, pokedexEntryId: string): Promise<CatchRecord | null> {
+	async findByUserAndPokemon(userId: string, pokedexEntryId: string, pokedexId: string): Promise<CatchRecord | null> {
 		const numericId = Number(pokedexEntryId);
 		if (isNaN(numericId)) {
 			return null;
@@ -149,6 +158,7 @@ class CatchRecordRepository {
 			.select('*')
 			.eq('userId', userId)
 			.eq('pokedexEntryId', numericId)
+			.eq('pokedexId', pokedexId)
 			.single();
 
 		if (error || !data) return null;

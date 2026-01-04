@@ -149,7 +149,7 @@
 						>
 							{#if localUser}
 								<li>
-									<a href="/mydex"> My Dex </a>
+									<a href="/my-pokedexes"> My Pokédexes </a>
 								</li>
 								<li>
 									<a href="/profile"> Profile </a>
