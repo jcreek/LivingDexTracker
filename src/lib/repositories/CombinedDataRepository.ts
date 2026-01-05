@@ -3,6 +3,7 @@ import { type CatchRecord, type CatchRecordDB } from '$lib/models/CatchRecord';
 import { type CombinedData } from '$lib/models/CombinedData';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { getRegionalDexColumnName } from '$lib/utils/regionalDexMapping';
+import { calculateBoxPlacement } from '$lib/utils/boxPlacement';
 
 class CombinedDataRepository {
 	constructor(
@@ -24,16 +25,9 @@ class CombinedDataRepository {
 			regionToEvolveIn: entry.regionToEvolveIn || '',
 			evolutionInformation: entry.evolutionInformation || '',
 			catchInformation: entry.catchInformation || [],
-			boxPlacementForms: {
-				box: entry.boxPlacementFormsBox || 0,
-				row: entry.boxPlacementFormsRow || 0,
-				column: entry.boxPlacementFormsColumn || 0
-			},
-			boxPlacement: {
-				box: entry.boxPlacementBox || 0,
-				row: entry.boxPlacementRow || 0,
-				column: entry.boxPlacementColumn || 0
-			},
+			// Box placement will be calculated dynamically after sorting
+			boxPlacementForms: { box: 0, row: 0, column: 0 },
+			boxPlacement: { box: 0, row: 0, column: 0 },
 			kantoDexNumber: entry.kanto_dex_number ?? undefined,
 			johtoDexNumber: entry.johto_dex_number ?? undefined,
 			hoennDexNumber: entry.hoenn_dex_number ?? undefined,
@@ -77,7 +71,8 @@ class CombinedDataRepository {
 
 		// Apply filters
 		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			// Filter to only base forms (form is NULL)
+			query = query.is('form', null);
 		}
 
 		if (region) {
@@ -101,18 +96,8 @@ class CombinedDataRepository {
 				query = query.order('pokedexNumber', { ascending: true });
 			}
 		} else {
-			// No game filter - use pre-calculated box placement (national dex order)
-			if (enableForms) {
-				query = query
-					.order('boxPlacementFormsBox', { ascending: true })
-					.order('boxPlacementFormsRow', { ascending: true })
-					.order('boxPlacementFormsColumn', { ascending: true });
-			} else {
-				query = query
-					.order('boxPlacementBox', { ascending: true })
-					.order('boxPlacementRow', { ascending: true })
-					.order('boxPlacementColumn', { ascending: true });
-			}
+			// No game filter - order by national dex number
+			query = query.order('pokedexNumber', { ascending: true });
 		}
 
 		const { data: entries, error: entriesError } = await query;
@@ -158,11 +143,8 @@ class CombinedDataRepository {
 			};
 		});
 
-		// Recalculate box placement if using regional dex ordering
-		if (game && getRegionalDexColumnName(game)) {
-			return this.recalculateBoxPlacement(combinedData, enableForms);
-		}
-		return combinedData;
+		// Always recalculate box placement based on current sort order
+		return this.recalculateBoxPlacement(combinedData, enableForms);
 	}
 
 	async findCombinedData(
@@ -180,7 +162,8 @@ class CombinedDataRepository {
 
 		// Apply filters
 		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			// Filter to only base forms (form is NULL)
+			query = query.is('form', null);
 		}
 
 		if (region) {
@@ -204,18 +187,8 @@ class CombinedDataRepository {
 				query = query.order('pokedexNumber', { ascending: true });
 			}
 		} else {
-			// No game filter - use pre-calculated box placement (national dex order)
-			if (enableForms) {
-				query = query
-					.order('boxPlacementFormsBox', { ascending: true })
-					.order('boxPlacementFormsRow', { ascending: true })
-					.order('boxPlacementFormsColumn', { ascending: true });
-			} else {
-				query = query
-					.order('boxPlacementBox', { ascending: true })
-					.order('boxPlacementRow', { ascending: true })
-					.order('boxPlacementColumn', { ascending: true });
-			}
+			// No game filter - order by national dex number
+			query = query.order('pokedexNumber', { ascending: true });
 		}
 
 		const { data: entries, error: entriesError } = await query;
@@ -261,11 +234,8 @@ class CombinedDataRepository {
 			};
 		});
 
-		// Recalculate box placement if using regional dex ordering
-		if (game && getRegionalDexColumnName(game)) {
-			return this.recalculateBoxPlacement(combinedData, enableForms);
-		}
-		return combinedData;
+		// Always recalculate box placement based on current sort order
+		return this.recalculateBoxPlacement(combinedData, enableForms);
 	}
 
 	async countCombinedData(
@@ -277,7 +247,8 @@ class CombinedDataRepository {
 
 		// Apply same filters as in findCombinedData
 		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			// Filter to only base forms (form is NULL)
+			query = query.is('form', null);
 		}
 
 		if (region) {

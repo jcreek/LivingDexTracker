@@ -17,16 +17,9 @@ class PokedexEntryRepository {
 			regionToEvolveIn: entry.regionToEvolveIn || '',
 			evolutionInformation: entry.evolutionInformation || '',
 			catchInformation: entry.catchInformation || [],
-			boxPlacementForms: {
-				box: entry.boxPlacementFormsBox || 0,
-				row: entry.boxPlacementFormsRow || 0,
-				column: entry.boxPlacementFormsColumn || 0
-			},
-			boxPlacement: {
-				box: entry.boxPlacementBox || 0,
-				row: entry.boxPlacementRow || 0,
-				column: entry.boxPlacementColumn || 0
-			},
+			// Box placement is calculated dynamically - not stored in database
+			boxPlacementForms: { box: 0, row: 0, column: 0 },
+			boxPlacement: { box: 0, row: 0, column: 0 },
 			kantoDexNumber: entry.kanto_dex_number ?? undefined,
 			johtoDexNumber: entry.johto_dex_number ?? undefined,
 			hoennDexNumber: entry.hoenn_dex_number ?? undefined,
@@ -80,17 +73,7 @@ class PokedexEntryRepository {
 		if (data.evolutionInformation !== undefined)
 			dbData.evolutionInformation = data.evolutionInformation;
 		if (data.catchInformation !== undefined) dbData.catchInformation = data.catchInformation;
-		if (data.boxPlacementForms?.box !== undefined)
-			dbData.boxPlacementFormsBox = data.boxPlacementForms.box;
-		if (data.boxPlacementForms?.row !== undefined)
-			dbData.boxPlacementFormsRow = data.boxPlacementForms.row;
-		if (data.boxPlacementForms?.column !== undefined)
-			dbData.boxPlacementFormsColumn = data.boxPlacementForms.column;
-		if (data.boxPlacement?.box !== undefined) dbData.boxPlacementBox = data.boxPlacement.box;
-		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
-		if (data.boxPlacement?.column !== undefined)
-			dbData.boxPlacementColumn = data.boxPlacement.column;
-		if (data.regionalDexNumbers !== undefined) dbData.regionalDexNumbers = data.regionalDexNumbers;
+		// Box placement is calculated dynamically - not stored in database
 
 		const { data: result, error } = await this.supabase
 			.from('pokedex_entries')
@@ -115,17 +98,7 @@ class PokedexEntryRepository {
 		if (data.evolutionInformation !== undefined)
 			dbData.evolutionInformation = data.evolutionInformation;
 		if (data.catchInformation !== undefined) dbData.catchInformation = data.catchInformation;
-		if (data.boxPlacementForms?.box !== undefined)
-			dbData.boxPlacementFormsBox = data.boxPlacementForms.box;
-		if (data.boxPlacementForms?.row !== undefined)
-			dbData.boxPlacementFormsRow = data.boxPlacementForms.row;
-		if (data.boxPlacementForms?.column !== undefined)
-			dbData.boxPlacementFormsColumn = data.boxPlacementForms.column;
-		if (data.boxPlacement?.box !== undefined) dbData.boxPlacementBox = data.boxPlacement.box;
-		if (data.boxPlacement?.row !== undefined) dbData.boxPlacementRow = data.boxPlacement.row;
-		if (data.boxPlacement?.column !== undefined)
-			dbData.boxPlacementColumn = data.boxPlacement.column;
-		if (data.regionalDexNumbers !== undefined) dbData.regionalDexNumbers = data.regionalDexNumbers;
+		// Box placement is calculated dynamically - not stored in database
 
 		const { data: result, error } = await this.supabase
 			.from('pokedex_entries')

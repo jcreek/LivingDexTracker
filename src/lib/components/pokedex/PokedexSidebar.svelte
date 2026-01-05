@@ -7,12 +7,10 @@
 	export let currentPage = 1;
 	export let itemsPerPage = 20;
 	export let totalPages = 0;
-	export let showForms = true;
 	export let showOrigins = true;
 	export let showShiny = false;
 	export let catchRegion = '';
 	export let catchGame = '';
-	export let toggleForms = () => {};
 	export let toggleOrigins = () => {};
 	export let toggleShiny = () => {};
 	export let getData = () => {};
@@ -57,11 +55,6 @@
 	</ul>
 	<h2 class="text-2xl font-semibold mb-4">Filters</h2>
 	<ul>
-		<li class="mb-2">
-			<button class="block p-2 hover:bg-gray-700 rounded" on:click={toggleForms}>
-				Toggle Forms (Currently {showForms ? 'On' : 'Off'})
-			</button>
-		</li>
 		<li class="mb-2">
 			<button class="block p-2 hover:bg-gray-700 rounded" on:click={toggleOrigins}>
 				Toggle Origins (Currently {showOrigins ? 'On' : 'Off'})

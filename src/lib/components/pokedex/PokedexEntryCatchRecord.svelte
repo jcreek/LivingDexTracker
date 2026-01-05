@@ -60,17 +60,6 @@
 		{/if}
 
 		<div class="bg-white text-black rounded-lg p-4">
-			{#if showForms}
-				<p><strong>Box:</strong> {pokedexEntry.boxPlacementForms.box}</p>
-				<p><strong>Row:</strong> {pokedexEntry.boxPlacementForms.row}</p>
-				<p><strong>Column:</strong> {pokedexEntry.boxPlacementForms.column}</p>
-				<p><strong>Can Gigantamax:</strong> {pokedexEntry.canGigantamax ? 'Yes' : 'No'}</p>
-			{:else}
-				<p><strong>Box:</strong> {pokedexEntry.boxPlacement.box}</p>
-				<p><strong>Row:</strong> {pokedexEntry.boxPlacement.row}</p>
-				<p><strong>Column:</strong> {pokedexEntry.boxPlacement.column}</p>
-			{/if}
-
 			{#if pokedexEntry.evolutionInformation}
 				<p><strong>How to evolve: </strong>{pokedexEntry.evolutionInformation}</p>
 			{:else}

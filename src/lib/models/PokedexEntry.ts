@@ -43,12 +43,6 @@ export interface PokedexEntryDB {
 	regionToEvolveIn: string | null;
 	evolutionInformation: string | null;
 	catchInformation: string[] | null;
-	boxPlacementFormsBox: number | null;
-	boxPlacementFormsRow: number | null;
-	boxPlacementFormsColumn: number | null;
-	boxPlacementBox: number | null;
-	boxPlacementRow: number | null;
-	boxPlacementColumn: number | null;
 	// Regional dex numbers - snake_case to match database
 	kanto_dex_number: number | null;
 	johto_dex_number: number | null;

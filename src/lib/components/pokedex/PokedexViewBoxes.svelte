@@ -9,7 +9,6 @@
 	export let showForms = true;
 	export let combinedData: CombinedData[] | null;
 	export let boxNumbers: number[] = [];
-	export let currentPlacement = 'boxPlacementForms';
 	export let creatingRecords = false;
 	export let totalRecordsCreated = 0;
 	export let failedToLoad = false;

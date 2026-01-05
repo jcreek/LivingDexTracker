@@ -27,11 +27,9 @@
 	let catchGame = '';
 	let localUser: User | null;
 	let showOrigins = true;
-	let showForms = true;
 	let showShiny = false;
 	let drawerOpen = false;
 	let viewAsBoxes = false;
-	let currentPlacement = 'boxPlacementForms';
 	let boxNumbers: number[] = [];
 
 	const unsubscribe = user.subscribe((value) => {
@@ -43,17 +41,8 @@
 		showOrigins = !showOrigins;
 	}
 
-	async function toggleForms() {
-		showForms = !showForms;
-		await getData();
-	}
-
 	async function toggleShiny() {
 		showShiny = !showShiny;
-		if (showShiny) {
-			showForms = false;
-		}
-
 		await getData();
 	}
 
@@ -67,7 +56,7 @@
 			combinedData = null;
 		}
 		// Use new pokédex-scoped endpoint
-		let endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${currentPage}&limit=${viewAsBoxes ? 9999 : itemsPerPage}&enableForms=${showForms}&region=${catchRegion}&game=${catchGame}`;
+		let endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${currentPage}&limit=${viewAsBoxes ? 9999 : itemsPerPage}&enableForms=${pokedex.isFormDex}&region=${catchRegion}&game=${catchGame}`;
 
 		const response = await fetch(endpoint);
 		const fetchedData = await response.json();
@@ -81,7 +70,7 @@
 			boxNumbers = [
 				...new Set(
 					combinedData.map(({ pokedexEntry }) =>
-						showForms ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box
+						pokedex.isFormDex ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box
 					)
 				)
 			].filter(Boolean);
@@ -129,7 +118,7 @@
 	) {
 		let catchRecordsToUpdate = combinedData
 			.filter(({ pokedexEntry }) =>
-				(showForms ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box) ===
+				(pokedex.isFormDex ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box) ===
 				boxNumber
 			)
 			.map(({ pokedexEntry, catchRecord }) => {
@@ -262,8 +251,6 @@
 			currentPage, itemsPerPage, getData();
 		}
 	}
-
-	$: currentPlacement = showForms ? 'boxPlacementForms' : 'boxPlacement';
 </script>
 
 <svelte:head>
@@ -286,10 +273,9 @@
 			{#if viewAsBoxes}
 				<PokedexViewBoxes
 					bind:showShiny
-					bind:showForms
+					showForms={pokedex.isFormDex}
 					bind:combinedData
 					bind:boxNumbers
-					bind:currentPlacement
 					bind:creatingRecords
 					bind:failedToLoad
 					{markBoxAsNotCaught}
@@ -301,7 +287,7 @@
 			{:else}
 				<PokedexViewList
 					bind:showOrigins
-					bind:showForms
+					showForms={pokedex.isFormDex}
 					bind:showShiny
 					bind:combinedData
 					bind:creatingRecords
@@ -322,13 +308,11 @@
 				bind:currentPage
 				bind:itemsPerPage
 				bind:totalPages
-				bind:showForms
 				bind:showOrigins
 				bind:showShiny
 				bind:catchRegion
 				bind:catchGame
 				{getData}
-				{toggleForms}
 				{toggleOrigins}
 				{toggleShiny}
 				{toggleViewAsBoxes}
