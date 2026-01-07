@@ -139,6 +139,7 @@
 					bind:value={catchRecord.personalNotes}
 					id={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}
 					class="form-textarea w-full p-2 border rounded"
+					style="min-height: 120px;"
 					on:change={updateCatchRecord}
 				></textarea>
 			</p>
@@ -199,7 +200,8 @@
 
 <style>
 	.dex-column {
-		width: 300px;
+		flex: 1;
+		min-width: 250px;
 	}
 
 	.sprite-container {

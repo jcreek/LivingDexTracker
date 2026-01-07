@@ -2,8 +2,6 @@ import { type PokedexEntry, type PokedexEntryDB } from '$lib/models/PokedexEntry
 import { type CatchRecord, type CatchRecordDB } from '$lib/models/CatchRecord';
 import { type CombinedData } from '$lib/models/CombinedData';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { getRegionalDexColumnName } from '$lib/utils/regionalDexMapping';
-import { calculateBoxPlacement } from '$lib/utils/boxPlacement';
 
 class CombinedDataRepository {
 	constructor(
@@ -27,23 +25,8 @@ class CombinedDataRepository {
 			catchInformation: entry.catchInformation || [],
 			// Box placement will be calculated dynamically after sorting
 			boxPlacementForms: { box: 0, row: 0, column: 0 },
-			boxPlacement: { box: 0, row: 0, column: 0 },
-			kantoDexNumber: entry.kanto_dex_number ?? undefined,
-			johtoDexNumber: entry.johto_dex_number ?? undefined,
-			hoennDexNumber: entry.hoenn_dex_number ?? undefined,
-			sinnohDexNumber: entry.sinnoh_dex_number ?? undefined,
-			unovaBwDexNumber: entry.unova_bw_dex_number ?? undefined,
-			unovaB2w2DexNumber: entry.unova_b2w2_dex_number ?? undefined,
-			kalosCentralDexNumber: entry.kalos_central_dex_number ?? undefined,
-			kalosCoastalDexNumber: entry.kalos_coastal_dex_number ?? undefined,
-			kalosMountainDexNumber: entry.kalos_mountain_dex_number ?? undefined,
-			alolaSmDexNumber: entry.alola_sm_dex_number ?? undefined,
-			alolaUsumDexNumber: entry.alola_usum_dex_number ?? undefined,
-			galarDexNumber: entry.galar_dex_number ?? undefined,
-			galarIsleOfArmorDexNumber: entry.galar_isle_of_armor_dex_number ?? undefined,
-			galarCrownTundraDexNumber: entry.galar_crown_tundra_dex_number ?? undefined,
-			hisuiDexNumber: entry.hisui_dex_number ?? undefined,
-			paldeaDexNumber: entry.paldea_dex_number ?? undefined
+			boxPlacement: { box: 0, row: 0, column: 0 }
+			// Note: Regional dex numbers are stored in separate regional_dex_numbers table
 		};
 	}
 
@@ -71,8 +54,8 @@ class CombinedDataRepository {
 
 		// Apply filters
 		if (!enableForms) {
-			// Filter to only base forms (form is NULL)
-			query = query.is('form', null);
+			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
+			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
@@ -83,22 +66,9 @@ class CombinedDataRepository {
 			query = query.contains('gamesToCatchIn', [game]);
 		}
 
-		// Determine ordering strategy based on game filter
-		if (game) {
-			const regionalColumn = getRegionalDexColumnName(game);
-			if (regionalColumn) {
-				// Order by regional dex with national dex fallback for NULLs
-				query = query
-					.order(regionalColumn, { ascending: true, nullsFirst: false })
-					.order('pokedexNumber', { ascending: true });
-			} else {
-				// Game specified but has no regional dex mapping
-				query = query.order('pokedexNumber', { ascending: true });
-			}
-		} else {
-			// No game filter - order by national dex number
-			query = query.order('pokedexNumber', { ascending: true });
-		}
+		// Always order by national dex number
+		// Note: Regional dex ordering would require joining with regional_dex_numbers table
+		query = query.order('pokedexNumber', { ascending: true });
 
 		const { data: entries, error: entriesError } = await query;
 
@@ -162,8 +132,8 @@ class CombinedDataRepository {
 
 		// Apply filters
 		if (!enableForms) {
-			// Filter to only base forms (form is NULL)
-			query = query.is('form', null);
+			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
+			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
@@ -174,22 +144,9 @@ class CombinedDataRepository {
 			query = query.contains('gamesToCatchIn', [game]);
 		}
 
-		// Determine ordering strategy based on game filter
-		if (game) {
-			const regionalColumn = getRegionalDexColumnName(game);
-			if (regionalColumn) {
-				// Order by regional dex with national dex fallback for NULLs
-				query = query
-					.order(regionalColumn, { ascending: true, nullsFirst: false })
-					.order('pokedexNumber', { ascending: true });
-			} else {
-				// Game specified but has no regional dex mapping
-				query = query.order('pokedexNumber', { ascending: true });
-			}
-		} else {
-			// No game filter - order by national dex number
-			query = query.order('pokedexNumber', { ascending: true });
-		}
+		// Always order by national dex number
+		// Note: Regional dex ordering would require joining with regional_dex_numbers table
+		query = query.order('pokedexNumber', { ascending: true });
 
 		const { data: entries, error: entriesError } = await query;
 
@@ -247,8 +204,8 @@ class CombinedDataRepository {
 
 		// Apply same filters as in findCombinedData
 		if (!enableForms) {
-			// Filter to only base forms (form is NULL)
-			query = query.is('form', null);
+			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
+			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {

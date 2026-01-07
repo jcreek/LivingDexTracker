@@ -5,9 +5,9 @@
 	import { type CombinedData } from '$lib/models/CombinedData';
 	import { browser } from '$app/environment';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
-	import PokedexSidebar from '$lib/components/pokedex/PokedexSidebar.svelte';
-	import PokedexViewList from '$lib/components/pokedex/PokedexViewList.svelte';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
+	import PokedexModal from '$lib/components/pokedex/PokedexModal.svelte';
+	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
@@ -23,40 +23,49 @@
 	let creatingRecords = false;
 	let totalRecordsCreated = 0;
 	let failedToLoad = false;
-	let catchRegion = '';
-	let catchGame = '';
 	let localUser: User | null;
-	let showOrigins = true;
-	let showShiny = false;
-	let drawerOpen = false;
-	let viewAsBoxes = false;
 	let boxNumbers: number[] = [];
+	let showModal = false;
+	let selectedPokemon: CombinedData | null = null;
+
+	// Derive from pokedex config
+	$: showOrigins = pokedex.isOriginDex;
+	$: showShiny = pokedex.isShinyDex;
 
 	const unsubscribe = user.subscribe((value) => {
 		localUser = value;
 	});
 	onDestroy(unsubscribe);
 
-	function toggleOrigins() {
-		showOrigins = !showOrigins;
+	function openPokemonModal(pokemon: CombinedData) {
+		selectedPokemon = pokemon;
+		showModal = true;
 	}
 
-	async function toggleShiny() {
-		showShiny = !showShiny;
-		await getData();
+	function closePokemonModal() {
+		showModal = false;
+		selectedPokemon = null;
 	}
 
-	async function toggleViewAsBoxes() {
-		viewAsBoxes = !viewAsBoxes;
-		await getData();
+	async function handleModalCatchUpdate(event: any) {
+		await updateACatch(event); // Existing handler
+		// Sync modal with refreshed data
+		if (selectedPokemon && combinedData) {
+			const updated = combinedData.find(
+				(cd) => cd.pokedexEntry._id === selectedPokemon!.pokedexEntry._id
+			);
+			if (updated) {
+				selectedPokemon = updated;
+			}
+		}
 	}
 
 	async function getData(setCombinedDataToNull = true) {
 		if (setCombinedDataToNull) {
 			combinedData = null;
 		}
-		// Use new pokédex-scoped endpoint
-		let endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${currentPage}&limit=${viewAsBoxes ? 9999 : itemsPerPage}&enableForms=${pokedex.isFormDex}&region=${catchRegion}&game=${catchGame}`;
+		// Use new pokédex-scoped endpoint - always fetch all data for box view
+		let endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${currentPage}&limit=9999&enableForms=${pokedex.isFormDex}`;
 
 		const response = await fetch(endpoint);
 		const fetchedData = await response.json();
@@ -66,7 +75,8 @@
 		}
 		combinedData = fetchedData.combinedData;
 		totalPages = fetchedData.totalPages || 0;
-		if (viewAsBoxes) {
+		// Always extract box numbers for box view
+		if (combinedData) {
 			boxNumbers = [
 				...new Set(
 					combinedData.map(({ pokedexEntry }) =>
@@ -116,6 +126,8 @@
 		needsToEvolve: boolean,
 		inHome: boolean | null = null
 	) {
+		if (!combinedData) return;
+
 		let catchRecordsToUpdate = combinedData
 			.filter(({ pokedexEntry }) =>
 				(pokedex.isFormDex ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box) ===
@@ -260,63 +272,119 @@
 {#if !localUser}
 	<p>Please <a href="/signin" class="underline text-primary hover:text-secondary">sign in</a></p>
 {:else}
-	<div class="drawer lg:drawer-open">
-		<input id="my-drawer" type="checkbox" class="drawer-toggle" bind:checked={drawerOpen} />
-		<div class="drawer-content flex flex-col items-center justify-center md:ml-64">
-			<label
-				for="my-drawer"
-				class="btn btn-secondary drawer-button lg:hidden fixed -left-10 top-1/2 -rotate-90"
-			>
-				{drawerOpen ? 'Close Filters' : 'Open Filters'}
-			</label>
+	<div class="container mx-auto p-4 max-w-screen-2xl">
+		<!-- Pokédex Header -->
+		<div class="card bg-base-100 shadow-xl mb-6">
+			<div class="card-body">
+				<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+					<!-- Left side: Title and metadata -->
+					<div class="flex-1">
+						<h1 class="card-title text-3xl mb-3">{pokedex.name}</h1>
 
-			{#if viewAsBoxes}
-				<PokedexViewBoxes
-					bind:showShiny
-					showForms={pokedex.isFormDex}
-					bind:combinedData
-					bind:boxNumbers
-					bind:creatingRecords
-					bind:failedToLoad
-					{markBoxAsNotCaught}
-					{markBoxAsCaught}
-					{markBoxAsNeedsToEvolve}
-					{markBoxAsInHome}
-					{markBoxAsNotInHome}
-				/>
-			{:else}
-				<PokedexViewList
-					bind:showOrigins
-					showForms={pokedex.isFormDex}
-					bind:showShiny
-					bind:combinedData
-					bind:creatingRecords
-					bind:totalRecordsCreated
-					bind:failedToLoad
-					userId={localUser?.id}
-					pokedexId={pokedexId}
-					{updateACatch}
-					{createCatchRecords}
-				/>
-			{/if}
+						<div class="flex flex-wrap items-center gap-3">
+							<!-- Type badges -->
+							{#if pokedex.isLivingDex}
+								<div class="badge badge-primary badge-lg gap-1">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+									</svg>
+									Living
+								</div>
+							{/if}
+							{#if pokedex.isShinyDex}
+								<div class="badge badge-secondary badge-lg gap-1">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+									</svg>
+									Shiny
+								</div>
+							{/if}
+							{#if pokedex.isOriginDex}
+								<div class="badge badge-accent badge-lg gap-1">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+									</svg>
+									Origin
+								</div>
+							{/if}
+							{#if pokedex.isFormDex}
+								<div class="badge badge-info badge-lg gap-1">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+										<path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+									</svg>
+									Form
+								</div>
+							{/if}
+
+							<!-- Game scope -->
+							{#if pokedex.gameScope}
+								<div class="divider divider-horizontal mx-0"></div>
+								<div class="flex items-center gap-2 text-base-content/70">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+										<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+										<path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+									</svg>
+									<span class="font-semibold">{pokedex.gameScope}</span>
+								</div>
+							{:else}
+								<div class="divider divider-horizontal mx-0"></div>
+								<div class="flex items-center gap-2 text-base-content/70">
+									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clip-rule="evenodd" />
+									</svg>
+									<span class="font-semibold">All Games</span>
+								</div>
+							{/if}
+						</div>
+
+						{#if pokedex.description}
+							<p class="text-sm text-base-content/70 mt-3">{pokedex.description}</p>
+						{/if}
+					</div>
+
+					<!-- Right side: Actions -->
+					<div class="flex flex-row lg:flex-col gap-2">
+						<a href="/my-pokedexes" class="btn btn-outline btn-sm">
+							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+								<path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+							</svg>
+							My Pokédexes
+						</a>
+					</div>
+				</div>
+			</div>
 		</div>
-		<div class="drawer-side lg:relative">
-			<label for="my-drawer" class="drawer-overlay lg:hidden"></label>
-			<PokedexSidebar
-				{pokedex}
-				bind:viewAsBoxes
-				bind:currentPage
-				bind:itemsPerPage
-				bind:totalPages
-				bind:showOrigins
-				bind:showShiny
-				bind:catchRegion
-				bind:catchGame
-				{getData}
-				{toggleOrigins}
-				{toggleShiny}
-				{toggleViewAsBoxes}
-			/>
-		</div>
+
+		<!-- Box View -->
+		<PokedexViewBoxes
+			{showShiny}
+			showForms={pokedex.isFormDex}
+			bind:combinedData
+			bind:boxNumbers
+			bind:creatingRecords
+			bind:failedToLoad
+			{markBoxAsNotCaught}
+			{markBoxAsCaught}
+			{markBoxAsNeedsToEvolve}
+			{markBoxAsInHome}
+			{markBoxAsNotInHome}
+			{createCatchRecords}
+			onPokemonClick={openPokemonModal}
+		/>
 	</div>
+
+	{#if showModal && selectedPokemon}
+		<PokedexModal isOpen={showModal} onClose={closePokemonModal}>
+			<PokedexEntryCatchRecord
+				pokedexEntry={selectedPokemon.pokedexEntry}
+				bind:catchRecord={selectedPokemon.catchRecord}
+				{showOrigins}
+				showForms={pokedex.isFormDex}
+				{showShiny}
+				userId={localUser?.id}
+				pokedexId={pokedexId}
+				on:updateCatch={handleModalCatchUpdate}
+			/>
+		</PokedexModal>
+	{/if}
 {/if}

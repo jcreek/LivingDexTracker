@@ -113,7 +113,10 @@ function generateMigration(region) {
 
   const rows = pokemon.map(p => {
     const form = p.form ? `'${p.form}'` : 'NULL';
-    const gamesList = p.games.split('|');
+    // Use regionalDexGames for the database (regional dex availability)
+    // originGames column is for future origin dex feature
+    const gamesField = p.regionalDexGames || p.games; // Fallback to old 'games' column for compatibility
+    const gamesList = gamesField.split('|');
     const gamesArray = `ARRAY[${gamesList.map(g => `'${g}'`).join(', ')}]`;
 
     return `(${p.pokedexNumber}, '${p.name}', ${form}, false, '${region}', ${gamesArray})`;
@@ -124,11 +127,6 @@ function generateMigration(region) {
 
   // Regional dex numbers (separate table)
   sql += `-- Insert ${region} regional dex numbers\n`;
-  sql += `INSERT INTO regional_dex_numbers (\n`;
-  sql += `  pokedex_entry_id,\n`;
-  sql += `  region,\n`;
-  sql += `  dex_number\n`;
-  sql += `) VALUES\n`;
 
   const dexRows = pokemon
     .filter(p => p.regionalNumber)  // Only entries with regional dex numbers
@@ -141,10 +139,15 @@ function generateMigration(region) {
     });
 
   if (dexRows.length > 0) {
+    sql += `INSERT INTO regional_dex_numbers (\n`;
+    sql += `  pokedex_entry_id,\n`;
+    sql += `  region,\n`;
+    sql += `  dex_number\n`;
+    sql += `) VALUES\n`;
     sql += dexRows.join(',\n');
     sql += ';\n\n';
   } else {
-    sql += '  -- No regional dex numbers for this region\n\n';
+    sql += '-- No regional dex numbers for this region\n\n';
   }
 
   // Add metadata
@@ -155,7 +158,7 @@ function generateMigration(region) {
   sql += `  ('${region.toLowerCase()}_pokemon_count', '${pokemon.filter(p => !p.form).length}');\n`;
 
   // 4. Write file
-  const timestamp = new Date().toISOString().replace(/[-:.]/g, '').slice(0, 14);
+  const timestamp = new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14);
   const filename = `${timestamp}_seed_${region.toLowerCase()}.sql`;
   const outputPath = path.join(__dirname, '..', 'supabase', 'migrations', filename);
 
