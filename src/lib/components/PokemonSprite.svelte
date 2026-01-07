@@ -31,13 +31,20 @@
 		// Sanitise the pokemon name by making it all lowercase and replacing any spaces with hyphens and removing other characters
 		let sanitisedPokemonName = pokemonName.toLowerCase().replace(/[^a-z]/g, '');
 
-		// Get the PokeApi id for the pokemon
+		/**
+		 * Sprite Resolution Strategy:
+		 * 1. For forms with PokeAPI entries (regional forms): Use PokeAPI ID (e.g., 10107.png)
+		 * 2. For forms without PokeAPI entries (Unown, Burmy, etc.): Use {pokedexNumber}-{form} (e.g., 201-a.png)
+		 * 3. For base forms: Use PokeAPI ID matching species_id
+		 */
 		let pokeApiId;
 		if (form && form.length > 0 && form !== 'Female') {
 			// Sanitise the form by making it all lowercase and replacing spaces with hyphens
 			let sanitisedForm = form
 				.toLowerCase()
 				.replaceAll(' ', '-')
+				.replaceAll('!', 'exclamation')
+				.replaceAll('?', 'question')
 				.replaceAll('2', 'two')
 				.replaceAll('3', 'three')
 				.replaceAll('4', 'four');
@@ -59,20 +66,17 @@
 					break;
 			}
 
-			// If the form is contained in the identifier, use that
-			if (
-				pokeApiPokemon.find(
-					(pokemon) => pokemon.identifier === sanitisedPokemonName + '-' + sanitisedForm
-				)
-			) {
-				pokeApiId = pokeApiPokemon.find(
-					(pokemon) => pokemon.identifier === sanitisedPokemonName + '-' + sanitisedForm
-				)?.id;
+			// Try to find by PokeAPI identifier (e.g., "meowth-alola" -> 10107)
+			const pokeApiEntry = pokeApiPokemon.find(
+				(pokemon) => pokemon.identifier === sanitisedPokemonName + '-' + sanitisedForm
+			);
+
+			if (pokeApiEntry) {
+				// Pattern 1: Use PokeAPI ID (e.g., 10107.png for Meowth-Alola)
+				pokeApiId = pokeApiEntry.id;
 			} else {
-				// If the form is not contained in the identifier, use the species_id
-				pokeApiId = pokeApiPokemon.find(
-					(pokemon) => pokemon.species_id.toString() === strippedPokedexNumber
-				)?.id;
+				// Pattern 2: Use {pokedexNumber}-{form} (e.g., 201-a.png for Unown-A)
+				pokeApiId = `${strippedPokedexNumber}-${sanitisedForm}`;
 			}
 		} else {
 			pokeApiId = pokeApiPokemon.find(

@@ -18,6 +18,7 @@
 	export let markBoxAsInHome = (boxNumber: number) => {};
 	export let markBoxAsNotInHome = (boxNumber: number) => {};
 	export let createCatchRecords = () => {};
+	export let onPokemonClick: (pokemon: CombinedData) => void = () => {};
 
 	function cellBackgroundColourClass(catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught) {
@@ -51,19 +52,19 @@
 					{#each boxNumbers as boxNumber}
 						<div class="mb-8 md:w-1/2 px-2">
 							<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
-							<button class="btn" on:click={markBoxAsNotCaught(boxNumber)}>
+							<button class="btn" on:click={() => markBoxAsNotCaught(boxNumber)}>
 								Mark box as not 'caught'
 							</button>
-							<button class="btn" on:click={markBoxAsCaught(boxNumber)}>
+							<button class="btn" on:click={() => markBoxAsCaught(boxNumber)}>
 								Mark box as 'caught'
 							</button>
-							<button class="btn" on:click={markBoxAsNeedsToEvolve(boxNumber)}
+							<button class="btn" on:click={() => markBoxAsNeedsToEvolve(boxNumber)}
 								>Mark box as 'needs to evolve'</button
 							>
-							<button class="btn" on:click={markBoxAsInHome(boxNumber)}
+							<button class="btn" on:click={() => markBoxAsInHome(boxNumber)}
 								>Mark box as 'in Home'</button
 							>
-							<button class="btn" on:click={markBoxAsNotInHome(boxNumber)}
+							<button class="btn" on:click={() => markBoxAsNotInHome(boxNumber)}
 								>Mark box as not 'in Home'</button
 							>
 							<div class="grid grid-cols-6">
@@ -72,10 +73,13 @@
 										? pokedexEntry.boxPlacementForms
 										: pokedexEntry.boxPlacement}
 									{#if placement.box === boxNumber}
-										<div
-											class="pokemon-box {cellBackgroundColourClass(catchRecord)}"
+										<button
+											type="button"
+											class="pokemon-box {cellBackgroundColourClass(catchRecord)} hover:scale-105 hover:shadow-lg hover:z-50 transition-all cursor-pointer relative"
 											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
                                         {cellBackgroundColourStyle(pokedexEntry, catchRecord)}"
+											on:click={() => onPokemonClick({ pokedexEntry, catchRecord })}
+											aria-label="View details for {pokedexEntry.pokemon}"
 										>
 											<Tooltip>
 												<div slot="hover-target">
@@ -106,7 +110,7 @@
 													</div>
 												</div>
 											</Tooltip>
-										</div>
+										</button>
 									{/if}
 								{/each}
 							</div>

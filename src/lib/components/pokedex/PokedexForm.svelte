@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import type { Pokedex } from '$lib/models/Pokedex';
 
 	export let pokedex: Partial<Pokedex> = {
@@ -13,6 +14,26 @@
 	export let mode: 'create' | 'edit' = 'create';
 	export let onSubmit: () => void;
 	export let onCancel: () => void;
+
+	let games: string[] = [];
+	let loadingGames = true;
+
+	// Fetch available games from the database
+	onMount(async () => {
+		try {
+			const response = await fetch('/api/games');
+			if (response.ok) {
+				const data = await response.json();
+				games = data.games || [];
+			} else {
+				console.error('Failed to fetch games');
+			}
+		} catch (error) {
+			console.error('Error fetching games:', error);
+		} finally {
+			loadingGames = false;
+		}
+	});
 
 	// Validation
 	$: hasAtLeastOneType =
@@ -83,15 +104,20 @@
 	<label class="label" for="game-scope">
 		<span class="label-text">Game Scope</span>
 	</label>
-	<select id="game-scope" class="select select-bordered" bind:value={pokedex.gameScope}>
+	<select
+		id="game-scope"
+		class="select select-bordered"
+		bind:value={pokedex.gameScope}
+		disabled={loadingGames}
+	>
 		<option value={null}>All Games</option>
-		<option value="Scarlet">Scarlet</option>
-		<option value="Violet">Violet>
-		<option value="Sword">Sword</option>
-		<option value="Shield">Shield</option>
-		<option value="Brilliant Diamond">Brilliant Diamond</option>
-		<option value="Shining Pearl">Shining Pearl</option>
-		<option value="Legends: Arceus">Legends: Arceus</option>
+		{#if loadingGames}
+			<option disabled>Loading games...</option>
+		{:else}
+			{#each games as game}
+				<option value={game}>{game}</option>
+			{/each}
+		{/if}
 	</select>
 </div>
 
