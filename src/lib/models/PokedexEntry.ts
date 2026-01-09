@@ -2,8 +2,6 @@
 export interface PokedexEntry {
 	_id: string; // Maps to Supabase 'id' field for frontend compatibility
 	pokedexNumber: number;
-	boxPlacement: { box: number; row: number; column: number };
-	boxPlacementForms: { box: number; row: number; column: number };
 	pokemon: string;
 	form: string;
 	canGigantamax: boolean;
@@ -12,6 +10,7 @@ export interface PokedexEntry {
 	regionToEvolveIn: string;
 	evolutionInformation: string;
 	catchInformation: string[];
+	// Note: Regional dex numbers stored in separate regional_dex_numbers table
 }
 
 // Database record type for Supabase
@@ -26,12 +25,7 @@ export interface PokedexEntryDB {
 	regionToEvolveIn: string | null;
 	evolutionInformation: string | null;
 	catchInformation: string[] | null;
-	boxPlacementFormsBox: number | null;
-	boxPlacementFormsRow: number | null;
-	boxPlacementFormsColumn: number | null;
-	boxPlacementBox: number | null;
-	boxPlacementRow: number | null;
-	boxPlacementColumn: number | null;
+	// Note: Regional dex numbers stored in separate regional_dex_numbers table
 	createdAt: string;
 	updatedAt: string;
 }

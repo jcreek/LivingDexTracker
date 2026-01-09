@@ -1,14 +1,13 @@
 <script lang="ts">
 	import type { CatchRecord } from '$lib/models/CatchRecord';
 	import type { CombinedData } from '$lib/models/CombinedData';
-	import type { PokedexEntry } from '$lib/models/PokedexEntry';
+	import { calculateBoxPlacement } from '$lib/utils/boxPlacement';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	export let showShiny = false;
 	export let combinedData: CombinedData[] | null;
-	export let boxNumbers = Array<number>;
-	export let currentPlacement = 'boxPlacementForms';
+	export let boxNumbers: number[] = [];
 	export let creatingRecords = false;
 	export let totalRecordsCreated = 0;
 	export let failedToLoad = false;
@@ -18,6 +17,7 @@
 	export let markBoxAsInHome = (boxNumber: number) => {};
 	export let markBoxAsNotInHome = (boxNumber: number) => {};
 	export let createCatchRecords = () => {};
+	export let onPokemonClick: (pokemon: CombinedData) => void = () => {};
 
 	function cellBackgroundColourClass(catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught) {
@@ -29,11 +29,12 @@
 		}
 	}
 
-	function cellBackgroundColourStyle(pokedexEntry: PokedexEntry, catchRecord: CatchRecord | null) {
+	function cellBackgroundColourStyle(index: number, catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught || catchRecord?.haveToEvolve) {
 			return '';
 		} else {
-			if (pokedexEntry[currentPlacement].column % 2 === 0) {
+			const placement = calculateBoxPlacement(index);
+			if (placement.column % 2 === 0) {
 				return 'background-color: #ffffff';
 			} else {
 				return 'background-color: #f9f9f9;';
@@ -50,29 +51,34 @@
 					{#each boxNumbers as boxNumber}
 						<div class="mb-8 md:w-1/2 px-2">
 							<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
-							<button class="btn" on:click={markBoxAsNotCaught(boxNumber)}>
+							<button class="btn" on:click={() => markBoxAsNotCaught(boxNumber)}>
 								Mark box as not 'caught'
 							</button>
-							<button class="btn" on:click={markBoxAsCaught(boxNumber)}>
+							<button class="btn" on:click={() => markBoxAsCaught(boxNumber)}>
 								Mark box as 'caught'
 							</button>
-							<button class="btn" on:click={markBoxAsNeedsToEvolve(boxNumber)}
+							<button class="btn" on:click={() => markBoxAsNeedsToEvolve(boxNumber)}
 								>Mark box as 'needs to evolve'</button
 							>
-							<button class="btn" on:click={markBoxAsInHome(boxNumber)}
+							<button class="btn" on:click={() => markBoxAsInHome(boxNumber)}
 								>Mark box as 'in Home'</button
 							>
-							<button class="btn" on:click={markBoxAsNotInHome(boxNumber)}
+							<button class="btn" on:click={() => markBoxAsNotInHome(boxNumber)}
 								>Mark box as not 'in Home'</button
 							>
 							<div class="grid grid-cols-6">
-								{#each combinedData as { pokedexEntry, catchRecord }}
-									{#if pokedexEntry[currentPlacement].box === boxNumber}
-										<div
-											class="pokemon-box {cellBackgroundColourClass(catchRecord)}"
-											style="grid-column-start: {pokedexEntry[currentPlacement]
-												.column}; grid-row-start: {pokedexEntry[currentPlacement].row};
-                                        {cellBackgroundColourStyle(pokedexEntry, catchRecord)}"
+								{#each combinedData as { pokedexEntry, catchRecord }, index}
+									{@const placement = calculateBoxPlacement(index)}
+									{#if placement.box === boxNumber}
+										<button
+											type="button"
+											class="pokemon-box {cellBackgroundColourClass(
+												catchRecord
+											)} hover:scale-105 hover:shadow-lg hover:z-50 transition-all cursor-pointer relative"
+											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
+																{cellBackgroundColourStyle(index, catchRecord)}"
+											on:click={() => onPokemonClick({ pokedexEntry, catchRecord })}
+											aria-label="View details for {pokedexEntry.pokemon}"
 										>
 											<Tooltip>
 												<div slot="hover-target">
@@ -103,7 +109,7 @@
 													</div>
 												</div>
 											</Tooltip>
-										</div>
+										</button>
 									{/if}
 								{/each}
 							</div>

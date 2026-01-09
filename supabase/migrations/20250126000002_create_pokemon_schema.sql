@@ -9,17 +9,7 @@ CREATE TABLE pokedex_entries (
   "regionToEvolveIn" TEXT,
   "evolutionInformation" TEXT,
   "catchInformation" TEXT[],
-  
-  -- Box placement for forms view
-  "boxPlacementFormsBox" INTEGER,
-  "boxPlacementFormsRow" INTEGER,
-  "boxPlacementFormsColumn" INTEGER,
-  
-  -- Box placement for no-forms view
-  "boxPlacementBox" INTEGER,
-  "boxPlacementRow" INTEGER,
-  "boxPlacementColumn" INTEGER,
-  
+
   "createdAt" TIMESTAMPTZ DEFAULT NOW(),
   "updatedAt" TIMESTAMPTZ DEFAULT NOW()
 );
@@ -65,8 +55,6 @@ CREATE TABLE metadata (
 -- Create indexes for better performance
 CREATE INDEX idx_pokedex_entries_pokedex_number ON pokedex_entries("pokedexNumber");
 CREATE INDEX idx_pokedex_entries_pokemon ON pokedex_entries(pokemon);
-CREATE INDEX idx_pokedex_entries_box_placement_forms ON pokedex_entries("boxPlacementFormsBox", "boxPlacementFormsRow", "boxPlacementFormsColumn");
-CREATE INDEX idx_pokedex_entries_box_placement ON pokedex_entries("boxPlacementBox", "boxPlacementRow", "boxPlacementColumn");
 
 CREATE INDEX idx_catch_records_user_id ON catch_records("userId");
 CREATE INDEX idx_catch_records_pokedex_entry_id ON catch_records("pokedexEntryId");

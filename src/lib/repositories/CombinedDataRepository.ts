@@ -6,7 +6,8 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 class CombinedDataRepository {
 	constructor(
 		private supabase: SupabaseClient,
-		private userId: string
+		private userId: string | null,
+		private pokedexId: string | null
 	) {}
 
 	// Transform Supabase data to match frontend expectations (minimal transformation)
@@ -21,17 +22,8 @@ class CombinedDataRepository {
 			gamesToCatchIn: entry.gamesToCatchIn || [],
 			regionToEvolveIn: entry.regionToEvolveIn || '',
 			evolutionInformation: entry.evolutionInformation || '',
-			catchInformation: entry.catchInformation || [],
-			boxPlacementForms: {
-				box: entry.boxPlacementFormsBox || 0,
-				row: entry.boxPlacementFormsRow || 0,
-				column: entry.boxPlacementFormsColumn || 0
-			},
-			boxPlacement: {
-				box: entry.boxPlacementBox || 0,
-				row: entry.boxPlacementRow || 0,
-				column: entry.boxPlacementColumn || 0
-			}
+			catchInformation: entry.catchInformation || []
+			// Note: Regional dex numbers are stored in separate regional_dex_numbers table
 		};
 	}
 
@@ -40,6 +32,7 @@ class CombinedDataRepository {
 			_id: record.id,
 			userId: record.userId,
 			pokedexEntryId: record.pokedexEntryId.toString(),
+			pokedexId: record.pokedexId,
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
 			inHome: record.inHome,
@@ -58,7 +51,8 @@ class CombinedDataRepository {
 
 		// Apply filters
 		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
+			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
@@ -69,18 +63,9 @@ class CombinedDataRepository {
 			query = query.contains('gamesToCatchIn', [game]);
 		}
 
-		// Order by box placement
-		if (enableForms) {
-			query = query
-				.order('boxPlacementFormsBox', { ascending: true })
-				.order('boxPlacementFormsRow', { ascending: true })
-				.order('boxPlacementFormsColumn', { ascending: true });
-		} else {
-			query = query
-				.order('boxPlacementBox', { ascending: true })
-				.order('boxPlacementRow', { ascending: true })
-				.order('boxPlacementColumn', { ascending: true });
-		}
+		// Always order by national dex number
+		// Note: Regional dex ordering would require joining with regional_dex_numbers table
+		query = query.order('pokedexNumber', { ascending: true });
 
 		const { data: entries, error: entriesError } = await query;
 
@@ -95,12 +80,13 @@ class CombinedDataRepository {
 
 		// Get catch records for all entries
 		let catchRecords: CatchRecordDB[] = [];
-		if (userId) {
+		if (userId && this.pokedexId) {
 			const entryIds = entries.map((entry) => entry.id);
 			const { data: records, error: recordsError } = await this.supabase
 				.from('catch_records')
 				.select('*')
 				.eq('userId', userId)
+				.eq('pokedexId', this.pokedexId)
 				.in('pokedexEntryId', entryIds);
 
 			if (!recordsError && records) {
@@ -109,7 +95,7 @@ class CombinedDataRepository {
 		}
 
 		// Combine the data exactly like master branch
-		return entries.map((entry) => {
+		const combinedData = entries.map((entry) => {
 			const userCatchRecord =
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
@@ -123,6 +109,9 @@ class CombinedDataRepository {
 				catchRecord: transformedCatchRecord
 			};
 		});
+
+		// Box placement is calculated dynamically on the frontend based on the current sort order.
+		return combinedData;
 	}
 
 	async findCombinedData(
@@ -140,7 +129,8 @@ class CombinedDataRepository {
 
 		// Apply filters
 		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
+			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
@@ -151,18 +141,9 @@ class CombinedDataRepository {
 			query = query.contains('gamesToCatchIn', [game]);
 		}
 
-		// Order by box placement
-		if (enableForms) {
-			query = query
-				.order('boxPlacementFormsBox', { ascending: true })
-				.order('boxPlacementFormsRow', { ascending: true })
-				.order('boxPlacementFormsColumn', { ascending: true });
-		} else {
-			query = query
-				.order('boxPlacementBox', { ascending: true })
-				.order('boxPlacementRow', { ascending: true })
-				.order('boxPlacementColumn', { ascending: true });
-		}
+		// Always order by national dex number
+		// Note: Regional dex ordering would require joining with regional_dex_numbers table
+		query = query.order('pokedexNumber', { ascending: true });
 
 		const { data: entries, error: entriesError } = await query;
 
@@ -177,12 +158,13 @@ class CombinedDataRepository {
 
 		// Get catch records for these entries
 		let catchRecords: CatchRecordDB[] = [];
-		if (userId) {
+		if (userId && this.pokedexId) {
 			const entryIds = entries.map((entry) => entry.id);
 			const { data: records, error: recordsError } = await this.supabase
 				.from('catch_records')
 				.select('*')
 				.eq('userId', userId)
+				.eq('pokedexId', this.pokedexId)
 				.in('pokedexEntryId', entryIds);
 
 			if (!recordsError && records) {
@@ -191,7 +173,7 @@ class CombinedDataRepository {
 		}
 
 		// Combine the data exactly like master branch
-		return entries.map((entry) => {
+		const combinedData = entries.map((entry) => {
 			const userCatchRecord =
 				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
 
@@ -205,18 +187,18 @@ class CombinedDataRepository {
 				catchRecord: transformedCatchRecord
 			};
 		});
+
+		// Box placement is calculated dynamically on the frontend based on the current sort order.
+		return combinedData;
 	}
 
-	async countCombinedData(
-		enableForms: boolean,
-		region: string,
-		game: string
-	): Promise<number> {
+	async countCombinedData(enableForms: boolean, region: string, game: string): Promise<number> {
 		let query = this.supabase.from('pokedex_entries').select('id', { count: 'exact', head: true });
 
 		// Apply same filters as in findCombinedData
 		if (!enableForms) {
-			query = query.not('boxPlacementBox', 'is', null);
+			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
+			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
