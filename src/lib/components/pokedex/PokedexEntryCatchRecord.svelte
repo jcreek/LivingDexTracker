@@ -32,6 +32,24 @@
 	function updateCatchRecord() {
 		dispatch('updateCatch', { pokedexEntry, catchRecord });
 	}
+
+	function onCaughtChange() {
+		if (!catchRecord) return;
+		// Mutually exclusive with "needs to evolve"
+		if (catchRecord.caught) {
+			catchRecord.haveToEvolve = false;
+		}
+		updateCatchRecord();
+	}
+
+	function onNeedsToEvolveChange() {
+		if (!catchRecord) return;
+		// Mutually exclusive with "caught"
+		if (catchRecord.haveToEvolve) {
+			catchRecord.caught = false;
+		}
+		updateCatchRecord();
+	}
 </script>
 
 <div
@@ -84,7 +102,7 @@
 							type="checkbox"
 							bind:checked={catchRecord.caught}
 							class="checkbox checkbox-primary border-black"
-							on:change={updateCatchRecord}
+							on:change={onCaughtChange}
 						/>
 					</label>
 				</div>
@@ -97,7 +115,7 @@
 							type="checkbox"
 							bind:checked={catchRecord.haveToEvolve}
 							class="checkbox checkbox-primary border-black"
-							on:change={updateCatchRecord}
+							on:change={onNeedsToEvolveChange}
 						/>
 					</label>
 				</div>
