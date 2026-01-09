@@ -22,10 +22,7 @@ class CombinedDataRepository {
 			gamesToCatchIn: entry.gamesToCatchIn || [],
 			regionToEvolveIn: entry.regionToEvolveIn || '',
 			evolutionInformation: entry.evolutionInformation || '',
-			catchInformation: entry.catchInformation || [],
-			// Box placement will be calculated dynamically after sorting
-			boxPlacementForms: { box: 0, row: 0, column: 0 },
-			boxPlacement: { box: 0, row: 0, column: 0 }
+			catchInformation: entry.catchInformation || []
 			// Note: Regional dex numbers are stored in separate regional_dex_numbers table
 		};
 	}
@@ -113,8 +110,8 @@ class CombinedDataRepository {
 			};
 		});
 
-		// Always recalculate box placement based on current sort order
-		return this.recalculateBoxPlacement(combinedData, enableForms);
+		// Box placement is calculated dynamically on the frontend based on the current sort order.
+		return combinedData;
 	}
 
 	async findCombinedData(
@@ -191,15 +188,11 @@ class CombinedDataRepository {
 			};
 		});
 
-		// Always recalculate box placement based on current sort order
-		return this.recalculateBoxPlacement(combinedData, enableForms);
+		// Box placement is calculated dynamically on the frontend based on the current sort order.
+		return combinedData;
 	}
 
-	async countCombinedData(
-		enableForms: boolean,
-		region: string,
-		game: string
-	): Promise<number> {
+	async countCombinedData(enableForms: boolean, region: string, game: string): Promise<number> {
 		let query = this.supabase.from('pokedex_entries').select('id', { count: 'exact', head: true });
 
 		// Apply same filters as in findCombinedData
@@ -224,35 +217,6 @@ class CombinedDataRepository {
 		}
 
 		return count || 0;
-	}
-
-	/**
-	 * Recalculates box placement based on the current order of data.
-	 * Used when ordering by regional dex instead of pre-calculated national dex placement.
-	 */
-	private recalculateBoxPlacement(
-		data: CombinedData[],
-		useFormsPlacement: boolean
-	): CombinedData[] {
-		return data.map((item, index) => {
-			const placementIndex = index + 1; // 1-based indexing
-			const box = Math.ceil(placementIndex / 30);
-			const rowColumnIndex = (placementIndex - 1) % 30;
-			const row = Math.floor(rowColumnIndex / 6) + 1;
-			const column = (rowColumnIndex % 6) + 1;
-
-			const newPlacement = { box, row, column };
-
-			return {
-				...item,
-				pokedexEntry: {
-					...item.pokedexEntry,
-					...(useFormsPlacement
-						? { boxPlacementForms: newPlacement }
-						: { boxPlacement: newPlacement })
-				}
-			};
-		});
 	}
 }
 

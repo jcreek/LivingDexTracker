@@ -1,24 +1,31 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onDestroy } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
 	import { type CombinedData } from '$lib/models/CombinedData';
 	import { browser } from '$app/environment';
+	import type { CatchRecord } from '$lib/models/CatchRecord';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
+	import { calculateBoxNumbers, calculateBoxPlacement } from '$lib/utils/boxPlacement';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
 	import PokedexModal from '$lib/components/pokedex/PokedexModal.svelte';
 	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
+	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
 
-	// Get pokédex from server load
-	$: pokedex = data.pokedex;
-	$: pokedexId = pokedex._id;
+	// Get pokédex from server load (guarded for transient undefined during navigation/HMR)
+	let pokedex: Pokedex | undefined;
+	let pokedexId = '';
+	$: pokedex = data?.pokedex;
+	$: pokedexId = pokedex?._id ?? '';
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
-	let itemsPerPage = 20 as number;
+	// Box view requires the full dataset for correct box numbering/placement.
+	// If/when a paginated list view is introduced, this can be lowered and paired with UI controls.
+	let itemsPerPage = 9999 as number;
 	let totalPages = 0 as number;
 	let creatingRecords = false;
 	let totalRecordsCreated = 0;
@@ -29,8 +36,8 @@
 	let selectedPokemon: CombinedData | null = null;
 
 	// Derive from pokedex config
-	$: showOrigins = pokedex.isOriginDex;
-	$: showShiny = pokedex.isShinyDex;
+	$: showOrigins = !!pokedex?.isOriginDex;
+	$: showShiny = !!pokedex?.isShinyDex;
 
 	const unsubscribe = user.subscribe((value) => {
 		localUser = value;
@@ -60,12 +67,25 @@
 		}
 	}
 
-	async function getData(setCombinedDataToNull = true) {
+	type GetDataOptions = {
+		page?: number;
+		perPage?: number;
+		setCombinedDataToNull?: boolean;
+	};
+
+	async function getData({
+		page = currentPage,
+		perPage = itemsPerPage,
+		setCombinedDataToNull = true
+	}: GetDataOptions = {}) {
+		if (!pokedex || !pokedexId) return;
 		if (setCombinedDataToNull) {
 			combinedData = null;
 		}
-		// Use new pokédex-scoped endpoint - always fetch all data for box view
-		let endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${currentPage}&limit=9999&enableForms=${pokedex.isFormDex}`;
+		const effectivePage = Math.max(1, page);
+		const effectivePerPage = Math.max(1, perPage);
+		// Use new pokédex-scoped endpoint
+		const endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${effectivePage}&limit=${effectivePerPage}&enableForms=${pokedex.isFormDex}`;
 
 		const response = await fetch(endpoint);
 		const fetchedData = await response.json();
@@ -77,17 +97,12 @@
 		totalPages = fetchedData.totalPages || 0;
 		// Always extract box numbers for box view
 		if (combinedData) {
-			boxNumbers = [
-				...new Set(
-					combinedData.map(({ pokedexEntry }) =>
-						pokedex.isFormDex ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box
-					)
-				)
-			].filter(Boolean);
+			boxNumbers = calculateBoxNumbers(combinedData.length);
 		}
 	}
 
 	async function updateACatch(event: any) {
+		if (!pokedexId) return;
 		const { catchRecord } = event.detail;
 		if (!localUser?.id) {
 			alert('User not signed in');
@@ -114,7 +129,7 @@
 			}
 
 			// Refresh the data to reflect changes from server
-			await getData(false);
+			await getData({ page: currentPage, perPage: itemsPerPage, setCombinedDataToNull: false });
 		} catch (error) {
 			console.error('Error updating catch record:', error);
 		}
@@ -127,15 +142,13 @@
 		inHome: boolean | null = null
 	) {
 		if (!combinedData) return;
+		if (!pokedexId) return;
 
-		let catchRecordsToUpdate = combinedData
-			.filter(({ pokedexEntry }) =>
-				(pokedex.isFormDex ? pokedexEntry.boxPlacementForms.box : pokedexEntry.boxPlacement.box) ===
-				boxNumber
-			)
+		const catchRecordsToUpdate: CatchRecord[] = combinedData
+			.filter((_, index) => calculateBoxPlacement(index).box === boxNumber)
 			.map(({ pokedexEntry, catchRecord }) => {
 				// Create default record if null
-				const baseRecord = catchRecord || {
+				const baseRecord: CatchRecord = catchRecord ?? {
 					_id: '',
 					userId: localUser?.id || '',
 					pokedexEntryId: pokedexEntry._id,
@@ -147,7 +160,7 @@
 					personalNotes: ''
 				};
 
-				let updatedRecord = { ...baseRecord };
+				let updatedRecord: CatchRecord = { ...baseRecord };
 				if (inHome !== null) {
 					updatedRecord = {
 						...updatedRecord,
@@ -163,15 +176,30 @@
 				return updatedRecord;
 			});
 		// Use new pokédex-scoped endpoint
-		await fetch(`/api/pokedexes/${pokedexId}/catch-records`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(catchRecordsToUpdate)
-		}).then(async () => {
-			await getData(false);
-		});
+		try {
+			const response = await fetch(`/api/pokedexes/${pokedexId}/catch-records`, {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(catchRecordsToUpdate)
+			});
+			if (!response.ok) {
+				const errorText = await response.text();
+				console.error('Server response:', response.status, errorText);
+				alert(
+					`Failed to update catch records: ${response.status} ${response.statusText}\n${errorText}`
+				);
+				return;
+			}
+
+			await getData({ page: currentPage, perPage: itemsPerPage, setCombinedDataToNull: false });
+		} catch (error) {
+			console.error('Error updating catch records:', error);
+			alert(
+				`Network error updating catch records: ${error instanceof Error ? error.message : String(error)}`
+			);
+		}
 	}
 
 	async function markBoxAsNotCaught(boxNumber: number) {
@@ -204,6 +232,7 @@
 	}
 
 	async function createCatchRecords() {
+		if (!pokedexId) return;
 		// this user doesn't have any catch records, so we need to create them
 		await getPokedexEntries().then(async (pokedexEntries) => {
 			// If there are no catch records, make one for each pokedex entry
@@ -250,27 +279,22 @@
 
 			creatingRecords = false;
 			failedToLoad = false;
-			await getData();
+			await getData({ page: currentPage, perPage: itemsPerPage });
 		});
 	}
 
-	onMount(async () => {
-		await getData();
-	});
-
-	$: {
-		if (browser) {
-			currentPage, itemsPerPage, getData();
-		}
-	}
+	// Fetch data whenever pagination controls change (client-side only)
+	$: if (browser && pokedexId) getData({ page: currentPage, perPage: itemsPerPage });
 </script>
 
 <svelte:head>
-	<title>{pokedex.name} - Living Dex Tracker</title>
+	<title>{pokedex ? `${pokedex.name} - Living Dex Tracker` : 'Pokédex - Living Dex Tracker'}</title>
 </svelte:head>
 
 {#if !localUser}
 	<p>Please <a href="/signin" class="underline text-primary hover:text-secondary">sign in</a></p>
+{:else if !pokedex}
+	<p>Loading...</p>
 {:else}
 	<div class="container mx-auto p-4 max-w-screen-2xl">
 		<!-- Pokédex Header -->
@@ -285,32 +309,64 @@
 							<!-- Type badges -->
 							{#if pokedex.isLivingDex}
 								<div class="badge badge-primary badge-lg gap-1">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-4 w-4"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+											clip-rule="evenodd"
+										/>
 									</svg>
 									Living
 								</div>
 							{/if}
 							{#if pokedex.isShinyDex}
 								<div class="badge badge-secondary badge-lg gap-1">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-										<path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-4 w-4"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
+										<path
+											d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+										/>
 									</svg>
 									Shiny
 								</div>
 							{/if}
 							{#if pokedex.isOriginDex}
 								<div class="badge badge-accent badge-lg gap-1">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-4 w-4"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+											clip-rule="evenodd"
+										/>
 									</svg>
 									Origin
 								</div>
 							{/if}
 							{#if pokedex.isFormDex}
 								<div class="badge badge-info badge-lg gap-1">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-										<path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-4 w-4"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
+										<path
+											d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"
+										/>
 									</svg>
 									Form
 								</div>
@@ -320,17 +376,35 @@
 							{#if pokedex.gameScope}
 								<div class="divider divider-horizontal mx-0"></div>
 								<div class="flex items-center gap-2 text-base-content/70">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-5 w-5"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
 										<path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-										<path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
+										<path
+											fill-rule="evenodd"
+											d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z"
+											clip-rule="evenodd"
+										/>
 									</svg>
 									<span class="font-semibold">{pokedex.gameScope}</span>
 								</div>
 							{:else}
 								<div class="divider divider-horizontal mx-0"></div>
 								<div class="flex items-center gap-2 text-base-content/70">
-									<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-										<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clip-rule="evenodd" />
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										class="h-5 w-5"
+										viewBox="0 0 20 20"
+										fill="currentColor"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z"
+											clip-rule="evenodd"
+										/>
 									</svg>
 									<span class="font-semibold">All Games</span>
 								</div>
@@ -345,8 +419,15 @@
 					<!-- Right side: Actions -->
 					<div class="flex flex-row lg:flex-col gap-2">
 						<a href="/my-pokedexes" class="btn btn-outline btn-sm">
-							<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
-								<path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-4 w-4"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+							>
+								<path
+									d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+								/>
 							</svg>
 							My Pokédexes
 						</a>
@@ -358,7 +439,6 @@
 		<!-- Box View -->
 		<PokedexViewBoxes
 			{showShiny}
-			showForms={pokedex.isFormDex}
 			bind:combinedData
 			bind:boxNumbers
 			bind:creatingRecords
@@ -382,7 +462,7 @@
 				showForms={pokedex.isFormDex}
 				{showShiny}
 				userId={localUser?.id}
-				pokedexId={pokedexId}
+				{pokedexId}
 				on:updateCatch={handleModalCatchUpdate}
 			/>
 		</PokedexModal>

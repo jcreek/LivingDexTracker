@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { CatchRecord } from '$lib/models/CatchRecord';
 	import type { CombinedData } from '$lib/models/CombinedData';
-	import type { PokedexEntry } from '$lib/models/PokedexEntry';
+	import { calculateBoxPlacement } from '$lib/utils/boxPlacement';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	export let showShiny = false;
-	export let showForms = true;
 	export let combinedData: CombinedData[] | null;
 	export let boxNumbers: number[] = [];
 	export let creatingRecords = false;
@@ -30,11 +29,11 @@
 		}
 	}
 
-	function cellBackgroundColourStyle(pokedexEntry: PokedexEntry, catchRecord: CatchRecord | null) {
+	function cellBackgroundColourStyle(index: number, catchRecord: CatchRecord | null) {
 		if (catchRecord?.caught || catchRecord?.haveToEvolve) {
 			return '';
 		} else {
-			const placement = showForms ? pokedexEntry.boxPlacementForms : pokedexEntry.boxPlacement;
+			const placement = calculateBoxPlacement(index);
 			if (placement.column % 2 === 0) {
 				return 'background-color: #ffffff';
 			} else {
@@ -68,16 +67,16 @@
 								>Mark box as not 'in Home'</button
 							>
 							<div class="grid grid-cols-6">
-								{#each combinedData as { pokedexEntry, catchRecord }}
-									{@const placement = showForms
-										? pokedexEntry.boxPlacementForms
-										: pokedexEntry.boxPlacement}
+								{#each combinedData as { pokedexEntry, catchRecord }, index}
+									{@const placement = calculateBoxPlacement(index)}
 									{#if placement.box === boxNumber}
 										<button
 											type="button"
-											class="pokemon-box {cellBackgroundColourClass(catchRecord)} hover:scale-105 hover:shadow-lg hover:z-50 transition-all cursor-pointer relative"
+											class="pokemon-box {cellBackgroundColourClass(
+												catchRecord
+											)} hover:scale-105 hover:shadow-lg hover:z-50 transition-all cursor-pointer relative"
 											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
-                                        {cellBackgroundColourStyle(pokedexEntry, catchRecord)}"
+																{cellBackgroundColourStyle(index, catchRecord)}"
 											on:click={() => onPokemonClick({ pokedexEntry, catchRecord })}
 											aria-label="View details for {pokedexEntry.pokemon}"
 										>
