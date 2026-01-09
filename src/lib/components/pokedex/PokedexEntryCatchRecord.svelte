@@ -105,7 +105,7 @@
 			<div class="flex items-center">
 				<div class="form-control">
 					<label class="cursor-pointer label">
-						<span class="block font-bold mr-2">In home:</span>
+						<span class="block font-bold mr-2">In Home:</span>
 						<input
 							type="checkbox"
 							bind:checked={catchRecord.inHome}
