@@ -104,6 +104,14 @@
 	async function updateACatch(event: any) {
 		if (!pokedexId) return;
 		const { catchRecord } = event.detail;
+		// Enforce mutual exclusivity (should be impossible to have both true).
+		const sanitizedCatchRecord: CatchRecord = { ...catchRecord };
+		if (sanitizedCatchRecord.caught) {
+			sanitizedCatchRecord.haveToEvolve = false;
+		}
+		if (sanitizedCatchRecord.haveToEvolve) {
+			sanitizedCatchRecord.caught = false;
+		}
 		if (!localUser?.id) {
 			alert('User not signed in');
 			return;
@@ -114,7 +122,7 @@
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify(catchRecord),
+			body: JSON.stringify(sanitizedCatchRecord),
 			credentials: 'include' as RequestCredentials
 		};
 
