@@ -20,6 +20,87 @@
 	export let createCatchRecords = () => {};
 	export let onPokemonClick: (pokemon: CombinedData) => void = () => {};
 
+	let filterNotCaught = false;
+	let filterNeedsToEvolve = false;
+	let filterInHome = false;
+	let filterNotInHome = false;
+
+	let filteredCombinedData: CombinedData[] = [];
+	let filteredTotal = 0;
+	let overallTotal = 0;
+	let overallCaughtCount = 0;
+	let overallNotCaughtCount = 0;
+	let overallNeedsToEvolveCount = 0;
+	let overallInHomeCount = 0;
+	let overallNotInHomeCount = 0;
+	let filtersActive = false;
+	let filtersKey = '';
+
+	function normalizedStatus(catchRecord: CatchRecord | null) {
+		return {
+			caught: !!catchRecord?.caught,
+			needsToEvolve: !!catchRecord?.haveToEvolve,
+			inHome: !!catchRecord?.inHome
+		};
+	}
+
+	function matchesFilters(catchRecord: CatchRecord | null) {
+		const status = normalizedStatus(catchRecord);
+		if (!filtersActive) return true;
+
+		const isCaught = status.caught || status.needsToEvolve;
+		const isNotCaught = !isCaught;
+		const isNeedsToEvolve = status.needsToEvolve;
+		const isInHome = status.inHome;
+		const isNotInHome = !status.inHome;
+
+		// OR within each group, AND between groups.
+		const progressGroupActive = filterNotCaught || filterNeedsToEvolve;
+		const homeGroupActive = filterInHome || filterNotInHome;
+
+		const progressMatch =
+			!progressGroupActive ||
+			(filterNotCaught && isNotCaught) ||
+			(filterNeedsToEvolve && isNeedsToEvolve);
+
+		const homeMatch =
+			!homeGroupActive || (filterInHome && isInHome) || (filterNotInHome && isNotInHome);
+
+		return progressMatch && homeMatch;
+	}
+
+	$: filtersActive = filterNotCaught || filterNeedsToEvolve || filterInHome || filterNotInHome;
+	$: filtersKey = `${filterNotCaught}-${filterNeedsToEvolve}-${filterInHome}-${filterNotInHome}`;
+
+	$: {
+		// Ensure this recalculates when any filter changes (Svelte doesn't track function internals).
+		filtersKey;
+		filteredCombinedData = combinedData
+			? combinedData.filter(({ catchRecord }) => matchesFilters(catchRecord))
+			: [];
+	}
+
+	$: filteredTotal = filteredCombinedData.length;
+	$: overallTotal = combinedData?.length ?? 0;
+
+	$: overallCaughtCount = (combinedData ?? []).reduce((acc, { catchRecord }) => {
+		const status = normalizedStatus(catchRecord);
+		// Treat "needs to evolve" as a subset of "caught" (it is caught, just not finished).
+		return acc + (status.caught || status.needsToEvolve ? 1 : 0);
+	}, 0);
+
+	$: overallNotCaughtCount = overallTotal - overallCaughtCount;
+
+	$: overallNeedsToEvolveCount = (combinedData ?? []).reduce((acc, { catchRecord }) => {
+		return acc + (normalizedStatus(catchRecord).needsToEvolve ? 1 : 0);
+	}, 0);
+
+	$: overallInHomeCount = (combinedData ?? []).reduce((acc, { catchRecord }) => {
+		return acc + (normalizedStatus(catchRecord).inHome ? 1 : 0);
+	}, 0);
+
+	$: overallNotInHomeCount = overallTotal - overallInHomeCount;
+
 	const BOX_VIEW_LAYOUT_STORAGE_KEY = 'livingdex:boxViewLayout:v1';
 	type BoxViewLayout = 'comfortable' | 'compact' | 'ultra';
 	let boxViewLayout: BoxViewLayout = 'comfortable';
@@ -89,86 +170,162 @@
 			}
 		}
 	}
+
+	function onInHomeFilterChange(event: Event) {
+		const checked = (event.currentTarget as HTMLInputElement).checked;
+		if (checked) filterNotInHome = false;
+	}
+
+	function onNotInHomeFilterChange(event: Event) {
+		const checked = (event.currentTarget as HTMLInputElement).checked;
+		if (checked) filterInHome = false;
+	}
 </script>
 
 <main class="flex-1 p-4 w-full">
 	<div class="max-w-fit mx-auto">
 		{#if combinedData && combinedData.length > 0}
 			<div class="container mx-auto">
-				<div class="flex flex-col gap-3 mb-4">
-					<div class="flex flex-wrap items-center gap-3">
-						<label class="label p-0" for="box-view-layout">
-							<span class="label-text font-semibold">Box view layout</span>
-						</label>
-						<select
-							id="box-view-layout"
-							class="select select-bordered select-sm"
-							bind:value={boxViewLayout}
-							on:change={onBoxViewLayoutChange}
-							aria-label="Choose box view layout density"
-						>
-							<option value="comfortable">Comfortable (2 boxes/row)</option>
-							<option value="compact">Compact (3 boxes/row)</option>
-							<option value="ultra">Ultra (4 boxes/row)</option>
-						</select>
+				<div class="card bg-base-100 shadow mb-4">
+					<div class="card-body p-4 flex flex-col gap-3">
+						<div class="flex flex-wrap items-center gap-3">
+							<label class="label p-0" for="box-view-layout">
+								<span class="label-text font-semibold">Box view layout</span>
+							</label>
+							<select
+								id="box-view-layout"
+								class="select select-bordered select-sm"
+								bind:value={boxViewLayout}
+								on:change={onBoxViewLayoutChange}
+								aria-label="Choose box view layout density"
+							>
+								<option value="comfortable">Comfortable (2 boxes/row)</option>
+								<option value="compact">Compact (3 boxes/row)</option>
+								<option value="ultra">Ultra (4 boxes/row)</option>
+							</select>
 
-						<div class="flex flex-wrap items-center gap-2 text-sm">
-							<span class="font-semibold">Legend:</span>
-							<span
-								class="inline-flex items-center gap-1 rounded-full border border-green-700 bg-green-600 px-2 py-0.5 text-white"
-							>
-								<span class="status-badge status-badge--caught" aria-hidden="true">
-									<svg
-										class="status-icon"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="#ffffff"
-										stroke-width="3"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									>
-										<path d="M5 13l4 4L19 7" />
-									</svg>
+							<div class="flex flex-wrap items-center gap-2 text-sm">
+								<span class="font-semibold">Legend:</span>
+								<span
+									class="inline-flex items-center gap-1 rounded-full border border-green-700 bg-green-600 px-2 py-0.5 text-white"
+								>
+									<span class="status-badge status-badge--caught" aria-hidden="true">
+										<svg
+											class="status-icon"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="#ffffff"
+											stroke-width="3"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<path d="M5 13l4 4L19 7" />
+										</svg>
+									</span>
+									<span>Caught</span>
 								</span>
-								<span>Caught</span>
-							</span>
-							<span
-								class="inline-flex items-center gap-1 rounded-full border border-yellow-700 bg-yellow-500 px-2 py-0.5 text-white"
-							>
-								<span class="status-badge status-badge--evolve" aria-hidden="true">
-									<svg
-										class="status-icon"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="#ffffff"
-										stroke-width="3"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									>
-										<path d="M12 19V5" />
-										<path d="M5 12l7-7 7 7" />
-									</svg>
+								<span
+									class="inline-flex items-center gap-1 rounded-full border border-yellow-700 bg-yellow-500 px-2 py-0.5 text-white"
+								>
+									<span class="status-badge status-badge--evolve" aria-hidden="true">
+										<svg
+											class="status-icon"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="#ffffff"
+											stroke-width="3"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<path d="M12 19V5" />
+											<path d="M5 12l7-7 7 7" />
+										</svg>
+									</span>
+									<span>Caught but needs to evolve</span>
 								</span>
-								<span>Caught but needs to evolve</span>
-							</span>
-							<span
-								class="inline-flex items-center gap-1 rounded-full border border-sky-700 bg-sky-600 px-2 py-0.5 text-white"
-							>
-								<span class="status-badge status-badge--home" aria-hidden="true">
-									<svg
-										class="status-icon"
-										viewBox="0 0 24 24"
-										fill="#ffffff"
-										stroke="#ffffff"
-										stroke-width="2"
-										stroke-linecap="round"
-										stroke-linejoin="round"
-									>
-										<path d="M12 3 3 10.5V21a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1V10.5L12 3Z" />
-									</svg>
+								<span
+									class="inline-flex items-center gap-1 rounded-full border border-sky-700 bg-sky-600 px-2 py-0.5 text-white"
+								>
+									<span class="status-badge status-badge--home" aria-hidden="true">
+										<svg
+											class="status-icon"
+											viewBox="0 0 24 24"
+											fill="#ffffff"
+											stroke="#ffffff"
+											stroke-width="2"
+											stroke-linecap="round"
+											stroke-linejoin="round"
+										>
+											<path d="M12 3 3 10.5V21a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1V10.5L12 3Z" />
+										</svg>
+									</span>
+									<span>In Home</span>
 								</span>
-								<span>In Home</span>
-							</span>
+							</div>
+						</div>
+
+						<div class="flex flex-col gap-3">
+							<div class="flex flex-wrap items-center gap-4">
+								<span class="font-semibold">Filters:</span>
+								<label class="label cursor-pointer gap-2 p-0">
+									<input
+										type="checkbox"
+										class="checkbox checkbox-sm"
+										bind:checked={filterNotCaught}
+									/>
+									<span class="label-text">Not caught</span>
+								</label>
+								<label class="label cursor-pointer gap-2 p-0">
+									<input
+										type="checkbox"
+										class="checkbox checkbox-sm"
+										bind:checked={filterNeedsToEvolve}
+									/>
+									<span class="label-text">Needs to evolve</span>
+								</label>
+								<label class="label cursor-pointer gap-2 p-0">
+									<input
+										type="checkbox"
+										class="checkbox checkbox-sm"
+										bind:checked={filterInHome}
+										on:change={onInHomeFilterChange}
+									/>
+									<span class="label-text">In HOME</span>
+								</label>
+								<label class="label cursor-pointer gap-2 p-0">
+									<input
+										type="checkbox"
+										class="checkbox checkbox-sm"
+										bind:checked={filterNotInHome}
+										on:change={onNotInHomeFilterChange}
+									/>
+									<span class="label-text">Not in HOME</span>
+								</label>
+							</div>
+
+							<div
+								class="flex flex-wrap items-center justify-between gap-2 rounded-box bg-base-200/60 px-3 py-2"
+							>
+								<div class="text-sm text-base-content/70">
+									<span class="font-semibold text-base-content">Caught</span>
+									{overallCaughtCount}
+									<span class="mx-2">•</span>
+									<span class="font-semibold text-base-content">Not caught</span>
+									{overallNotCaughtCount}
+									<span class="mx-2">•</span>
+									<span class="font-semibold text-base-content">Needs to evolve</span>
+									{overallNeedsToEvolveCount}
+									<span class="mx-2">•</span>
+									<span class="font-semibold text-base-content">In HOME</span>
+									{overallInHomeCount}
+									<span class="mx-2">•</span>
+									<span class="font-semibold text-base-content">Not in HOME</span>
+									{overallNotInHomeCount}
+								</div>
+								<div class="badge badge-outline">
+									Showing {filteredTotal} of {overallTotal}
+								</div>
+							</div>
 						</div>
 					</div>
 				</div>
@@ -198,15 +355,20 @@
 							<div class="grid grid-cols-6">
 								{#each combinedData as { pokedexEntry, catchRecord }, index}
 									{@const placement = calculateBoxPlacement(index)}
+									{@const isFilteredOut =
+										filtersActive && !!filtersKey && !matchesFilters(catchRecord)}
 									{#if placement.box === boxNumber}
 										<button
 											type="button"
-											class="pokemon-box {cellStatusClasses(
-												catchRecord
-											)} hover:scale-105 hover:shadow-lg hover:z-50 transition-all cursor-pointer relative"
+											class="pokemon-box {cellStatusClasses(catchRecord)} {isFilteredOut
+												? 'pokemon-box--filtered-out'
+												: 'hover:scale-105 hover:shadow-lg hover:z-50'} transition-all cursor-pointer relative"
 											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
 															{cellBackgroundColourStyle(index, catchRecord)}"
-											on:click={() => onPokemonClick({ pokedexEntry, catchRecord })}
+											aria-disabled={isFilteredOut}
+											on:click={() => {
+												if (!isFilteredOut) onPokemonClick({ pokedexEntry, catchRecord });
+											}}
 											aria-label="View details for {pokedexEntry.pokemon}. Status: {statusLabel(
 												catchRecord
 											)}"
@@ -348,6 +510,12 @@
 		border: 1px solid #ddd;
 		padding: 0;
 		border-radius: 0;
+	}
+
+	.pokemon-box--filtered-out {
+		opacity: 0.25;
+		filter: grayscale(1);
+		cursor: default;
 	}
 
 	.pokemon-box-inner {
