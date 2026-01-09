@@ -80,6 +80,10 @@
 					alert(`Failed to update pokédex: ${errorText}`);
 					return;
 				}
+
+				closeModal();
+				await loadPokedexes();
+				return;
 			} else {
 				// Create new pokédex
 				const response = await fetch('/api/pokedexes', {
@@ -95,17 +99,18 @@
 					alert(`Failed to create pokédex: ${errorText}`);
 					return;
 				}
+				const createdPokedex = (await response.json()) as Pokedex;
 
-				// If this is the first pokédex, redirect to it after creation
-				const createdPokedex = await response.json();
-				if (pokedexes.length === 0) {
+				// Refresh local state BEFORE deciding whether this is the user's first pokédex.
+				closeModal();
+				await loadPokedexes();
+
+				// If the user's total pokédex count is now 1, this newly created one is their first.
+				if (pokedexes.length === 1) {
 					goto(`/pokedex/${createdPokedex._id}`);
 					return;
 				}
 			}
-
-			closeModal();
-			await loadPokedexes();
 		} catch (error) {
 			console.error('Error saving pokédex:', error);
 			alert('An error occurred');
@@ -184,12 +189,7 @@
 			<h3 class="font-bold text-lg mb-4">
 				{mode === 'create' ? 'Create New Pokédex' : 'Edit Pokédex'}
 			</h3>
-			<PokedexForm
-				bind:pokedex={formData}
-				{mode}
-				onSubmit={handleSubmit}
-				onCancel={closeModal}
-			/>
+			<PokedexForm bind:pokedex={formData} {mode} onSubmit={handleSubmit} onCancel={closeModal} />
 		</div>
 		<div class="modal-backdrop" on:click={closeModal}></div>
 	</div>

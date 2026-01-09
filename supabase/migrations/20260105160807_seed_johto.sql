@@ -149,6 +149,7 @@ INSERT INTO pokedex_entries (
 (231, 'Phanpy', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
 (232, 'Donphan', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
 (232, 'Donphan', 'Female', false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
+(233, 'Porygon2', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
 (234, 'Stantler', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
 (235, 'Smeargle', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
 (236, 'Tyrogue', NULL, false, 'Johto', ARRAY['Gold', 'Silver', 'Crystal', 'HeartGold', 'SoulSilver']),
@@ -256,6 +257,7 @@ INSERT INTO regional_dex_numbers (
   ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 230 AND form IS NULL), 'Johto', 79),
   ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 231 AND form IS NULL), 'Johto', 80),
   ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 232 AND form IS NULL), 'Johto', 81),
+  ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 233 AND form IS NULL), 'Johto', 82),
   ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 234 AND form IS NULL), 'Johto', 83),
   ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 235 AND form IS NULL), 'Johto', 84),
   ((SELECT id FROM pokedex_entries WHERE "pokedexNumber" = 236 AND form IS NULL), 'Johto', 85),
@@ -279,4 +281,4 @@ INSERT INTO regional_dex_numbers (
 INSERT INTO metadata (key, value) VALUES
   ('johto_seeded', 'true'),
   ('johto_seed_date', NOW()::TEXT),
-  ('johto_pokemon_count', '98');
+  ('johto_pokemon_count', '99');

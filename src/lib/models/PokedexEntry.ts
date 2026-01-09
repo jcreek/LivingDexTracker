@@ -2,8 +2,6 @@
 export interface PokedexEntry {
 	_id: string; // Maps to Supabase 'id' field for frontend compatibility
 	pokedexNumber: number;
-	boxPlacement: { box: number; row: number; column: number };
-	boxPlacementForms: { box: number; row: number; column: number };
 	pokemon: string;
 	form: string;
 	canGigantamax: boolean;
