@@ -25,6 +25,17 @@
 	let filterInHome = false;
 	let filterNotInHome = false;
 
+	// Bulk actions menu state (one open menu at a time)
+	let openBulkMenuForBox: number | null = null;
+
+	onMount(() => {
+		const close = () => {
+			openBulkMenuForBox = null;
+		};
+		window.addEventListener('click', close);
+		return () => window.removeEventListener('click', close);
+	});
+
 	let filteredCombinedData: CombinedData[] = [];
 	let filteredTotal = 0;
 	let overallTotal = 0;
@@ -336,22 +347,86 @@
 				>
 					{#each boxNumbers as boxNumber}
 						<div class="mb-8">
-							<h2 class="text-xl font-bold mb-4">Box {boxNumber}</h2>
-							<button class="btn" on:click={() => markBoxAsNotCaught(boxNumber)}>
-								Mark box as not 'caught'
-							</button>
-							<button class="btn" on:click={() => markBoxAsCaught(boxNumber)}>
-								Mark box as 'caught'
-							</button>
-							<button class="btn" on:click={() => markBoxAsNeedsToEvolve(boxNumber)}>
-								Mark box as 'needs to evolve'
-							</button>
-							<button class="btn" on:click={() => markBoxAsInHome(boxNumber)}>
-								Mark box as 'in Home'
-							</button>
-							<button class="btn" on:click={() => markBoxAsNotInHome(boxNumber)}>
-								Mark box as not 'in Home'
-							</button>
+							<div class="flex flex-wrap items-center justify-between gap-3 mb-4 relative z-20">
+								<h2 class="text-xl font-bold">Box {boxNumber}</h2>
+								<div class="relative" on:click|stopPropagation>
+									<button
+										type="button"
+										class="btn btn-sm btn-outline relative z-[210]"
+										aria-label="Open bulk actions menu"
+										aria-haspopup="menu"
+										aria-expanded={openBulkMenuForBox === boxNumber}
+										on:click={(event) => {
+											event.stopPropagation();
+											openBulkMenuForBox = openBulkMenuForBox === boxNumber ? null : boxNumber;
+										}}
+										on:keydown={(event) => {
+											if (event.key === 'Escape') openBulkMenuForBox = null;
+										}}
+									>
+										⋯
+									</button>
+
+									{#if openBulkMenuForBox === boxNumber}
+										<ul
+											class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
+											role="menu"
+											on:click|stopPropagation
+										>
+											<li>
+												<button
+													on:click={() => {
+														markBoxAsNotCaught(boxNumber);
+														openBulkMenuForBox = null;
+													}}
+												>
+													Mark box as Not caught
+												</button>
+											</li>
+											<li>
+												<button
+													on:click={() => {
+														markBoxAsCaught(boxNumber);
+														openBulkMenuForBox = null;
+													}}
+												>
+													Mark box as Caught
+												</button>
+											</li>
+											<li>
+												<button
+													on:click={() => {
+														markBoxAsNeedsToEvolve(boxNumber);
+														openBulkMenuForBox = null;
+													}}
+												>
+													Mark box as Needs to evolve
+												</button>
+											</li>
+											<li>
+												<button
+													on:click={() => {
+														markBoxAsInHome(boxNumber);
+														openBulkMenuForBox = null;
+													}}
+												>
+													Mark box as In HOME
+												</button>
+											</li>
+											<li>
+												<button
+													on:click={() => {
+														markBoxAsNotInHome(boxNumber);
+														openBulkMenuForBox = null;
+													}}
+												>
+													Mark box as Not in HOME
+												</button>
+											</li>
+										</ul>
+									{/if}
+								</div>
+							</div>
 							<div class="grid grid-cols-6">
 								{#each combinedData as { pokedexEntry, catchRecord }, index}
 									{@const placement = calculateBoxPlacement(index)}
