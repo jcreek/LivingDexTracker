@@ -24,7 +24,7 @@
 			if (session) {
 				localUser = session.user;
 				user.set(localUser);
-				await goto('/mydex', { replace: true });
+				await goto('/my-pokedexes');
 			} else {
 				localUser = null;
 				user.set(localUser);
