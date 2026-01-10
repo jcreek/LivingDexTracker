@@ -30,13 +30,18 @@ BEGIN
   FROM auth.users;
 
   -- Calculate current stats: count of completed pokedexes
-  -- A pokedex is completed when all its entries have caught = true
+  -- A pokedex is completed when all its expected entries have caught = true
+  -- Join catch_records to pokedex_entries_mapping to validate against explicit expected entries
   SELECT COUNT(*) INTO v_completed_pokedexes
   FROM (
-    SELECT "pokedexId"
-    FROM catch_records
-    GROUP BY "pokedexId"
-    HAVING COUNT(*) = COUNT(*) FILTER (WHERE caught = true)
+    SELECT cr."pokedexId"
+    FROM catch_records cr
+    INNER JOIN pokedex_entries_mapping pem
+      ON cr."pokedexId" = pem."pokedexId"
+      AND cr."pokedexEntryId" = pem."pokedexEntryId"
+    GROUP BY cr."pokedexId"
+    HAVING COUNT(*) = COUNT(*) FILTER (WHERE cr.caught = true)
+      AND COUNT(*) = (SELECT COUNT(*) FROM pokedex_entries_mapping WHERE "pokedexId" = cr."pokedexId")
   ) completed;
 
   -- Update cache using UPSERT pattern
