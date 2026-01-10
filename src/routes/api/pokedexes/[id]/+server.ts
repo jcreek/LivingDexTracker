@@ -8,6 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 /**
  * Calculate expected pokedex entries based on pokedex configuration
  * Applies the same filtering logic as CombinedDataRepository
+ * @throws Error if the Supabase query fails
  */
 async function calculateExpectedEntries(
 	supabase: SupabaseClient,
@@ -28,7 +29,7 @@ async function calculateExpectedEntries(
 			.from('region_game_mappings')
 			.select('region')
 			.eq('game', pokedex.gameScope)
-			.single();
+			.maybeSingle();
 
 		if (regionData?.region) {
 			query = query.eq('regionToCatchIn', regionData.region);
@@ -44,16 +45,17 @@ async function calculateExpectedEntries(
 
 	if (error) {
 		console.error('Error calculating expected entries:', error);
-		return [];
+		throw new Error(`Failed to calculate expected entries: ${error.message}`);
 	}
 
 	return data?.map((entry) => entry.id) || [];
 }
 
 /**
- * Populate pokedex_entries_mapping table for a pokedex
+ * Recalculate pokedex_entries_mapping table for a pokedex (used on update)
+ * Uses a single atomic RPC call to prevent orphaned pokedexes
  */
-async function populatePokedexMappings(
+async function recalculatePokedexMappings(
 	supabase: SupabaseClient,
 	pokedexId: string,
 	pokedex: Pokedex
@@ -65,40 +67,16 @@ async function populatePokedexMappings(
 		return;
 	}
 
-	const mappings = expectedEntryIds.map((pokedexEntryId) => ({
-		pokedexId,
-		pokedexEntryId
-	}));
-
-	const { error } = await supabase.from('pokedex_entries_mapping').insert(mappings);
+	// Call the atomic RPC function to delete old mappings and insert new ones
+	const { error } = await supabase.rpc('recalculate_pokedex_mappings', {
+		p_pokedex_id: pokedexId,
+		p_entry_ids: expectedEntryIds
+	});
 
 	if (error) {
-		console.error('Error populating pokedex mappings:', error);
-		throw new Error(`Failed to populate pokedex mappings: ${error.message}`);
+		console.error('Error recalculating pokedex mappings:', error);
+		throw new Error(`Failed to recalculate pokedex mappings: ${error.message}`);
 	}
-}
-
-/**
- * Recalculate pokedex_entries_mapping table for a pokedex (used on update)
- */
-async function recalculatePokedexMappings(
-	supabase: SupabaseClient,
-	pokedexId: string,
-	pokedex: Pokedex
-): Promise<void> {
-	// Delete old mappings
-	const { error: deleteError } = await supabase
-		.from('pokedex_entries_mapping')
-		.delete()
-		.eq('pokedexId', pokedexId);
-
-	if (deleteError) {
-		console.error('Error deleting old pokedex mappings:', deleteError);
-		throw new Error(`Failed to delete old pokedex mappings: ${deleteError.message}`);
-	}
-
-	// Populate new mappings
-	await populatePokedexMappings(supabase, pokedexId, pokedex);
 }
 
 // GET: Get single pokedex by ID
@@ -154,6 +132,13 @@ export const PUT = async (event: RequestEvent) => {
 		}
 
 		const repo = new PokedexRepository(event.locals.supabase, userId);
+
+		// Fetch the existing pokedex before update to compare values
+		const existingPokedex = await repo.findById(id);
+		if (!existingPokedex) {
+			return json({ error: 'Pokedex not found' }, { status: 404 });
+		}
+
 		const pokedex = await repo.update(id, data);
 
 		if (!pokedex) {
@@ -161,16 +146,16 @@ export const PUT = async (event: RequestEvent) => {
 		}
 
 		// Recalculate pokedex_entries_mapping if configuration changed
-		// Only recalculate if type flags or gameScope changed
+		// Only recalculate if type flags or gameScope actually changed
 		const configChanged =
-			data.isFormDex !== undefined ||
-			data.gameScope !== undefined ||
-			(data.isLivingDex !== undefined && pokedex.isLivingDex !== data.isLivingDex) ||
-			(data.isShinyDex !== undefined && pokedex.isShinyDex !== data.isShinyDex) ||
-			(data.isOriginDex !== undefined && pokedex.isOriginDex !== data.isOriginDex);
+			(data.isFormDex !== undefined && existingPokedex.isFormDex !== data.isFormDex) ||
+			(data.gameScope !== undefined && existingPokedex.gameScope !== data.gameScope) ||
+			(data.isLivingDex !== undefined && existingPokedex.isLivingDex !== data.isLivingDex) ||
+			(data.isShinyDex !== undefined && existingPokedex.isShinyDex !== data.isShinyDex) ||
+			(data.isOriginDex !== undefined && existingPokedex.isOriginDex !== data.isOriginDex);
 
 		if (configChanged) {
-			await recalculatePokedexMappings(event.locals.supabase, id, { ...pokedex, ...data });
+			await recalculatePokedexMappings(event.locals.supabase, id, pokedex);
 		}
 
 		return json(pokedex);

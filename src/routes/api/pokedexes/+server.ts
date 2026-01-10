@@ -8,6 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 /**
  * Calculate expected pokedex entries based on pokedex configuration
  * Applies the same filtering logic as CombinedDataRepository
+ * @throws Error if the Supabase query fails
  */
 async function calculateExpectedEntries(
 	supabase: SupabaseClient,
@@ -28,7 +29,7 @@ async function calculateExpectedEntries(
 			.from('region_game_mappings')
 			.select('region')
 			.eq('game', pokedex.gameScope)
-			.single();
+			.maybeSingle();
 
 		if (regionData?.region) {
 			query = query.eq('regionToCatchIn', regionData.region);
@@ -44,7 +45,7 @@ async function calculateExpectedEntries(
 
 	if (error) {
 		console.error('Error calculating expected entries:', error);
-		return [];
+		throw new Error(`Failed to calculate expected entries: ${error.message}`);
 	}
 
 	return data?.map((entry) => entry.id) || [];
@@ -52,6 +53,8 @@ async function calculateExpectedEntries(
 
 /**
  * Populate pokedex_entries_mapping table for a pokedex
+ * Uses chunked upsert to avoid UNIQUE constraint violations and request size limits
+ * @throws Error if the Supabase upsert fails
  */
 async function populatePokedexMappings(
 	supabase: SupabaseClient,
@@ -70,11 +73,19 @@ async function populatePokedexMappings(
 		pokedexEntryId
 	}));
 
-	const { error } = await supabase.from('pokedex_entries_mapping').insert(mappings);
+	// Process in chunks to avoid request size limits
+	const CHUNK_SIZE = 500;
+	for (let i = 0; i < mappings.length; i += CHUNK_SIZE) {
+		const chunk = mappings.slice(i, i + CHUNK_SIZE);
+		const { error } = await supabase.from('pokedex_entries_mapping').upsert(chunk, {
+			onConflict: 'pokedexId,pokedexEntryId',
+			ignoreDuplicates: true
+		});
 
-	if (error) {
-		console.error('Error populating pokedex mappings:', error);
-		throw new Error(`Failed to populate pokedex mappings: ${error.message}`);
+		if (error) {
+			console.error('Error populating pokedex mappings:', error);
+			throw new Error(`Failed to populate pokedex mappings: ${error.message}`);
+		}
 	}
 }
 
