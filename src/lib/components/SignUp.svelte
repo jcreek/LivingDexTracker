@@ -1,4 +1,7 @@
 <script lang="ts">
+	import { createEventDispatcher } from 'svelte';
+	const dispatch = createEventDispatcher();
+
 	let email = '';
 	let password = '';
 
@@ -17,13 +20,18 @@
 			});
 
 			if (error) {
-				throw error;
+				console.error('Sign up error:', error);
+				alert(`Sign up failed: ${error.message}`);
+				return;
 			}
 
-			// Handle success (optional)
-		} catch (error) {
-			console.error('Sign up error:', error.message);
-			// Handle error
+			if (data) {
+				// Emit signedUp event to notify parent component
+				dispatch('signedUp', {});
+			}
+		} catch (err) {
+			console.error('Sign up error:', err);
+			alert('Sign up failed');
 		}
 	}
 </script>
@@ -54,6 +62,12 @@
 		/>
 	</div>
 	<div class="form-control mt-6">
-		<button class="btn btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
+		<button class="btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
 	</div>
 </form>
+
+<style>
+	.card-body {
+		padding: 0.5rem;
+	}
+</style>

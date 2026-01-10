@@ -97,10 +97,10 @@
 							<p class="text-sm opacity-70 mt-2">
 								Still having trouble?
 								<a
-									href="mailto:support@example.com"
+									href="https://github.com/jcreek/LivingDexTracker/issues"
 									class="link link-primary font-semibold hover:underline"
 								>
-									Contact support
+									Raise an issue on our GitHub
 								</a> for assistance.
 							</p>
 						</div>

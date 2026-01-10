@@ -1,12 +1,11 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { user } from '$lib/stores/user';
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import PokedexCard from '$lib/components/pokedex/PokedexCard.svelte';
 	import PokedexForm from '$lib/components/pokedex/PokedexForm.svelte';
 
-	let pokedexes: Pokedex[] = [];
+	export let data;
+	let { pokedexes } = data;
 	let showModal = false;
 	let editingPokedex: Pokedex | null = null;
 	let formData: Partial<Pokedex> = {
@@ -20,14 +19,6 @@
 	};
 
 	$: mode = editingPokedex ? ('edit' as const) : ('create' as const);
-
-	onMount(async () => {
-		if (!$user) {
-			goto('/signin');
-			return;
-		}
-		await loadPokedexes();
-	});
 
 	async function loadPokedexes() {
 		const response = await fetch('/api/pokedexes', { credentials: 'include' });
