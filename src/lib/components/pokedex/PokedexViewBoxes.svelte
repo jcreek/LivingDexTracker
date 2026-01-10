@@ -175,9 +175,9 @@
 		} else {
 			const placement = calculateBoxPlacement(index);
 			if (placement.column % 2 === 0) {
-				return 'background-color: #ffffff';
+				return 'background-color: var(--ld-box-bg-even);';
 			} else {
-				return 'background-color: #f9f9f9;';
+				return 'background-color: var(--ld-box-bg-odd);';
 			}
 		}
 	}
@@ -533,7 +533,6 @@
 															form={pokedexEntry.form}
 															shiny={showShiny}
 														/>
-														<span class="md:hidden">&#9432;</span>
 													</div>
 												</div>
 												<div slot="tooltip">
@@ -596,6 +595,21 @@
 </main>
 
 <style>
+	/*
+		Theme-aware backgrounds for non-caught box slots.
+		- Light mode (`pokeball`) keeps the original exact colors.
+		- Dark mode maps to DaisyUI theme base tokens so it stays consistent with the active theme.
+	*/
+	:global(:root) {
+		--ld-box-bg-even: var(--fallback-b1, oklch(var(--b1) / 1));
+		--ld-box-bg-odd: var(--fallback-b3, oklch(var(--b3) / 1));
+	}
+
+	:global([data-theme='pokeball']) {
+		--ld-box-bg-even: #ffffff;
+		--ld-box-bg-odd: #f9f9f9;
+	}
+
 	.boxes-grid {
 		display: grid;
 		grid-template-columns: repeat(1, minmax(0, 1fr));
@@ -612,6 +626,13 @@
 		border: 1px solid #ddd;
 		padding: 0;
 		border-radius: 0;
+		/*
+			On small screens the grid columns get narrow; without an explicit ratio,
+			the button height becomes content-driven (padding + sprite) and you end up
+			with rectangular cells. Force each slot to be square.
+		*/
+		aspect-ratio: 1 / 1;
+		width: 100%;
 	}
 
 	.pokemon-box--filtered-out {
@@ -638,13 +659,51 @@
 	.pokemon-box :global(img) {
 		width: var(--sprite-size, 64px);
 		height: var(--sprite-size, 64px);
+		max-width: 100%;
+		max-height: 100%;
+		display: block;
 		object-fit: contain;
 	}
 
 	.sprite-placeholder {
 		width: var(--sprite-size, 64px);
 		height: var(--sprite-size, 64px);
+		max-width: 100%;
+		max-height: 100%;
 		display: block;
+	}
+
+	/* Mobile: keep 6 columns but prevent sprite/padding from forcing tall cells */
+	@media (max-width: 767px) {
+		.pokemon-box-inner {
+			/* cap padding so the sprite can fit inside small squares */
+			padding: min(var(--cell-padding, 1rem), 0.35rem);
+		}
+
+		.pokemon-box :global(img) {
+			/* allow the sprite to shrink with the square cell */
+			width: min(var(--sprite-size, 64px), 100%);
+			height: min(var(--sprite-size, 64px), 100%);
+		}
+
+		.sprite-placeholder {
+			width: min(var(--sprite-size, 64px), 100%);
+			height: min(var(--sprite-size, 64px), 100%);
+		}
+
+		.status-badge {
+			width: 0.95rem;
+			height: 0.95rem;
+		}
+
+		.status-badge-top {
+			top: 0.35rem;
+		}
+
+		.status-icon {
+			width: 0.85rem;
+			height: 0.85rem;
+		}
 	}
 
 	.status-badge {

@@ -25,7 +25,7 @@
 
 {#if isOpen}
 	<div class="modal modal-open" role="dialog" aria-modal="true">
-		<div class="modal-box-custom">
+		<div class="modal-box-custom bg-primary text-primary-content">
 			<button class="close-button" on:click={onClose} aria-label="Close"> ✕ </button>
 			<div class="modal-content">
 				<slot />
@@ -52,7 +52,6 @@
 		max-width: 72rem;
 		width: 100%;
 		max-height: 90vh;
-		background-color: rgba(220, 38, 38, 0.95);
 		border: none;
 		box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
 		outline: none;

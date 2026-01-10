@@ -59,7 +59,7 @@
 >
 	<div class="dex-column pokedex-entry-container">
 		<div class="flex mb-2">
-			<div class="sprite-container flex justify-center items-center bg-white rounded-lg p-2">
+			<div class="sprite-container flex justify-center items-center bg-base-100 rounded-lg p-2">
 				<PokemonSprite
 					pokemonName={pokedexEntry.pokemon}
 					pokedexNumber={pokedexEntry.pokedexNumber}
@@ -68,18 +68,20 @@
 				/>
 			</div>
 			<div class="pl-2">
-				<h3 class="text-xl font-bold pt-1 text-secondary">{pokedexEntry.pokemon}</h3>
-				<sub class="text-gray-200">#{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</sub>
+				<h3 class="text-xl font-bold pt-1">{pokedexEntry.pokemon}</h3>
+				<sub class="text-primary-content/80"
+					>#{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</sub
+				>
 			</div>
 		</div>
 
 		{#if showForms}
-			<div class="bg-white text-black rounded-lg p-4 mb-2">
+			<div class="bg-base-100 text-base-content rounded-lg p-4 mb-2">
 				<p><strong>Form:</strong> {pokedexEntry.form ? pokedexEntry.form : '-'}</p>
 			</div>
 		{/if}
 
-		<div class="bg-white text-black rounded-lg p-4">
+		<div class="bg-base-100 text-base-content rounded-lg p-4">
 			{#if pokedexEntry.evolutionInformation}
 				<p><strong>How to evolve: </strong>{pokedexEntry.evolutionInformation}</p>
 			{:else}
@@ -95,7 +97,9 @@
 	</div>
 
 	{#if catchRecord}
-		<div class="dex-column catch-record-container bg-white text-black rounded-lg p-4 mb-4 md:mb-0">
+		<div
+			class="dex-column catch-record-container bg-base-100 text-base-content rounded-lg p-4 mb-4 md:mb-0"
+		>
 			<div class="flex items-center">
 				<div class="form-control">
 					<label class="cursor-pointer label">
@@ -103,7 +107,7 @@
 						<input
 							type="checkbox"
 							bind:checked={catchRecord.caught}
-							class="checkbox checkbox-primary border-black"
+							class="checkbox checkbox-primary"
 							on:change={onCaughtChange}
 						/>
 					</label>
@@ -116,7 +120,7 @@
 						<input
 							type="checkbox"
 							bind:checked={catchRecord.haveToEvolve}
-							class="checkbox checkbox-primary border-black"
+							class="checkbox checkbox-primary"
 							on:change={onNeedsToEvolveChange}
 						/>
 					</label>
@@ -126,30 +130,30 @@
 				<div class="form-control">
 					<label class="cursor-pointer label">
 						<span class="block font-bold mr-2">In Home:</span>
-					<input
-						type="checkbox"
-						bind:checked={catchRecord.inHome}
-						class="checkbox checkbox-primary border-black"
-						on:change={() => updateCatchRecord('toggle')}
-					/>
-				</label>
-			</div>
-		</div>
-			{#if pokedexEntry.canGigantamax && showForms}
-				<div class="flex items-center">
-					<div class="form-control">
-						<label class="cursor-pointer label">
-							<span class="block font-bold mr-2">Has Gigantamaxed:</span>
 						<input
 							type="checkbox"
-							bind:checked={catchRecord.hasGigantamaxed}
-							class="checkbox checkbox-primary border-black"
+							bind:checked={catchRecord.inHome}
+							class="checkbox checkbox-primary"
 							on:change={() => updateCatchRecord('toggle')}
 						/>
 					</label>
 				</div>
 			</div>
-		{/if}
+			{#if pokedexEntry.canGigantamax && showForms}
+				<div class="flex items-center">
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="block font-bold mr-2">Has Gigantamaxed:</span>
+							<input
+								type="checkbox"
+								bind:checked={catchRecord.hasGigantamaxed}
+								class="checkbox checkbox-primary"
+								on:change={() => updateCatchRecord('toggle')}
+							/>
+						</label>
+					</div>
+				</div>
+			{/if}
 			<p>
 				<label
 					class="block font-bold mb-1"
@@ -158,7 +162,7 @@
 				<textarea
 					bind:value={catchRecord.personalNotes}
 					id={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}
-					class="form-textarea w-full p-2 border rounded"
+					class="textarea textarea-bordered w-full"
 					style="min-height: 120px;"
 					on:input={() => updateCatchRecord('notes')}
 					on:change={() => updateCatchRecord('notes-blur')}
@@ -169,7 +173,7 @@
 
 	<div class="dex-column additional-details-container">
 		{#if showOrigins}
-			<div class="bg-white text-black rounded-lg p-4 mb-2">
+			<div class="bg-base-100 text-base-content rounded-lg p-4 mb-2">
 				<h3 class="text-xl font-semibold mb-4">Origin Dex Requirements</h3>
 				<p><strong>Region to Catch In:</strong> {pokedexEntry.regionToCatchIn}</p>
 				<p><strong>Games to catch in:</strong></p>
@@ -184,7 +188,7 @@
 			</div>
 		{/if}
 		{#if pokedexEntry.catchInformation.length > 0}
-			<div class="bg-white text-black rounded-lg p-4 mb-2">
+			<div class="bg-base-100 text-base-content rounded-lg p-4 mb-2">
 				<p><strong>Where to catch: </strong></p>
 				<ul class="list-disc list-inside">
 					{#each pokedexEntry.catchInformation as info}
@@ -206,7 +210,7 @@
 				</p>
 			</div>
 		{:else}
-			<div class="bg-white text-black rounded-lg p-4 mb-2">
+			<div class="bg-base-100 text-base-content rounded-lg p-4 mb-2">
 				<p>
 					<strong>Where to catch: </strong>Currently missing - can you
 					<a
@@ -228,28 +232,5 @@
 	.sprite-container {
 		width: 68px;
 		height: 68px;
-	}
-
-	.form-checkbox {
-		appearance: none;
-		background-color: #fff;
-		border: 2px solid #000;
-		border-radius: 0.25rem;
-		width: 1.5rem;
-		height: 1.5rem;
-		display: inline-block;
-		position: relative;
-	}
-
-	.form-checkbox:checked {
-		background-color: #00bfff;
-		background-size: 100% 100%;
-		background-position: center center;
-		background-repeat: no-repeat;
-	}
-
-	.form-textarea {
-		min-height: 3rem;
-		background-color: #fff;
 	}
 </style>
