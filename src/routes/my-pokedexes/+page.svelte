@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { user } from '$lib/stores/user';
 	import type { Pokedex } from '$lib/models/Pokedex';
@@ -7,6 +7,10 @@
 	import PokedexForm from '$lib/components/pokedex/PokedexForm.svelte';
 
 	let pokedexes: Pokedex[] = [];
+	const unsubscribe = user.subscribe((value) => {
+		console.log('[MyPokedexes] User store updated:', value ? 'User found' : 'User null');
+	});
+	onDestroy(unsubscribe);
 	let showModal = false;
 	let editingPokedex: Pokedex | null = null;
 	let formData: Partial<Pokedex> = {
@@ -22,10 +26,22 @@
 	$: mode = editingPokedex ? ('edit' as const) : ('create' as const);
 
 	onMount(async () => {
+		// Wait a short time for the user store to be populated (in case of race condition)
+		// This gives the layout's getUser() time to complete
+		if (!$user) {
+			console.log('[MyPokedexes] onMount() - No user yet, waiting 100ms...');
+			await new Promise((resolve) => setTimeout(resolve, 100));
+			console.log(
+				'[MyPokedexes] onMount() - After wait, user store value:',
+				$user ? 'User found' : 'User null'
+			);
+		}
+
 		if (!$user) {
 			goto('/signin');
 			return;
 		}
+
 		await loadPokedexes();
 	});
 

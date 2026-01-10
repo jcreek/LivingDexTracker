@@ -24,6 +24,19 @@
 	onMount(async () => {
 		await getUser();
 
+		// Listen for auth state changes to keep the user store in sync
+		const {
+			data: { subscription }
+		} = supabase.auth.onAuthStateChange((event, session) => {
+			console.log('[Layout] Auth state changed:', event, session ? 'Session found' : 'No session');
+			if (session) {
+				localUser = session.user;
+			} else {
+				localUser = null;
+			}
+			user.set(localUser);
+		});
+
 		if (pwaInfo) {
 			const { registerSW } = await import('virtual:pwa-register');
 			registerSW({
@@ -41,6 +54,10 @@
 				}
 			});
 		}
+
+		return () => {
+			subscription.unsubscribe();
+		};
 	});
 
 	async function getUser() {

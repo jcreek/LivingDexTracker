@@ -8,6 +8,7 @@ SELECT
   p.id AS "pokedexId",
   pe.id AS "pokedexEntryId"
 FROM pokedexes p
+LEFT JOIN region_game_mappings rg ON rg.game = p."gameScope"
 CROSS JOIN pokedex_entries pe
 WHERE
   -- Form filter: if isFormDex is false, only include base forms
@@ -15,10 +16,8 @@ WHERE
   (p."isFormDex" = true OR (pe.form IS NULL OR (pe.pokemon = 'Unown' AND pe.form = 'A')))
   -- Game scope filter: if gameScope is specified, filter by game
   AND (p."gameScope" IS NULL OR pe."gamesToCatchIn" @> ARRAY[p."gameScope"]::TEXT[])
-  -- Region filter: if gameScope is specified, filter by region
-  AND (p."gameScope" IS NULL OR pe."regionToCatchIn" = (
-    SELECT region FROM region_game_mappings WHERE game = p."gameScope" LIMIT 1
-  ))
+  -- Region filter: only enforce when a mapping exists
+  AND (p."gameScope" IS NULL OR rg.region IS NULL OR pe."regionToCatchIn" = rg.region)
 ON CONFLICT ("pokedexId", "pokedexEntryId") DO NOTHING;
 
 -- Add comment to document this migration
