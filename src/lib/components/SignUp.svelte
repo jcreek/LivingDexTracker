@@ -57,3 +57,9 @@
 		<button class="btn btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
 	</div>
 </form>
+
+<style scoped>
+	.card-body {
+		padding: 0.5rem;
+	}
+</style>
