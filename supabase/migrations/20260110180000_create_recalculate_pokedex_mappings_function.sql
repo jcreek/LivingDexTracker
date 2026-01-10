@@ -28,7 +28,7 @@ BEGIN
     RAISE EXCEPTION 'pokedex not found';
   END IF;
 
-  IF v_user_id != auth.uid() THEN
+  IF auth.uid() IS NULL OR v_user_id IS DISTINCT FROM auth.uid() THEN
     RAISE EXCEPTION 'not authorized: you do not own this pokedex';
   END IF;
 
@@ -38,6 +38,7 @@ BEGIN
   WHERE "pokedexId" = p_pokedex_id;
 
   INSERT INTO pokedex_entries_mapping ("pokedexId", "pokedexEntryId")
-  SELECT p_pokedex_id, unnest(p_entry_ids);
+  SELECT p_pokedex_id, unnest(p_entry_ids)
+  ON CONFLICT ("pokedexId", "pokedexEntryId") DO NOTHING;
 END;
 $$;
