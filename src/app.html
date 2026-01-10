@@ -1,9 +1,22 @@
 <!doctype html>
-<html lang="en" data-theme="pokeball">
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script>
+			(function () {
+				try {
+					const storedTheme = localStorage.getItem('theme');
+					const allowed = ['pokeball', 'dark'];
+					const theme = storedTheme && allowed.includes(storedTheme) ? storedTheme : 'pokeball';
+					document.documentElement.setAttribute('data-theme', theme);
+				} catch (e) {
+					// Fallback to default theme if localStorage is not accessible
+					document.documentElement.setAttribute('data-theme', 'pokeball');
+				}
+			})();
+		</script>
 		%sveltekit.head%
 		<link rel="stylesheet" href="%sveltekit.assets%/output.css" />
 	</head>
