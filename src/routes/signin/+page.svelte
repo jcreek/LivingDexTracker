@@ -16,11 +16,16 @@
 	onDestroy(unsubscribe);
 
 	let showAnimation = false;
+	let animationTimer: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
-		setTimeout(() => {
+		animationTimer = setTimeout(() => {
 			showAnimation = true;
 		}, 100);
+	});
+
+	onDestroy(() => {
+		clearTimeout(animationTimer);
 	});
 
 	async function getUser() {
