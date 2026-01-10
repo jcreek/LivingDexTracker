@@ -602,17 +602,12 @@
 	*/
 	:global(:root) {
 		--ld-box-bg-even: var(--fallback-b1, oklch(var(--b1) / 1));
-		--ld-box-bg-odd: var(--fallback-b2, oklch(var(--b3) / 1));
+		--ld-box-bg-odd: var(--fallback-b3, oklch(var(--b3) / 1));
 	}
 
 	:global([data-theme='pokeball']) {
 		--ld-box-bg-even: #ffffff;
 		--ld-box-bg-odd: #f9f9f9;
-	}
-
-	:global([data-theme='dark']) {
-		--ld-box-bg-even: var(--fallback-b1, oklch(var(--b1) / 1));
-		--ld-box-bg-odd: var(--fallback-b2, oklch(var(--b3) / 1));
 	}
 
 	.boxes-grid {

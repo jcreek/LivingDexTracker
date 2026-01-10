@@ -2,13 +2,10 @@
 	import { theme, applyTheme } from '$lib/stores/theme.js';
 	import { onMount } from 'svelte';
 
-	let currentTheme: 'pokeball' | 'dark';
+	let currentTheme: 'pokeball' | 'dark' = 'pokeball';
 
 	// Subscribe to theme changes
-	$: if ($theme) {
-		currentTheme = $theme;
-		applyTheme($theme);
-	}
+	$: (currentTheme = $theme), applyTheme($theme);
 
 	onMount(() => {
 		// Initialize theme from localStorage
