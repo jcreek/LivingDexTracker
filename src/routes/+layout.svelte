@@ -29,7 +29,6 @@
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((event, session) => {
-			console.log('[Layout] Auth state changed:', event, session ? 'Session found' : 'No session');
 			if (session) {
 				localUser = session.user;
 			} else {
