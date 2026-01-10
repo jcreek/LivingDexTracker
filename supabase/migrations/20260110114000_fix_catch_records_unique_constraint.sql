@@ -196,6 +196,14 @@ CREATE POLICY "Users can update own catch records" ON public.catch_records
 			WHERE public.pokedexes.id = public.catch_records."pokedexId"
 				AND public.pokedexes."userId" = auth.uid()
 		)
+	)
+	WITH CHECK (
+		auth.uid() = new."userId" AND
+		EXISTS (
+			SELECT 1 FROM public.pokedexes
+			WHERE public.pokedexes.id = new."pokedexId"
+				AND public.pokedexes."userId" = auth.uid()
+		)
 	);
 
 CREATE POLICY "Users can delete own catch records" ON public.catch_records

@@ -93,7 +93,7 @@ class CatchRecordRepository {
 		const { data: result, error } = await this.supabase
 			.from('catch_records')
 			.upsert(dbRows, {
-				onConflict: 'userId,pokedexId,pokedexEntryId'
+				onConflict: '"userId","pokedexId","pokedexEntryId"'
 			})
 			.select();
 
