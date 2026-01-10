@@ -1,8 +1,9 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
 	import SignUp from '$lib/components/SignUp.svelte';
+	import { goto } from '$app/navigation';
 
 	export let data;
 	let { supabase, stats } = data;
@@ -13,6 +14,28 @@
 		localUser = value;
 	});
 	onDestroy(unsubscribe);
+
+	onMount(() => {
+		checkSessionAndRedirect();
+	});
+
+	async function checkSessionAndRedirect() {
+		try {
+			const {
+				data: { session }
+			} = await supabase.auth.getSession();
+
+			if (session) {
+				await goto('/my-pokedexes');
+			}
+		} catch (error) {
+			console.error('Error checking session:', error);
+		}
+	}
+
+	async function handleSignedUp() {
+		await goto('/welcome');
+	}
 
 	// Format large numbers (e.g., 1000 -> 1K, 1000000 -> 1M)
 	function formatNumber(num: number): string {
@@ -140,7 +163,7 @@
 		<div class="card shrink-0 w-full max-w-sm shadow-2xl bg-neutral">
 			<div class="card-body">
 				<h2 class="card-title text-2xl mb-4">Get Started Free</h2>
-				<SignUp {supabase} />
+				<SignUp {supabase} on:signedUp={handleSignedUp} />
 			</div>
 		</div>
 	</div>
@@ -153,17 +176,14 @@
 			<div class="stat">
 				<div class="stat-title">Pokémon caught</div>
 				<div class="stat-value text-primary">{pokemonCaught}</div>
-				<div class="stat-desc">Since January 2026</div>
 			</div>
 			<div class="stat">
 				<div class="stat-title">Users</div>
 				<div class="stat-value text-primary">{users}</div>
-				<div class="stat-desc">↗︎ 400 (22%)</div>
 			</div>
 			<div class="stat">
 				<div class="stat-title">Living Dexes Completed</div>
 				<div class="stat-value text-primary">{livingDexesCompleted}</div>
-				<div class="stat-desc">Trainers worldwide</div>
 			</div>
 		</div>
 	</div>
@@ -325,7 +345,7 @@
 			<div class="card shrink-0 w-full max-w-sm shadow-2xl bg-neutral">
 				<div class="card-body">
 					<h3 class="card-title text-xl mb-4">Sign Up Now</h3>
-					<SignUp {supabase} />
+					<SignUp {supabase} on:signedUp={handleSignedUp} />
 				</div>
 			</div>
 		</div>
