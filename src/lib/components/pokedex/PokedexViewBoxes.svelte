@@ -191,6 +191,9 @@
 		const checked = (event.currentTarget as HTMLInputElement).checked;
 		if (checked) filterInHome = false;
 	}
+
+	const POKEMON_PER_BOX = 30;
+	const BOX_POSITIONS = Array.from({ length: POKEMON_PER_BOX }, (_, i) => i);
 </script>
 
 <main class="flex-1 p-4 w-full">
@@ -435,18 +438,22 @@
 								</div>
 							</div>
 							<div class="grid grid-cols-6">
-								{#each combinedData as { pokedexEntry, catchRecord }, index}
-									{@const placement = calculateBoxPlacement(index)}
+								{#each BOX_POSITIONS as positionInBox}
+									{@const globalIndex = (boxNumber - 1) * POKEMON_PER_BOX + positionInBox}
+									{@const placement = calculateBoxPlacement(globalIndex)}
+									{@const entry = combinedData?.[globalIndex]}
+									{@const pokedexEntry = entry?.pokedexEntry}
+									{@const catchRecord = entry?.catchRecord ?? null}
 									{@const isFilteredOut =
-										filtersActive && !!filtersKey && !matchesFilters(catchRecord)}
-									{#if placement.box === boxNumber}
+										!!entry && filtersActive && !!filtersKey && !matchesFilters(catchRecord)}
+									{#if entry && pokedexEntry}
 										<button
 											type="button"
 											class="pokemon-box {cellStatusClasses(catchRecord)} {isFilteredOut
 												? 'pokemon-box--filtered-out'
 												: 'hover:scale-105 hover:shadow-lg hover:z-50'} transition-all cursor-pointer relative"
 											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
-															{cellBackgroundColourStyle(index, catchRecord)}"
+															{cellBackgroundColourStyle(globalIndex, catchRecord)}"
 											aria-disabled={isFilteredOut}
 											on:click={() => {
 												if (!isFilteredOut) onPokemonClick({ pokedexEntry, catchRecord });
@@ -544,6 +551,19 @@
 												</div>
 											</Tooltip>
 										</button>
+									{:else}
+										<button
+											type="button"
+											class="pokemon-box pokemon-box--empty"
+											disabled
+											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
+															{cellBackgroundColourStyle(globalIndex, null)}"
+											aria-label="Empty box slot"
+										>
+											<div class="pokemon-box-inner" aria-hidden="true">
+												<span class="sprite-placeholder" />
+											</div>
+										</button>
 									{/if}
 								{/each}
 							</div>
@@ -600,6 +620,11 @@
 		cursor: default;
 	}
 
+	.pokemon-box--empty {
+		opacity: 0.55;
+		cursor: default;
+	}
+
 	.pokemon-box-inner {
 		padding: var(--cell-padding, 1rem);
 		width: 100%;
@@ -614,6 +639,12 @@
 		width: var(--sprite-size, 64px);
 		height: var(--sprite-size, 64px);
 		object-fit: contain;
+	}
+
+	.sprite-placeholder {
+		width: var(--sprite-size, 64px);
+		height: var(--sprite-size, 64px);
+		display: block;
 	}
 
 	.status-badge {
