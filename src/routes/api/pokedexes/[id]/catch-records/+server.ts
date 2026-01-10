@@ -88,11 +88,28 @@ export const POST = async (event: RequestEvent) => {
 	try {
 		const userId = await requireAuth(event);
 		const { id: pokedexId } = event.params;
-		const records: Partial<CatchRecord>[] = await event.request.json();
+		const body: unknown = await event.request.json();
 
 		if (!pokedexId) {
 			return json({ error: 'Pokedex ID is required' }, { status: 400 });
 		}
+
+		if (!Array.isArray(body)) {
+			return json({ error: 'Request body must be an array of catch records' }, { status: 400 });
+		}
+		const invalidIndex = body.findIndex((r) => {
+			if (!r || typeof r !== 'object') return true;
+			const entryId = (r as Partial<CatchRecord>).pokedexEntryId;
+			return entryId === undefined || entryId === null || entryId === '';
+		});
+		if (invalidIndex !== -1) {
+			return json(
+				{ error: `Record at index ${invalidIndex} is missing required field "pokedexEntryId"` },
+				{ status: 400 }
+			);
+		}
+
+		const records = body as Array<Partial<CatchRecord> & Pick<CatchRecord, 'pokedexEntryId'>>;
 
 		const { session } = await event.locals.safeGetSession();
 		if (session) {
@@ -109,16 +126,26 @@ export const POST = async (event: RequestEvent) => {
 
 		const repo = new CatchRecordRepository(event.locals.supabase, userId, pokedexId);
 
-		const insertedRecords = [];
-		for (const record of records) {
-			// Ensure the data is scoped to this pokédex and user
-			record.userId = userId;
-			record.pokedexId = pokedexId;
-			const upsertedRecord = await repo.upsert(record);
-			insertedRecords.push(upsertedRecord);
-		}
+		// Ensure the data is scoped to this pokédex and user
+		const scoped = records.map((r) => ({
+			...r,
+			userId,
+			pokedexId
+		}));
 
-		return json(insertedRecords);
+		// Prefer a single bulk upsert when the DB supports it; fall back to per-record upserts.
+		try {
+			const upserted = await repo.bulkUpsert(scoped);
+			return json(upserted);
+		} catch (bulkErr) {
+			console.warn('Bulk upsert failed; falling back to per-record upserts:', bulkErr);
+			const insertedRecords = [];
+			for (const record of scoped) {
+				const upsertedRecord = await repo.upsert(record);
+				insertedRecords.push(upsertedRecord);
+			}
+			return json(insertedRecords);
+		}
 	} catch (err) {
 		console.error(err);
 		if (err && typeof err === 'object' && 'status' in err) {
