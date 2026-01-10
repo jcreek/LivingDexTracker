@@ -175,9 +175,9 @@
 		} else {
 			const placement = calculateBoxPlacement(index);
 			if (placement.column % 2 === 0) {
-				return 'background-color: #ffffff';
+				return 'background-color: var(--ld-box-bg-even);';
 			} else {
-				return 'background-color: #f9f9f9;';
+				return 'background-color: var(--ld-box-bg-odd);';
 			}
 		}
 	}
@@ -596,6 +596,26 @@
 </main>
 
 <style>
+	/*
+		Theme-aware backgrounds for non-caught box slots.
+		- Light mode (`pokeball`) keeps the original exact colors.
+		- Dark mode maps to DaisyUI theme base tokens so it stays consistent with the active theme.
+	*/
+	:global(:root) {
+		--ld-box-bg-even: var(--fallback-b1, oklch(var(--b1) / 1));
+		--ld-box-bg-odd: var(--fallback-b2, oklch(var(--b3) / 1));
+	}
+
+	:global([data-theme='pokeball']) {
+		--ld-box-bg-even: #ffffff;
+		--ld-box-bg-odd: #f9f9f9;
+	}
+
+	:global([data-theme='dark']) {
+		--ld-box-bg-even: var(--fallback-b1, oklch(var(--b1) / 1));
+		--ld-box-bg-odd: var(--fallback-b2, oklch(var(--b3) / 1));
+	}
+
 	.boxes-grid {
 		display: grid;
 		grid-template-columns: repeat(1, minmax(0, 1fr));

@@ -5,6 +5,7 @@
 	import { type User } from '@supabase/auth-js';
 	import SignIn from '$lib/components/SignIn.svelte';
 	import SignOut from '$lib/components/SignOut.svelte';
+	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 
 	import { pwaInfo } from 'virtual:pwa-info';
 	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
@@ -137,6 +138,7 @@
 				<a class="btn btn-ghost text-xl" href="/">Living Dex Tracker</a>
 			</div>
 			<div class="navbar-end">
+				<ThemeToggle />
 				<div class="dropdown dropdown-end">
 					{#if localUser}
 						<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
