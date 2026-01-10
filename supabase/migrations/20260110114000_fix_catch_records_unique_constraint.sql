@@ -198,10 +198,10 @@ CREATE POLICY "Users can update own catch records" ON public.catch_records
 		)
 	)
 	WITH CHECK (
-		auth.uid() = new."userId" AND
+		auth.uid() = public.catch_records."userId" AND
 		EXISTS (
 			SELECT 1 FROM public.pokedexes
-			WHERE public.pokedexes.id = new."pokedexId"
+			WHERE public.pokedexes.id = public.catch_records."pokedexId"
 				AND public.pokedexes."userId" = auth.uid()
 		)
 	);
