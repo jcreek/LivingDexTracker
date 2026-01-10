@@ -3,6 +3,7 @@ import type { Pokedex } from '$lib/models/Pokedex';
 import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
+import { recalculatePokedexMappings } from '$lib/services/PokedexMappingService';
 
 // GET: Get single pokedex by ID
 export const GET = async (event: RequestEvent) => {
@@ -57,10 +58,28 @@ export const PUT = async (event: RequestEvent) => {
 		}
 
 		const repo = new PokedexRepository(event.locals.supabase, userId);
+
+		// Fetch the existing pokedex before update to compare values
+		const existingPokedex = await repo.findById(id);
+		if (!existingPokedex) {
+			return json({ error: 'Pokedex not found' }, { status: 404 });
+		}
+
 		const pokedex = await repo.update(id, data);
 
 		if (!pokedex) {
 			return json({ error: 'Pokedex not found' }, { status: 404 });
+		}
+
+		// Recalculate pokedex_entries_mapping if configuration changed
+		// Only recalculate if isFormDex or gameScope actually changed (these are the only fields that affect mapping)
+		// Compare the persisted result (pokedex) to existingPokedex to catch changes that repo.update may normalize or default
+		const configChanged =
+			pokedex.isFormDex !== existingPokedex.isFormDex ||
+			pokedex.gameScope !== existingPokedex.gameScope;
+
+		if (configChanged) {
+			await recalculatePokedexMappings(event.locals.supabase, id, pokedex);
 		}
 
 		return json(pokedex);

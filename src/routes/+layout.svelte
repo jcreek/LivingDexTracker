@@ -24,6 +24,19 @@
 	onMount(async () => {
 		await getUser();
 
+		// Listen for auth state changes to keep the user store in sync
+		const {
+			data: { subscription }
+		} = supabase.auth.onAuthStateChange((event, session) => {
+			console.log('[Layout] Auth state changed:', event, session ? 'Session found' : 'No session');
+			if (session) {
+				localUser = session.user;
+			} else {
+				localUser = null;
+			}
+			user.set(localUser);
+		});
+
 		if (pwaInfo) {
 			const { registerSW } = await import('virtual:pwa-register');
 			registerSW({
@@ -41,6 +54,10 @@
 				}
 			});
 		}
+
+		return () => {
+			subscription.unsubscribe();
+		};
 	});
 
 	async function getUser() {
@@ -91,7 +108,7 @@
 	<header>
 		<div class="navbar bg-primary text-primary-content">
 			<div class="navbar-start">
-				<div class="dropdown">
+				<!-- <div class="dropdown">
 					<div tabindex="0" role="button" class="btn btn-ghost btn-circle">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -110,12 +127,11 @@
 					<ul
 						class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-primary text-primary-content rounded-box w-52"
 					>
-						<li><a href="/about">About</a></li>
 						<li>
 							<a href="https://github.com/jcreek/LivingDexTracker" target="_blank">Contribute</a>
 						</li>
 					</ul>
-				</div>
+				</div> -->
 			</div>
 			<div class="navbar-center">
 				<a class="btn btn-ghost text-xl" href="/">Living Dex Tracker</a>
@@ -151,10 +167,6 @@
 								<li>
 									<a href="/my-pokedexes"> My Pokédexes </a>
 								</li>
-								<li>
-									<a href="/profile"> Profile </a>
-								</li>
-								<li><a href="/settings">Settings</a></li>
 								<li><SignOut {supabase} on:signedOut={getUser} /></li>
 							{:else}
 								<li><SignIn {supabase} on:signedIn={getUser} /></li>

@@ -3,6 +3,7 @@ import type { Pokedex } from '$lib/models/Pokedex';
 import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
+import { populatePokedexMappings } from '$lib/services/PokedexMappingService';
 
 // GET: List all pokedexes for user
 export const GET = async (event: RequestEvent) => {
@@ -23,6 +24,8 @@ export const GET = async (event: RequestEvent) => {
 // POST: Create new pokedex
 export const POST = async (event: RequestEvent) => {
 	let requestedName: string | undefined;
+	let createdPokedexId: string | undefined;
+	let createdPokedexName: string | undefined;
 	try {
 		const userId = await requireAuth(event);
 		const data: Partial<Pokedex> = await event.request.json();
@@ -31,6 +34,32 @@ export const POST = async (event: RequestEvent) => {
 
 		const repo = new PokedexRepository(event.locals.supabase, userId);
 		const pokedex = await repo.create(data);
+		createdPokedexId = pokedex._id;
+		createdPokedexName = pokedex.name;
+
+		// Populate pokedex_entries_mapping table with expected entries
+		try {
+			await populatePokedexMappings(event.locals.supabase, pokedex._id, pokedex);
+		} catch (mappingError) {
+			// Rollback: delete the partially-initialised pokedex to prevent dangling records
+			console.error(
+				`Failed to populate pokedex mappings for pokedex id="${createdPokedexId}" name="${createdPokedexName}":`,
+				mappingError
+			);
+			try {
+				await repo.delete(pokedex._id);
+				console.log(
+					`Successfully rolled back pokedex id="${createdPokedexId}" name="${createdPokedexName}"`
+				);
+			} catch (deleteError) {
+				console.error(
+					`Failed to rollback pokedex id="${createdPokedexId}" name="${createdPokedexName}":`,
+					deleteError
+				);
+			}
+			return json({ error: 'Failed to initialise Pokédex. Please try again.' }, { status: 500 });
+		}
+
 		return json(pokedex);
 	} catch (err) {
 		console.error('Error in POST /api/pokedexes:', err);
