@@ -38,6 +38,22 @@
 		}
 	}
 
+	async function readApiErrorMessage(response: Response): Promise<string> {
+		try {
+			const data = await response.json();
+			if (data && typeof data === 'object' && 'error' in data && typeof data.error === 'string') {
+				return data.error;
+			}
+		} catch {
+			// fall through
+		}
+		try {
+			return await response.text();
+		} catch {
+			return 'Request failed';
+		}
+	}
+
 	function openCreateModal() {
 		editingPokedex = null;
 		formData = {
@@ -75,9 +91,9 @@
 				});
 
 				if (!response.ok) {
-					const errorText = await response.text();
+					const errorText = await readApiErrorMessage(response);
 					console.error('Failed to update pokédex:', response.status, errorText);
-					alert(`Failed to update pokédex: ${errorText}`);
+					alert(errorText);
 					return;
 				}
 
@@ -94,9 +110,9 @@
 				});
 
 				if (!response.ok) {
-					const errorText = await response.text();
+					const errorText = await readApiErrorMessage(response);
 					console.error('Failed to create pokédex:', response.status, errorText);
-					alert(`Failed to create pokédex: ${errorText}`);
+					alert(errorText);
 					return;
 				}
 				const createdPokedex = (await response.json()) as Pokedex;

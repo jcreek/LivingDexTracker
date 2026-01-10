@@ -109,16 +109,26 @@ export const POST = async (event: RequestEvent) => {
 
 		const repo = new CatchRecordRepository(event.locals.supabase, userId, pokedexId);
 
-		const insertedRecords = [];
-		for (const record of records) {
-			// Ensure the data is scoped to this pokédex and user
-			record.userId = userId;
-			record.pokedexId = pokedexId;
-			const upsertedRecord = await repo.upsert(record);
-			insertedRecords.push(upsertedRecord);
-		}
+		// Ensure the data is scoped to this pokédex and user
+		const scoped = records.map((r) => ({
+			...r,
+			userId,
+			pokedexId
+		}));
 
-		return json(insertedRecords);
+		// Prefer a single bulk upsert when the DB supports it; fall back to per-record upserts.
+		try {
+			const upserted = await repo.bulkUpsert(scoped);
+			return json(upserted);
+		} catch (bulkErr) {
+			console.warn('Bulk upsert failed; falling back to per-record upserts:', bulkErr);
+			const insertedRecords = [];
+			for (const record of scoped) {
+				const upsertedRecord = await repo.upsert(record);
+				insertedRecords.push(upsertedRecord);
+			}
+			return json(insertedRecords);
+		}
 	} catch (err) {
 		console.error(err);
 		if (err && typeof err === 'object' && 'status' in err) {

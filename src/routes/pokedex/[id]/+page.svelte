@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
 	import { type CombinedData } from '$lib/models/CombinedData';
@@ -7,6 +7,10 @@
 	import type { CatchRecord } from '$lib/models/CatchRecord';
 	import type { PokedexEntry } from '$lib/models/PokedexEntry';
 	import { calculateBoxNumbers, calculateBoxPlacement } from '$lib/utils/boxPlacement';
+	import {
+		createCatchRecordWriteQueue,
+		type CatchRecordWriteQueueStatus
+	} from '$lib/utils/catchRecordWriteQueue';
 	import PokedexViewBoxes from '$lib/components/pokedex/PokedexViewBoxes.svelte';
 	import PokedexModal from '$lib/components/pokedex/PokedexModal.svelte';
 	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
@@ -35,6 +39,16 @@
 	let showModal = false;
 	let selectedPokemon: CombinedData | null = null;
 
+	let catchWriteQueue: ReturnType<typeof createCatchRecordWriteQueue> | null = null;
+	let catchWriteQueueKey: string | null = null;
+	let catchWriteStatus: CatchRecordWriteQueueStatus = {
+		pending: 0,
+		inFlight: 0,
+		lastError: null,
+		lastFlushAttemptAt: null,
+		lastSuccessfulFlushAt: null
+	};
+
 	// Derive from pokedex config
 	$: showOrigins = !!pokedex?.isOriginDex;
 	$: showShiny = !!pokedex?.isShinyDex;
@@ -54,17 +68,48 @@
 		selectedPokemon = null;
 	}
 
-	async function handleModalCatchUpdate(event: any) {
-		await updateACatch(event); // Existing handler
-		// Sync modal with refreshed data
-		if (selectedPokemon && combinedData) {
-			const updated = combinedData.find(
-				(cd) => cd.pokedexEntry._id === selectedPokemon!.pokedexEntry._id
-			);
-			if (updated) {
-				selectedPokemon = updated;
+	function ensureCatchWriteQueue() {
+		if (!browser) return;
+		if (!pokedexId) return;
+		if (!localUser?.id) return;
+		const desiredKey = `${localUser.id}:${pokedexId}`;
+		if (catchWriteQueue && catchWriteQueueKey === desiredKey) return;
+
+		catchWriteQueue = createCatchRecordWriteQueue({
+			endpointUrl: `/api/pokedexes/${pokedexId}/catch-records`,
+			fetchFn: fetch,
+			batchSize: 200,
+			concurrency: 2
+		});
+		catchWriteQueueKey = desiredKey;
+
+		catchWriteQueue.getStatus.subscribe((s) => {
+			catchWriteStatus = s;
+		});
+	}
+
+	function applyOptimisticCatchRecordUpdate(next: CatchRecord) {
+		if (!combinedData) return;
+		const idx = combinedData.findIndex((cd) => cd.pokedexEntry._id === next.pokedexEntryId);
+		if (idx === -1) return;
+		// Replace the catchRecord entry with the updated version.
+		const current = combinedData[idx];
+		const patched: CombinedData = {
+			...current,
+			catchRecord: {
+				...(current.catchRecord ?? next),
+				...next
 			}
+		};
+		combinedData = [...combinedData.slice(0, idx), patched, ...combinedData.slice(idx + 1)];
+
+		if (selectedPokemon?.pokedexEntry._id === next.pokedexEntryId) {
+			selectedPokemon = patched;
 		}
+	}
+
+	async function handleModalCatchUpdate(event: any) {
+		await updateACatch(event);
 	}
 
 	type GetDataOptions = {
@@ -103,7 +148,11 @@
 
 	async function updateACatch(event: any) {
 		if (!pokedexId) return;
-		const { catchRecord } = event.detail;
+		ensureCatchWriteQueue();
+		const { catchRecord, source } = event.detail as {
+			catchRecord: CatchRecord;
+			source: 'toggle' | 'notes' | 'notes-blur';
+		};
 		// Enforce mutual exclusivity (should be impossible to have both true).
 		const sanitizedCatchRecord: CatchRecord = { ...catchRecord };
 		if (sanitizedCatchRecord.caught) {
@@ -117,29 +166,18 @@
 			return;
 		}
 
-		const requestOptions = {
-			method: 'PUT',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(sanitizedCatchRecord),
-			credentials: 'include' as RequestCredentials
-		};
+		// Optimistic UI: update local state immediately.
+		applyOptimisticCatchRecordUpdate(sanitizedCatchRecord);
 
-		try {
-			// Use new pokédex-scoped endpoint
-			const response = await fetch(`/api/pokedexes/${pokedexId}/catch-records`, requestOptions);
-			if (!response.ok) {
-				const errorText = await response.text();
-				console.error('Server response:', response.status, errorText);
-				alert('Failed to update catch record');
-				throw new Error('Failed to update catch record');
-			}
-
-			// Refresh the data to reflect changes from server
-			await getData({ page: currentPage, perPage: itemsPerPage, setCombinedDataToNull: false });
-		} catch (error) {
-			console.error('Error updating catch record:', error);
+		// Queue a background write with coalescing.
+		const debounceMs = source === 'notes' ? 650 : 0;
+		catchWriteQueue?.enqueue(sanitizedCatchRecord, {
+			debounceMs,
+			flushSoon: true
+		});
+		if (source === 'notes-blur') {
+			// Force a flush attempt when the user leaves the textarea.
+			await catchWriteQueue?.flushNow();
 		}
 	}
 
@@ -151,6 +189,7 @@
 	) {
 		if (!combinedData) return;
 		if (!pokedexId) return;
+		ensureCatchWriteQueue();
 
 		const catchRecordsToUpdate: CatchRecord[] = combinedData
 			.filter((_, index) => calculateBoxPlacement(index).box === boxNumber)
@@ -183,31 +222,17 @@
 				}
 				return updatedRecord;
 			});
-		// Use new pokédex-scoped endpoint
-		try {
-			const response = await fetch(`/api/pokedexes/${pokedexId}/catch-records`, {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(catchRecordsToUpdate)
-			});
-			if (!response.ok) {
-				const errorText = await response.text();
-				console.error('Server response:', response.status, errorText);
-				alert(
-					`Failed to update catch records: ${response.status} ${response.statusText}\n${errorText}`
-				);
-				return;
-			}
 
-			await getData({ page: currentPage, perPage: itemsPerPage, setCombinedDataToNull: false });
-		} catch (error) {
-			console.error('Error updating catch records:', error);
-			alert(
-				`Network error updating catch records: ${error instanceof Error ? error.message : String(error)}`
-			);
+		// Optimistic patch: apply locally first.
+		for (const record of catchRecordsToUpdate) {
+			// Ensure mutual exclusivity locally.
+			if (record.caught) record.haveToEvolve = false;
+			if (record.haveToEvolve) record.caught = false;
+			applyOptimisticCatchRecordUpdate(record);
+			catchWriteQueue?.enqueue(record, { flushSoon: true });
 		}
+		// Kick a flush attempt (batching will occur inside the queue).
+		await catchWriteQueue?.flushNow();
 	}
 
 	async function markBoxAsNotCaught(boxNumber: number) {
@@ -293,6 +318,38 @@
 
 	// Fetch data whenever pagination controls change (client-side only)
 	$: if (browser && pokedexId) getData({ page: currentPage, perPage: itemsPerPage });
+
+	onMount(() => {
+		if (!browser) return;
+
+		const flushKeepalive = () => {
+			if (!catchWriteQueue) return;
+			// Best-effort: keepalive requests have body-size limits; flush a small batch.
+			void catchWriteQueue.flushNow({ keepalive: true, limit: 25 });
+		};
+
+		const onVisibilityChange = () => {
+			if (document.visibilityState === 'hidden') flushKeepalive();
+		};
+
+		window.addEventListener('pagehide', flushKeepalive);
+		document.addEventListener('visibilitychange', onVisibilityChange);
+		window.addEventListener('online', () => void catchWriteQueue?.flushNow());
+
+		// Periodic reconciliation to guard against any missed state (e.g. aborted tab-close flush).
+		const reconcileInterval = window.setInterval(() => {
+			if (!pokedexId) return;
+			if (creatingRecords) return;
+			if (catchWriteStatus.pending > 0 || catchWriteStatus.inFlight > 0) return;
+			void getData({ page: currentPage, perPage: itemsPerPage, setCombinedDataToNull: false });
+		}, 60_000);
+
+		return () => {
+			window.removeEventListener('pagehide', flushKeepalive);
+			document.removeEventListener('visibilitychange', onVisibilityChange);
+			window.clearInterval(reconcileInterval);
+		};
+	});
 </script>
 
 <svelte:head>
@@ -426,6 +483,15 @@
 
 					<!-- Right side: Actions -->
 					<div class="flex flex-row lg:flex-col gap-2">
+						{#if catchWriteStatus.pending > 0 || catchWriteStatus.inFlight > 0}
+							<div class="text-sm text-base-content/70">
+								Saving… ({catchWriteStatus.pending} queued)
+							</div>
+						{:else if catchWriteStatus.lastError}
+							<div class="text-sm text-error" title={catchWriteStatus.lastError}>
+								Save failed (will retry)
+							</div>
+						{/if}
 						<a href="/my-pokedexes" class="btn btn-outline btn-sm">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
