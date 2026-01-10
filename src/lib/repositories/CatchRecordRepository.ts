@@ -43,6 +43,35 @@ class CatchRecordRepository {
 		return dbData;
 	}
 
+	/**
+	 * Bulk upsert catch records in a single request when possible.
+	 *
+	 * Requires a unique constraint matching the `onConflict` columns.
+	 * If the database is not configured with that constraint, the caller should
+	 * catch the error and fall back to per-record upserts.
+	 */
+	async bulkUpsert(records: Partial<CatchRecord>[]): Promise<CatchRecord[]> {
+		const dbRows: Partial<CatchRecordDB>[] = records.map((r) => ({
+			userId: this.userId,
+			pokedexId: this.pokedexId,
+			...this.transformToDatabase(r)
+		}));
+
+		const { data: result, error } = await this.supabase
+			.from('catch_records')
+			.upsert(dbRows, {
+				onConflict: 'userId,pokedexId,pokedexEntryId'
+			})
+			.select();
+
+		if (error) {
+			console.error('Supabase error bulk upserting catch records:', error);
+			throw new Error(`Failed to bulk upsert catch records: ${error.message}`);
+		}
+
+		return (result ?? []).map((row) => this.transformCatchRecord(row));
+	}
+
 	async findById(id: string): Promise<CatchRecord | null> {
 		const { data, error } = await this.supabase
 			.from('catch_records')
@@ -138,7 +167,11 @@ class CatchRecordRepository {
 			return this.update(data._id, data);
 		} else if (data.pokedexEntryId) {
 			// Try to find existing record for this user, pokemon, and pokedex
-			const existing = await this.findByUserAndPokemon(this.userId, data.pokedexEntryId, this.pokedexId);
+			const existing = await this.findByUserAndPokemon(
+				this.userId,
+				data.pokedexEntryId,
+				this.pokedexId
+			);
 			if (existing) {
 				return this.update(existing._id, data);
 			} else {
@@ -148,7 +181,11 @@ class CatchRecordRepository {
 		return this.create(data);
 	}
 
-	async findByUserAndPokemon(userId: string, pokedexEntryId: string, pokedexId: string): Promise<CatchRecord | null> {
+	async findByUserAndPokemon(
+		userId: string,
+		pokedexEntryId: string,
+		pokedexId: string
+	): Promise<CatchRecord | null> {
 		const numericId = Number(pokedexEntryId);
 		if (isNaN(numericId)) {
 			return null;
