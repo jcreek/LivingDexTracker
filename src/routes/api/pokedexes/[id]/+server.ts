@@ -73,9 +73,10 @@ export const PUT = async (event: RequestEvent) => {
 
 		// Recalculate pokedex_entries_mapping if configuration changed
 		// Only recalculate if isFormDex or gameScope actually changed (these are the only fields that affect mapping)
+		// Compare the persisted result (pokedex) to existingPokedex to catch changes that repo.update may normalize or default
 		const configChanged =
-			(data.isFormDex !== undefined && existingPokedex.isFormDex !== data.isFormDex) ||
-			(data.gameScope !== undefined && existingPokedex.gameScope !== data.gameScope);
+			pokedex.isFormDex !== existingPokedex.isFormDex ||
+			pokedex.gameScope !== existingPokedex.gameScope;
 
 		if (configChanged) {
 			await recalculatePokedexMappings(event.locals.supabase, id, pokedex);
