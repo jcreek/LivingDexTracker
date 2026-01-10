@@ -54,11 +54,11 @@
 		/>
 	</div>
 	<div class="form-control mt-6">
-		<button class="btn btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
+		<button class="btn btn-primary" on:click={signUpNewUser}>Sign Up</button>
 	</div>
 </form>
 
-<style scoped>
+<style>
 	.card-body {
 		padding: 0.5rem;
 	}

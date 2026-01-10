@@ -17,7 +17,7 @@
 	// Format large numbers (e.g., 1000 -> 1K, 1000000 -> 1M)
 	function formatNumber(num: number): string {
 		if (num >= 1000000) {
-			return (num / 1000000).toFixed(1).replace(/.0$/, '') + 'M';
+			return (num / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
 		}
 		if (num >= 1000) {
 			return (num / 1000).toFixed(0) + 'K';
@@ -30,9 +30,9 @@
 	let users = '0';
 	let livingDexesCompleted = '0';
 	$: {
-		pokemonCaught = stats ? formatNumber(stats.pokemonCaught) : '0';
-		users = stats ? formatNumber(stats.users) : '0';
-		livingDexesCompleted = stats ? formatNumber(stats.livingDexesCompleted) : '0';
+		pokemonCaught = formatNumber(stats?.pokemonCaught ?? 0);
+		users = formatNumber(stats?.users ?? 0);
+		livingDexesCompleted = formatNumber(stats?.livingDexesCompleted ?? 0);
 	}
 </script>
 
@@ -188,7 +188,7 @@
 <!-- Features Section -->
 <div class="py-16 bg-base-200">
 	<div class="container mx-auto px-4 max-w-6xl">
-		<h1 class="text-4xl font-bold mb-12 text-center">Why Choose Living Dex Tracker?</h1>
+		<h2 class="text-4xl font-bold mb-12 text-center">Why Choose Living Dex Tracker?</h2>
 
 		<div class="grid md:grid-cols-2 gap-6">
 			<div class="card bg-neutral shadow-xl">
@@ -318,8 +318,8 @@
 	<div class="container mx-auto px-4 text-center">
 		<h2 class="text-4xl font-bold mb-6">Ready to Start Your Journey?</h2>
 		<p class="text-xl mb-8 text-base-content/80 max-w-2xl mx-auto">
-			Get started today with tracking you Living Pokédex progress. It's free, open source, and built
-			with love for the Pokémon community.
+			Get started today with tracking your Living Pokédex progress. It's free, open source, and
+			built with love for the Pokémon community.
 		</p>
 		<div class="flex flex-wrap gap-4 justify-center">
 			<div class="card shrink-0 w-full max-w-sm shadow-2xl bg-neutral">
