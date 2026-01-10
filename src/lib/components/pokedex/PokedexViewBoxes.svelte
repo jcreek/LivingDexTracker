@@ -346,6 +346,7 @@
 					style="--boxes-per-row: {boxesPerRow}; --cell-padding: {cellPaddingRem}rem; --sprite-size: {spriteSizePx}px;"
 				>
 					{#each boxNumbers as boxNumber}
+						{@const bulkMenuId = `box-${boxNumber}-bulk-menu`}
 						<div class="mb-8">
 							<div class="flex flex-wrap items-center justify-between gap-3 mb-4 relative z-20">
 								<h2 class="text-xl font-bold">Box {boxNumber}</h2>
@@ -355,6 +356,7 @@
 										class="btn btn-sm btn-outline relative z-[210]"
 										aria-label="Open bulk actions menu"
 										aria-haspopup="menu"
+										aria-controls={bulkMenuId}
 										aria-expanded={openBulkMenuForBox === boxNumber}
 										on:click={(event) => {
 											event.stopPropagation();
@@ -369,12 +371,13 @@
 
 									{#if openBulkMenuForBox === boxNumber}
 										<ul
+											id={bulkMenuId}
 											class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
-											role="menu"
 											on:click|stopPropagation
 										>
 											<li>
 												<button
+													type="button"
 													on:click={() => {
 														markBoxAsNotCaught(boxNumber);
 														openBulkMenuForBox = null;
@@ -385,6 +388,7 @@
 											</li>
 											<li>
 												<button
+													type="button"
 													on:click={() => {
 														markBoxAsCaught(boxNumber);
 														openBulkMenuForBox = null;
@@ -395,6 +399,7 @@
 											</li>
 											<li>
 												<button
+													type="button"
 													on:click={() => {
 														markBoxAsNeedsToEvolve(boxNumber);
 														openBulkMenuForBox = null;
@@ -405,6 +410,7 @@
 											</li>
 											<li>
 												<button
+													type="button"
 													on:click={() => {
 														markBoxAsInHome(boxNumber);
 														openBulkMenuForBox = null;
@@ -415,6 +421,7 @@
 											</li>
 											<li>
 												<button
+													type="button"
 													on:click={() => {
 														markBoxAsNotInHome(boxNumber);
 														openBulkMenuForBox = null;
