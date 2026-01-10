@@ -71,7 +71,7 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 	getPendingCount: () => number;
 	clearError: () => void;
 } {
-	const { endpointUrl, fetchFn, batchSize = 100, concurrency = 2 } = options;
+	const { endpointUrl, fetchFn, batchSize = 100, concurrency = 1 } = options;
 
 	const items = new Map<string, QueueItem>();
 	let scheduled: ReturnType<typeof setTimeout> | null = null;

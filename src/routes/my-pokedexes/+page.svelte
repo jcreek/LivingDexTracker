@@ -40,7 +40,8 @@
 
 	async function readApiErrorMessage(response: Response): Promise<string> {
 		try {
-			const data = await response.json();
+			// Use a clone so we can still fall back to reading the original body as text.
+			const data = await response.clone().json();
 			if (data && typeof data === 'object' && 'error' in data && typeof data.error === 'string') {
 				return data.error;
 			}
