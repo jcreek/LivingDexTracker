@@ -4,23 +4,62 @@ type Theme = 'pokeball' | 'dark';
 
 const STORAGE_KEY = 'theme';
 
+function isTheme(type: string): type is Theme {
+	return type === 'pokeball' || type === 'dark';
+}
+
 function createThemeStore() {
 	// Get stored theme from localStorage or default to 'pokeball'
-	const storedTheme = (typeof window !== 'undefined' &&
-		localStorage.getItem(STORAGE_KEY)) as Theme | null;
-	const initialTheme: Theme = storedTheme || 'pokeball';
+	let initialTheme: Theme = 'pokeball';
+	if (typeof window !== 'undefined') {
+		try {
+			const storedTheme = localStorage.getItem(STORAGE_KEY);
+			if (storedTheme && isTheme(storedTheme)) {
+				initialTheme = storedTheme;
+			}
+		} catch {
+			// ignore (privacy mode / disabled storage)
+		}
+	}
 
-	const { subscribe, set, update } = writable<Theme>(initialTheme);
+	const { subscribe, set: writableSet, update } = writable<Theme>(initialTheme);
 
 	return {
 		subscribe,
-		set,
-		toggle: () => update((theme) => (theme === 'pokeball' ? 'dark' : 'pokeball')),
+		set: (value: Theme) => {
+			if (isTheme(value)) {
+				writableSet(value);
+				if (typeof window !== 'undefined') {
+					try {
+						localStorage.setItem(STORAGE_KEY, value);
+					} catch {
+						// ignore (privacy mode / disabled storage)
+					}
+				}
+			}
+		},
+		toggle: () => {
+			update((theme) => {
+				const newTheme = theme === 'pokeball' ? 'dark' : 'pokeball';
+				if (typeof window !== 'undefined') {
+					try {
+						localStorage.setItem(STORAGE_KEY, newTheme);
+					} catch {
+						// ignore (privacy mode / disabled storage)
+					}
+				}
+				return newTheme;
+			});
+		},
 		init: () => {
 			if (typeof window !== 'undefined') {
-				const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-				if (stored) {
-					set(stored);
+				try {
+					const stored = localStorage.getItem(STORAGE_KEY);
+					if (stored && isTheme(stored)) {
+						writableSet(stored);
+					}
+				} catch {
+					// ignore (privacy mode / disabled storage)
 				}
 			}
 		}
