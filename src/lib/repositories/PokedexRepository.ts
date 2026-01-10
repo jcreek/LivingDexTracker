@@ -70,7 +70,10 @@ class PokedexRepository {
 
 		if (error) {
 			console.error('Error creating pokedex:', error);
-			throw new Error(`Failed to create pokedex: ${error.message}`);
+			// Preserve the Supabase error code so the API layer can map to a user-friendly response.
+			throw Object.assign(new Error(`Failed to create pokedex: ${error.message}`), {
+				code: error.code
+			});
 		}
 
 		if (!result) {
@@ -91,12 +94,22 @@ class PokedexRepository {
 			.select()
 			.single();
 
-		if (error || !result) return null;
+		if (error) {
+			console.error('Error updating pokedex:', error);
+			throw Object.assign(new Error(`Failed to update pokedex: ${error.message}`), {
+				code: error.code
+			});
+		}
+		if (!result) return null;
 		return this.transform(result);
 	}
 
 	async delete(id: string): Promise<void> {
-		const { error } = await this.supabase.from('pokedexes').delete().eq('id', id).eq('userId', this.userId);
+		const { error } = await this.supabase
+			.from('pokedexes')
+			.delete()
+			.eq('id', id)
+			.eq('userId', this.userId);
 
 		if (error) {
 			console.error('Error deleting pokedex:', error);

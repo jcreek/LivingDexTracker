@@ -40,10 +40,12 @@ export const GET = async (event: RequestEvent) => {
 
 // PUT: Update pokedex
 export const PUT = async (event: RequestEvent) => {
+	let requestedName: string | undefined;
 	try {
 		const userId = await requireAuth(event);
 		const { id } = event.params;
 		const data: Partial<Pokedex> = await event.request.json();
+		requestedName = typeof data.name === 'string' ? data.name : undefined;
 
 		if (!id) {
 			return json({ error: 'Pokedex ID is required' }, { status: 400 });
@@ -64,9 +66,25 @@ export const PUT = async (event: RequestEvent) => {
 		return json(pokedex);
 	} catch (err) {
 		console.error(err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
+
+		// Unique constraint violation (duplicate pokédex name for this user)
+		if (
+			err &&
+			typeof err === 'object' &&
+			'code' in err &&
+			(err as { code?: unknown }).code === '23505'
+		) {
+			return json(
+				{
+					error: requestedName
+						? `You already have a Pokédex named "${requestedName}". Please choose a different name.`
+						: 'You already have a Pokédex with that name. Please choose a different name.'
+				},
+				{ status: 409 }
+			);
 		}
+
+		if (err && typeof err === 'object' && 'status' in err) throw err;
 		return json({ error: 'Internal Server Error' }, { status: 500 });
 	}
 };

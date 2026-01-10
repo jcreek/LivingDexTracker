@@ -1,6 +1,8 @@
 import type { CatchRecord, CatchRecordDB } from '$lib/models/CatchRecord';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+type PartialExcept<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+
 class CatchRecordRepository {
 	constructor(
 		private supabase: SupabaseClient,
@@ -41,6 +43,66 @@ class CatchRecordRepository {
 		if (data.personalNotes !== undefined) dbData.personalNotes = data.personalNotes;
 
 		return dbData;
+	}
+
+	/**
+	 * Bulk upsert catch records in a single request when possible.
+	 *
+	 * Requires a unique constraint matching the `onConflict` columns.
+	 * If the database is not configured with that constraint, the caller should
+	 * catch the error and fall back to per-record upserts.
+	 */
+	async bulkUpsert(
+		records: Array<PartialExcept<CatchRecord, 'pokedexEntryId'>>
+	): Promise<CatchRecord[]> {
+		if (records.length === 0) return [];
+
+		const dbRows: Partial<CatchRecordDB>[] = records.map((r, index) => {
+			if (r.pokedexEntryId === undefined || r.pokedexEntryId === null || r.pokedexEntryId === '') {
+				throw new Error(
+					`CatchRecordRepository.bulkUpsert: record at index ${index} is missing required field "pokedexEntryId"`
+				);
+			}
+
+			// Preserve repository scoping; if a caller supplies ids, they must match the repo scope.
+			if (r.userId !== undefined && r.userId !== this.userId) {
+				throw new Error(
+					`CatchRecordRepository.bulkUpsert: record at index ${index} has userId "${r.userId}" but repository is scoped to "${this.userId}"`
+				);
+			}
+			if (r.pokedexId !== undefined && r.pokedexId !== this.pokedexId) {
+				throw new Error(
+					`CatchRecordRepository.bulkUpsert: record at index ${index} has pokedexId "${r.pokedexId}" but repository is scoped to "${this.pokedexId}"`
+				);
+			}
+
+			const mapped = this.transformToDatabase(r);
+			// Enforce repo scope after mapping so per-record input cannot override it.
+			mapped.userId = this.userId;
+			mapped.pokedexId = this.pokedexId;
+
+			if (mapped.pokedexEntryId === undefined || mapped.pokedexEntryId === null) {
+				throw new Error(
+					`CatchRecordRepository.bulkUpsert: record at index ${index} produced no pokedexEntryId after transform`
+				);
+			}
+
+			return mapped;
+		});
+
+		const { data: result, error } = await this.supabase
+			.from('catch_records')
+			.upsert(dbRows, {
+				onConflict: '"userId","pokedexId","pokedexEntryId"'
+			})
+			.select();
+
+		if (error) {
+			console.error('Supabase error bulk upserting catch records:', error);
+			throw new Error(`Failed to bulk upsert catch records: ${error.message}`);
+		}
+
+		return (result ?? []).map((row) => this.transformCatchRecord(row));
 	}
 
 	async findById(id: string): Promise<CatchRecord | null> {
@@ -138,7 +200,11 @@ class CatchRecordRepository {
 			return this.update(data._id, data);
 		} else if (data.pokedexEntryId) {
 			// Try to find existing record for this user, pokemon, and pokedex
-			const existing = await this.findByUserAndPokemon(this.userId, data.pokedexEntryId, this.pokedexId);
+			const existing = await this.findByUserAndPokemon(
+				this.userId,
+				data.pokedexEntryId,
+				this.pokedexId
+			);
 			if (existing) {
 				return this.update(existing._id, data);
 			} else {
@@ -148,7 +214,11 @@ class CatchRecordRepository {
 		return this.create(data);
 	}
 
-	async findByUserAndPokemon(userId: string, pokedexEntryId: string, pokedexId: string): Promise<CatchRecord | null> {
+	async findByUserAndPokemon(
+		userId: string,
+		pokedexEntryId: string,
+		pokedexId: string
+	): Promise<CatchRecord | null> {
 		const numericId = Number(pokedexEntryId);
 		if (isNaN(numericId)) {
 			return null;

@@ -29,8 +29,10 @@
 
 	const dispatch = createEventDispatcher();
 
-	function updateCatchRecord() {
-		dispatch('updateCatch', { pokedexEntry, catchRecord });
+	type UpdateCatchSource = 'toggle' | 'notes' | 'notes-blur';
+
+	function updateCatchRecord(source: UpdateCatchSource) {
+		dispatch('updateCatch', { pokedexEntry, catchRecord, source });
 	}
 
 	function onCaughtChange() {
@@ -39,7 +41,7 @@
 		if (catchRecord.caught) {
 			catchRecord.haveToEvolve = false;
 		}
-		updateCatchRecord();
+		updateCatchRecord('toggle');
 	}
 
 	function onNeedsToEvolveChange() {
@@ -48,7 +50,7 @@
 		if (catchRecord.haveToEvolve) {
 			catchRecord.caught = false;
 		}
-		updateCatchRecord();
+		updateCatchRecord('toggle');
 	}
 </script>
 
@@ -124,30 +126,30 @@
 				<div class="form-control">
 					<label class="cursor-pointer label">
 						<span class="block font-bold mr-2">In Home:</span>
-						<input
-							type="checkbox"
-							bind:checked={catchRecord.inHome}
-							class="checkbox checkbox-primary border-black"
-							on:change={updateCatchRecord}
-						/>
-					</label>
-				</div>
+					<input
+						type="checkbox"
+						bind:checked={catchRecord.inHome}
+						class="checkbox checkbox-primary border-black"
+						on:change={() => updateCatchRecord('toggle')}
+					/>
+				</label>
 			</div>
+		</div>
 			{#if pokedexEntry.canGigantamax && showForms}
 				<div class="flex items-center">
 					<div class="form-control">
 						<label class="cursor-pointer label">
 							<span class="block font-bold mr-2">Has Gigantamaxed:</span>
-							<input
-								type="checkbox"
-								bind:checked={catchRecord.hasGigantamaxed}
-								class="checkbox checkbox-primary border-black"
-								on:change={updateCatchRecord}
-							/>
-						</label>
-					</div>
+						<input
+							type="checkbox"
+							bind:checked={catchRecord.hasGigantamaxed}
+							class="checkbox checkbox-primary border-black"
+							on:change={() => updateCatchRecord('toggle')}
+						/>
+					</label>
 				</div>
-			{/if}
+			</div>
+		{/if}
 			<p>
 				<label
 					class="block font-bold mb-1"
@@ -158,7 +160,8 @@
 					id={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}
 					class="form-textarea w-full p-2 border rounded"
 					style="min-height: 120px;"
-					on:change={updateCatchRecord}
+					on:input={() => updateCatchRecord('notes')}
+					on:change={() => updateCatchRecord('notes-blur')}
 				></textarea>
 			</p>
 		</div>

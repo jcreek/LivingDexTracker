@@ -22,26 +22,38 @@ export const GET = async (event: RequestEvent) => {
 
 // POST: Create new pokedex
 export const POST = async (event: RequestEvent) => {
+	let requestedName: string | undefined;
 	try {
-		console.log('POST /api/pokedexes - Starting request');
 		const userId = await requireAuth(event);
-		console.log('POST /api/pokedexes - User authenticated:', userId);
-
 		const data: Partial<Pokedex> = await event.request.json();
-		console.log('POST /api/pokedexes - Request data:', data);
-
+		requestedName = typeof data.name === 'string' ? data.name : undefined;
 		data.userId = userId;
 
 		const repo = new PokedexRepository(event.locals.supabase, userId);
 		const pokedex = await repo.create(data);
-		console.log('POST /api/pokedexes - Pokédex created:', pokedex._id);
-
 		return json(pokedex);
 	} catch (err) {
 		console.error('Error in POST /api/pokedexes:', err);
-		if (err && typeof err === 'object' && 'status' in err) {
-			throw err;
+
+		// Unique constraint violation (duplicate pokédex name for this user)
+		if (
+			err &&
+			typeof err === 'object' &&
+			'code' in err &&
+			// Postgres unique_violation
+			(err as { code?: unknown }).code === '23505'
+		) {
+			return json(
+				{
+					error: requestedName
+						? `You already have a Pokédex named "${requestedName}". Please choose a different name.`
+						: 'You already have a Pokédex with that name. Please choose a different name.'
+				},
+				{ status: 409 }
+			);
 		}
+
+		if (err && typeof err === 'object' && 'status' in err) throw err;
 		return json({ error: 'Internal Server Error' }, { status: 500 });
 	}
 };
