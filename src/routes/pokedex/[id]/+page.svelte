@@ -41,6 +41,7 @@
 
 	let catchWriteQueue: ReturnType<typeof createCatchRecordWriteQueue> | null = null;
 	let catchWriteQueueKey: string | null = null;
+	let catchWriteQueueUnsubscribe: (() => void) | null = null;
 	let catchWriteStatus: CatchRecordWriteQueueStatus = {
 		pending: 0,
 		inFlight: 0,
@@ -57,6 +58,10 @@
 		localUser = value;
 	});
 	onDestroy(unsubscribe);
+	onDestroy(() => {
+		catchWriteQueueUnsubscribe?.();
+		catchWriteQueueUnsubscribe = null;
+	});
 
 	function openPokemonModal(pokemon: CombinedData) {
 		selectedPokemon = pokemon;
@@ -75,15 +80,19 @@
 		const desiredKey = `${localUser.id}:${pokedexId}`;
 		if (catchWriteQueue && catchWriteQueueKey === desiredKey) return;
 
+		// Unsubscribe from the previous queue's status store before replacing the queue.
+		catchWriteQueueUnsubscribe?.();
+		catchWriteQueueUnsubscribe = null;
+
 		catchWriteQueue = createCatchRecordWriteQueue({
 			endpointUrl: `/api/pokedexes/${pokedexId}/catch-records`,
 			fetchFn: fetch,
 			batchSize: 200,
-			concurrency: 2
+			concurrency: 1
 		});
 		catchWriteQueueKey = desiredKey;
 
-		catchWriteQueue.getStatus.subscribe((s) => {
+		catchWriteQueueUnsubscribe = catchWriteQueue.getStatus.subscribe((s) => {
 			catchWriteStatus = s;
 		});
 	}
@@ -332,9 +341,11 @@
 			if (document.visibilityState === 'hidden') flushKeepalive();
 		};
 
+		const onOnline = () => void catchWriteQueue?.flushNow();
+
 		window.addEventListener('pagehide', flushKeepalive);
 		document.addEventListener('visibilitychange', onVisibilityChange);
-		window.addEventListener('online', () => void catchWriteQueue?.flushNow());
+		window.addEventListener('online', onOnline);
 
 		// Periodic reconciliation to guard against any missed state (e.g. aborted tab-close flush).
 		const reconcileInterval = window.setInterval(() => {
@@ -347,6 +358,7 @@
 		return () => {
 			window.removeEventListener('pagehide', flushKeepalive);
 			document.removeEventListener('visibilitychange', onVisibilityChange);
+			window.removeEventListener('online', onOnline);
 			window.clearInterval(reconcileInterval);
 		};
 	});
