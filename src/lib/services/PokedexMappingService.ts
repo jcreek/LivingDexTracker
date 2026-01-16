@@ -20,11 +20,12 @@ export async function calculateExpectedEntries(
 
 	// Apply region filter: if gameScope is specified, filter by region
 	if (pokedex.gameScope) {
-		// Determine region from gameScope using region_game_mappings
+		// Determine region from gameScope using games table.
+		// We keep games.region as a denormalized convenience column.
 		const { data: regionData, error: regionError } = await supabase
-			.from('region_game_mappings')
+			.from('games')
 			.select('region')
-			.eq('game', pokedex.gameScope)
+			.eq('displayName', pokedex.gameScope)
 			.maybeSingle();
 
 		if (regionError) {
@@ -71,17 +72,18 @@ export async function populatePokedexMappings(
 		return;
 	}
 
-	const mappings = expectedEntryIds.map((pokedexEntryId) => ({
+	// New schema writes to pokedex_pokemon_mapping; column is pokemonId
+	const mappings = expectedEntryIds.map((pokemonId) => ({
 		pokedexId,
-		pokedexEntryId
+		pokemonId
 	}));
 
 	// Process in chunks to avoid request size limits
 	const CHUNK_SIZE = 500;
 	for (let i = 0; i < mappings.length; i += CHUNK_SIZE) {
 		const chunk = mappings.slice(i, i + CHUNK_SIZE);
-		const { error } = await supabase.from('pokedex_entries_mapping').upsert(chunk, {
-			onConflict: 'pokedexId,pokedexEntryId',
+		const { error } = await supabase.from('pokedex_pokemon_mapping').upsert(chunk, {
+			onConflict: 'pokedexId,pokemonId',
 			ignoreDuplicates: true
 		});
 

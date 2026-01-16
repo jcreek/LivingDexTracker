@@ -31,7 +31,8 @@ class CombinedDataRepository {
 		return {
 			_id: record.id,
 			userId: record.userId,
-			pokedexEntryId: record.pokedexEntryId.toString(),
+			// Backwards-compatible field name; DB column is pokemonId
+			pokedexEntryId: record.pokemonId.toString(),
 			pokedexId: record.pokedexId,
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
@@ -87,7 +88,7 @@ class CombinedDataRepository {
 				.select('*')
 				.eq('userId', userId)
 				.eq('pokedexId', this.pokedexId)
-				.in('pokedexEntryId', entryIds);
+				.in('pokemonId', entryIds);
 
 			if (!recordsError && records) {
 				catchRecords = records;
@@ -96,8 +97,7 @@ class CombinedDataRepository {
 
 		// Combine the data exactly like master branch
 		const combinedData = entries.map((entry) => {
-			const userCatchRecord =
-				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
+			const userCatchRecord = catchRecords.find((record) => record.pokemonId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			const transformedCatchRecord = userCatchRecord
@@ -165,7 +165,7 @@ class CombinedDataRepository {
 				.select('*')
 				.eq('userId', userId)
 				.eq('pokedexId', this.pokedexId)
-				.in('pokedexEntryId', entryIds);
+				.in('pokemonId', entryIds);
 
 			if (!recordsError && records) {
 				catchRecords = records;
@@ -174,8 +174,7 @@ class CombinedDataRepository {
 
 		// Combine the data exactly like master branch
 		const combinedData = entries.map((entry) => {
-			const userCatchRecord =
-				catchRecords.find((record) => record.pokedexEntryId === entry.id) || null;
+			const userCatchRecord = catchRecords.find((record) => record.pokemonId === entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			const transformedCatchRecord = userCatchRecord

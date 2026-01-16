@@ -2,8 +2,7 @@
 export interface CatchRecord {
 	_id: string; // Maps to Supabase 'id' field for frontend compatibility
 	userId: string;
-	pokedexEntryId: string; // String representation of the foreign key
-	pokedexId: string; // NEW: Foreign key to pokedexes table
+	pokemonId: string;
 	haveToEvolve: boolean;
 	caught: boolean;
 	inHome: boolean;
@@ -15,7 +14,8 @@ export interface CatchRecord {
 export interface CatchRecordDB {
 	id: string;
 	userId: string;
-	pokedexEntryId: number; // Numeric foreign key in database
+	/** Numeric foreign key in database (references `pokemon.id`) */
+	pokemonId: number;
 	pokedexId: string; // NEW: Foreign key to pokedexes table
 	haveToEvolve: boolean;
 	caught: boolean;
