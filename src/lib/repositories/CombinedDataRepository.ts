@@ -59,10 +59,14 @@ class CombinedDataRepository {
 			query = query.contains('gamesToCatchIn', [game]);
 		}
 
-		// Stable ordering: national dex number, then base form first, then form name.
+		// Stable ordering from the database: national dex, Unown order, base/female/temporal, then form label.
 		query = query
 			.order('pokedexNumber', { ascending: true })
-			.order('form', { ascending: true, nullsFirst: true });
+			.order('unownSortOrder', { ascending: true })
+			.order('formSortBucket', { ascending: true })
+			.order('formSortRegionOrder', { ascending: true })
+			.order('formSortRegionalSub', { ascending: true })
+			.order('formSortLabel', { ascending: true });
 
 		return query;
 	}
@@ -220,7 +224,6 @@ class CombinedDataRepository {
 	): Promise<CombinedData[]> {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
-
 		const entries = await this.fetchEntriesByRange(from, to, enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
