@@ -29,7 +29,7 @@ pokedexNumber,pokemon,form,originRegionToCatchIn,originGamesToCatchIn
 22,Fearow,,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 23,Ekans,,Kanto,Red/Blue/LG: Eevee
 24,Arbok,,Kanto,Red/Blue/LG: Eevee
-25,Pikachu,"x2 (Alola),",Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
+25,Pikachu,x2 (Alola),Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 25,Pikachu,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 25,Pikachu,Original Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 25,Pikachu,Hoenn Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon
@@ -194,7 +194,7 @@ pokedexNumber,pokemon,form,originRegionToCatchIn,originGamesToCatchIn
 130,Gyarados,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 131,Lapras,,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 132,Ditto,,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
-133,Eevee,"x9 (Eeveelutions),",Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
+133,Eevee,x9 (Eeveelutions),Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 133,Eevee,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 134,Vaporeon,,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
 135,Jolteon,,Kanto,Red/Blue/Yellow/LG: Pikachu/Eevee
@@ -983,176 +983,176 @@ pokedexNumber,pokemon,form,originRegionToCatchIn,originGamesToCatchIn
 717,Yveltal,,Kalos,Y/
 718,Zygarde,10%,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 718,Zygarde,10% Power Construct,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-719,Zygarde,50%,Kalos,X/Y/
-720,Zygarde,50% Power Construct,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-720,Diancie,,Kalos,X/Y/
-721,Hoopa,Confined,Kalos,X/Y/
-722,Hoopa,Unbound,Kalos,X/Y/
-723,Volcanion,,Kalos,X/Y/
-724,Rowlet,x2 (hisui),Alola,Sun/Moon/Ultra Sun/Ultra Moon
-724,Dartrix,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-725,Decidueye,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-726,Decidueye,Hisuian,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-727,Litten,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-728,Torracat,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-729,Incineroar,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-730,Popplio,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-731,Brionne,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-732,Primarina,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-733,Pikipek,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-734,Trumbeak,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-735,Toucannon,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-736,Yungoos,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-737,Gumshoos,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-738,Grubbin,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-739,Charjabug,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-740,Vikavolt,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-741,Crabrawler,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-741,Crabominable,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+718,Zygarde,50%,Kalos,X/Y/
+718,Zygarde,50% Power Construct,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+719,Diancie,,Kalos,X/Y/
+720,Hoopa,Confined,Kalos,X/Y/
+720,Hoopa,Unbound,Kalos,X/Y/
+721,Volcanion,,Kalos,X/Y/
+722,Rowlet,x2 (hisui),Alola,Sun/Moon/Ultra Sun/Ultra Moon
+723,Dartrix,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+724,Decidueye,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+724,Decidueye,Hisuian,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+725,Litten,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+726,Torracat,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+727,Incineroar,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+728,Popplio,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+729,Brionne,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+730,Primarina,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+731,Pikipek,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+732,Trumbeak,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+733,Toucannon,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+734,Yungoos,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+735,Gumshoos,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+736,Grubbin,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+737,Charjabug,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+738,Vikavolt,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+739,Crabrawler,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+740,Crabominable,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 741,Oricorio,Baile (Red),Alola,Sun/Moon/Ultra Sun/Ultra Moon
 741,Oricorio,Pom-pom (yellow),Alola,Sun/Moon/Ultra Sun/Ultra Moon
-742,Oricorio,Pa'u (pink),Alola,Sun/Moon/Ultra Sun/Ultra Moon
-743,Oricorio,Sensu (purple),Alola,Sun/Moon/Ultra Sun/Ultra Moon
-744,Cutiefly,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-744,Ribombee,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-745,Rockruff,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-745,Rockruff,Own Tempo,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+741,Oricorio,Pa'u (pink),Alola,Sun/Moon/Ultra Sun/Ultra Moon
+741,Oricorio,Sensu (purple),Alola,Sun/Moon/Ultra Sun/Ultra Moon
+742,Cutiefly,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+743,Ribombee,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+744,Rockruff,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+744,Rockruff,Own Tempo,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 745,Lycanroc,Midday,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-746,Lycanroc,Midnight,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-747,Lycanroc,Dusk,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-748,Wishiwashi,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-749,Mareanie,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-750,Toxapex,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-751,Mudbray,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-752,Mudsdale,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-753,Dewpider,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-754,Araquanid,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-755,Fomantis,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-756,Lurantis,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-757,Morelull,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-758,Shiinotic,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-759,Salandit,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-760,Salazzle,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-761,Stufful,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-762,Bewear,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-763,Bounsweet,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-764,Steenee,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-765,Tsareena,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-766,Comfey,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-767,Oranguru,,Alola,Moon/Ultra Moon
-768,Passimian,,Alola,Sun/Ultra Sun
-769,Wimpod,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-770,Golisopod,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-771,Sandygast,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-772,Palossand,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-773,Pyukumuku,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-774,Type: Null,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-774,Silvally,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+745,Lycanroc,Midnight,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+745,Lycanroc,Dusk,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+746,Wishiwashi,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+747,Mareanie,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+748,Toxapex,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+749,Mudbray,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+750,Mudsdale,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+751,Dewpider,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+752,Araquanid,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+753,Fomantis,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+754,Lurantis,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+755,Morelull,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+756,Shiinotic,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+757,Salandit,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+758,Salazzle,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+759,Stufful,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+760,Bewear,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+761,Bounsweet,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+762,Steenee,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+763,Tsareena,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+764,Comfey,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+765,Oranguru,,Alola,Moon/Ultra Moon
+766,Passimian,,Alola,Sun/Ultra Sun
+767,Wimpod,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+768,Golisopod,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+769,Sandygast,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+770,Palossand,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+771,Pyukumuku,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+772,Type: Null,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+773,Silvally,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 774,Minior,Red,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 774,Minior,Orange,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 774,Minior,Yellow,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 774,Minior,Green,Alola,Sun/Moon/Ultra Sun/Ultra Moon
 774,Minior,Blue,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-775,Minior,Indigo,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-776,Minior,Violet,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-777,Komala,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-778,Turtonator,,Alola,Sun/Ultra Sun
-779,Togedemaru,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-780,Mimikyu,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-781,Bruxish,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-782,Drampa,,Alola,Moon/Ultra Moon
-783,Dhelmise,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-784,Jangmo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-785,Hakamo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-786,Kommo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-787,Tapu Koko,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-788,Tapu Lele,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-789,Tapu Bulu,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-790,Tapu Fini,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-791,Cosmog,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-792,Cosmoem,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-793,Solgaleo,,Alola,Sun/Ultra Sun
-794,Lunala,,Alola,Moon/Ultra Moon
-795,Nihilego,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-796,Buzzwole,,Alola,Sun/Ultra Sun
-797,Pheromosa,,Alola,Moon/Ultra Moon
-798,Xurkitree,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-799,Celesteela,,Alola,Moon/Ultra Moon
-800,Kartana,,Alola,Sun/Ultra Sun
-801,Guzzlord,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-801,Necrozma,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-802,Magearna,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-803,Magearna,Original Color,Home,Pokemon Home/
-804,Marshadow,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
-805,Poipole,,Alola,Ultra Sun/Ultra Moon/
-806,Naganadel,,Alola,Ultra Sun/Ultra Moon/
-807,Stakataka,,Alola,Ultra Moon/
-808,Blacephalon,,Alola,Ultra Sun/
-809,Zeraora,,Alola,Ultra Sun/
-809,Meltan,,Go,GO/
-810,Melmetal,,Go,GO/
-811,Grookey,,Galar,Sword/Shield/
-812,Thwackey,,Galar,Sword/Shield/
-813,Rillaboom,,Galar,Sword/Shield/
-814,Scorbunny,,Galar,Sword/Shield/
-815,Raboot,,Galar,Sword/Shield/
-816,Cinderace,,Galar,Sword/Shield/
-817,Sobble,,Galar,Sword/Shield/
-818,Drizzile,,Galar,Sword/Shield/
-819,Inteleon,,Galar,Sword/Shield/
-820,Skwovet,,Galar,Sword/Shield/
-821,Greedent,,Galar,Sword/Shield/
-822,Rookidee,,Galar,Sword/Shield/
-823,Corvisquire,,Galar,Sword/Shield/
-824,Corviknight,,Galar,Sword/Shield/
-825,Blipbug,,Galar,Sword/Shield/
-826,Dottler,,Galar,Sword/Shield/
-827,Orbeetle,,Galar,Sword/Shield/
-828,Nickit,,Galar,Sword/Shield/
-829,Thievul,,Galar,Sword/Shield/
-830,Gossifleur,,Galar,Sword/Shield/
-831,Eldegoss,,Galar,Sword/Shield/
-832,Wooloo,,Galar,Sword/Shield/
-833,Dubwool,,Galar,Sword/Shield/
-834,Chewtle,,Galar,Sword/Shield/
-835,Drednaw,,Galar,Sword/Shield/
-836,Yamper,,Galar,Sword/Shield/
-837,Boltund,,Galar,Sword/Shield/
-838,Rolycoly,,Galar,Sword/Shield/
-839,Carkol,,Galar,Sword/Shield/
-840,Coalossal,,Galar,Sword/Shield/
-841,Applin,,Galar,Sword/Shield/
-842,Flapple,,Galar,Sword/
-843,Appletun,,Galar,Shield/
-844,Silicobra,,Galar,Sword/Shield/
-845,Sandaconda,,Galar,Sword/Shield/
-846,Cramorant,,Galar,Sword/Shield/
-847,Arrokuda,,Galar,Sword/Shield/
-848,Barraskewda,,Galar,Sword/Shield/
-849,Toxel,,Galar,Sword/Shield/
-849,Toxtricity,"Amped,",Galar,Sword/Shield/
-850,Toxtricity,Low-key,Galar,Sword/Shield/
-851,Sizzlipede,,Galar,Sword/Shield/
-852,Centiskorch,,Galar,Sword/Shield/
-853,Clobbopus,,Galar,Sword/Shield/
-854,Grapploct,,Galar,Sword/Shield/
+774,Minior,Indigo,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+774,Minior,Violet,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+775,Komala,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+776,Turtonator,,Alola,Sun/Ultra Sun
+777,Togedemaru,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+778,Mimikyu,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+779,Bruxish,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+780,Drampa,,Alola,Moon/Ultra Moon
+781,Dhelmise,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+782,Jangmo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+783,Hakamo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+784,Kommo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+785,Tapu Koko,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+786,Tapu Lele,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+787,Tapu Bulu,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+788,Tapu Fini,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+789,Cosmog,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+790,Cosmoem,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+791,Solgaleo,,Alola,Sun/Ultra Sun
+792,Lunala,,Alola,Moon/Ultra Moon
+793,Nihilego,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+794,Buzzwole,,Alola,Sun/Ultra Sun
+795,Pheromosa,,Alola,Moon/Ultra Moon
+796,Xurkitree,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+797,Celesteela,,Alola,Moon/Ultra Moon
+798,Kartana,,Alola,Sun/Ultra Sun
+799,Guzzlord,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+800,Necrozma,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+801,Magearna,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+801,Magearna,Original Color,Home,Pokemon Home/
+802,Marshadow,,Alola,Sun/Moon/Ultra Sun/Ultra Moon
+803,Poipole,,Alola,Ultra Sun/Ultra Moon/
+804,Naganadel,,Alola,Ultra Sun/Ultra Moon/
+805,Stakataka,,Alola,Ultra Moon/
+806,Blacephalon,,Alola,Ultra Sun/
+807,Zeraora,,Alola,Ultra Sun/
+808,Meltan,,Go,GO/
+809,Melmetal,,Go,GO/
+810,Grookey,,Galar,Sword/Shield/
+811,Thwackey,,Galar,Sword/Shield/
+812,Rillaboom,,Galar,Sword/Shield/
+813,Scorbunny,,Galar,Sword/Shield/
+814,Raboot,,Galar,Sword/Shield/
+815,Cinderace,,Galar,Sword/Shield/
+816,Sobble,,Galar,Sword/Shield/
+817,Drizzile,,Galar,Sword/Shield/
+818,Inteleon,,Galar,Sword/Shield/
+819,Skwovet,,Galar,Sword/Shield/
+820,Greedent,,Galar,Sword/Shield/
+821,Rookidee,,Galar,Sword/Shield/
+822,Corvisquire,,Galar,Sword/Shield/
+823,Corviknight,,Galar,Sword/Shield/
+824,Blipbug,,Galar,Sword/Shield/
+825,Dottler,,Galar,Sword/Shield/
+826,Orbeetle,,Galar,Sword/Shield/
+827,Nickit,,Galar,Sword/Shield/
+828,Thievul,,Galar,Sword/Shield/
+829,Gossifleur,,Galar,Sword/Shield/
+830,Eldegoss,,Galar,Sword/Shield/
+831,Wooloo,,Galar,Sword/Shield/
+832,Dubwool,,Galar,Sword/Shield/
+833,Chewtle,,Galar,Sword/Shield/
+834,Drednaw,,Galar,Sword/Shield/
+835,Yamper,,Galar,Sword/Shield/
+836,Boltund,,Galar,Sword/Shield/
+837,Rolycoly,,Galar,Sword/Shield/
+838,Carkol,,Galar,Sword/Shield/
+839,Coalossal,,Galar,Sword/Shield/
+840,Applin,,Galar,Sword/Shield/
+841,Flapple,,Galar,Sword/
+842,Appletun,,Galar,Shield/
+843,Silicobra,,Galar,Sword/Shield/
+844,Sandaconda,,Galar,Sword/Shield/
+845,Cramorant,,Galar,Sword/Shield/
+846,Arrokuda,,Galar,Sword/Shield/
+847,Barraskewda,,Galar,Sword/Shield/
+848,Toxel,,Galar,Sword/Shield/
+849,Toxtricity,Amped,Galar,Sword/Shield/
+849,Toxtricity,Low-key,Galar,Sword/Shield/
+850,Sizzlipede,,Galar,Sword/Shield/
+851,Centiskorch,,Galar,Sword/Shield/
+852,Clobbopus,,Galar,Sword/Shield/
+853,Grapploct,,Galar,Sword/Shield/
 854,Sinistea,Phony,Galar,Sword/Shield/
-855,Sinistea,Antique,Galar,Sword/Shield/
+854,Sinistea,Antique,Galar,Sword/Shield/
 855,Polteageist,Phony,Galar,Sword/Shield/
-856,Polteageist,Antique,Galar,Sword/Shield/
-857,Hatenna,,Galar,Sword/Shield/
-858,Hattrem,,Galar,Sword/Shield/
-859,Hatterene,,Galar,Sword/Shield/
-860,Impidimp,,Galar,Sword/Shield/
-861,Morgrem,,Galar,Sword/Shield/
-862,Grimmsnarl,,Galar,Sword/Shield/
-863,Obstagoon,,Galar,Sword/Shield/
-864,Perrserker,,Galar,Sword/Shield/
-865,Cursola,,Galar,Shield/
-866,Sirfetch’d,,Galar,Sword/
-867,Mr. Rime,,Galar,Sword/Shield/
-868,Runerigus,,Galar,Sword/Shield/
-869,Milcery,,Galar,Sword/Shield/
+855,Polteageist,Antique,Galar,Sword/Shield/
+856,Hatenna,,Galar,Sword/Shield/
+857,Hattrem,,Galar,Sword/Shield/
+858,Hatterene,,Galar,Sword/Shield/
+859,Impidimp,,Galar,Sword/Shield/
+860,Morgrem,,Galar,Sword/Shield/
+861,Grimmsnarl,,Galar,Sword/Shield/
+862,Obstagoon,,Galar,Sword/Shield/
+863,Perrserker,,Galar,Sword/Shield/
+864,Cursola,,Galar,Shield/
+865,Sirfetch’d,,Galar,Sword/
+866,Mr. Rime,,Galar,Sword/Shield/
+867,Runerigus,,Galar,Sword/Shield/
+868,Milcery,,Galar,Sword/Shield/
 869,Alcremie,Vanilla Strawberry,Galar,Sword/Shield/
 869,Alcremie,Vanilla Berry,Galar,Sword/Shield/
 869,Alcremie,Vanilla Love,Galar,Sword/Shield/
@@ -1215,150 +1215,150 @@ pokedexNumber,pokemon,form,originRegionToCatchIn,originGamesToCatchIn
 869,Alcremie,Rainbow Flower,Galar,Sword/Shield/
 869,Alcremie,Rainbow Clover,Galar,Sword/Shield/
 869,Alcremie,Rainbow Star,Galar,Sword/Shield/
-870,Alcremie,Rainbow Ribbon,Galar,Sword/Shield/
-871,Falinks,,Galar,Sword/Shield/
-872,Pincurchin,,Galar,Sword/Shield/
-873,Snom,,Galar,Sword/Shield/
-874,Frosmoth,,Galar,Sword/Shield/
-875,Stonjourner,,Galar,Sword/
-876,Eiscue,,Galar,Shield/
+869,Alcremie,Rainbow Ribbon,Galar,Sword/Shield/
+870,Falinks,,Galar,Sword/Shield/
+871,Pincurchin,,Galar,Sword/Shield/
+872,Snom,,Galar,Sword/Shield/
+873,Frosmoth,,Galar,Sword/Shield/
+874,Stonjourner,,Galar,Sword/
+875,Eiscue,,Galar,Shield/
 876,Indeedee,,Galar,Sword/
-877,Indeedee,Female,Galar,Shield/
-878,Morpeko,,Galar,Sword/Shield/
-879,Cufant,,Galar,Sword/Shield/
-880,Copperajah,,Galar,Sword/Shield/
-881,Dracozolt,Bird and Drake,Galar,Sword/Shield/
-882,Arctozolt,Bird and Dino,Galar,Sword/Shield/
-883,Dracovish,Fish and Drake,Galar,Sword/Shield/
-884,Arctovish,Fish and Dino,Galar,Sword/Shield/
-885,Duraludon,"x2 (Archaludon),",Galar,Sword/Shield/
-886,Dreepy,,Galar,Sword/Shield/
-887,Drakloak,,Galar,Sword/Shield/
-888,Dragapult,,Galar,Sword/Shield/
-889,Zacian,,Galar,Sword/
-890,Zamazenta,,Galar,Shield/
-891,Eternatus,,Galar,Sword/Shield/
-892,Kubfu,,Galar,Sword/Shield/
-892,Urshifu,"Single,",Galar,Sword/Shield/
-893,Urshifu,Rapid.,Galar,Sword/Shield/
+876,Indeedee,Female,Galar,Shield/
+877,Morpeko,,Galar,Sword/Shield/
+878,Cufant,,Galar,Sword/Shield/
+879,Copperajah,,Galar,Sword/Shield/
+880,Dracozolt,Bird and Drake,Galar,Sword/Shield/
+881,Arctozolt,Bird and Dino,Galar,Sword/Shield/
+882,Dracovish,Fish and Drake,Galar,Sword/Shield/
+883,Arctovish,Fish and Dino,Galar,Sword/Shield/
+884,Duraludon,x2 (Archaludon),Galar,Sword/Shield/
+885,Dreepy,,Galar,Sword/Shield/
+886,Drakloak,,Galar,Sword/Shield/
+887,Dragapult,,Galar,Sword/Shield/
+888,Zacian,,Galar,Sword/
+889,Zamazenta,,Galar,Shield/
+890,Eternatus,,Galar,Sword/Shield/
+891,Kubfu,,Galar,Sword/Shield/
+892,Urshifu,Single,Galar,Sword/Shield/
+892,Urshifu,Rapid.,Galar,Sword/Shield/
 893,Zarude,,Galar,Sword/Shield/
-894,Zarude,Dada,Galar,Sword/Shield/
-895,Regieleki,,Galar,Sword/Shield/
-896,Regidrago,,Galar,Sword/Shield/
-897,Glastrier,,Galar,Sword/Shield/
-898,Spectrier,,Galar,Sword/Shield/
-899,Calyrex,,Galar,Sword/Shield/
-900,Wyrdeer,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver
-901,Kleavor,,Kanto,Red/Yellow/LG: Pikachu
+893,Zarude,Dada,Galar,Sword/Shield/
+894,Regieleki,,Galar,Sword/Shield/
+895,Regidrago,,Galar,Sword/Shield/
+896,Glastrier,,Galar,Sword/Shield/
+897,Spectrier,,Galar,Sword/Shield/
+898,Calyrex,,Galar,Sword/Shield/
+999,Wyrdeer,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver
+900,Kleavor,,Kanto,Red/Yellow/LG: Pikachu
 901,Ursaluna,,Johto,Gold/Crystal/Heart Gold/Soul Silver
 902,Ursaluna,Bloodmoon,Paldea,Violet/
 902,Basculegion,,Hisui,Arceus/
-903,Basculegion,Female,Hisui,Arceus/
-904,Sneasler,,Hisui,Arceus/
-905,Overqwil,,Hisui,Arceus/
+902,Basculegion,Female,Hisui,Arceus/
+903,Sneasler,,Hisui,Arceus/
+904,Overqwil,,Hisui,Arceus/
 905,Enamorus,Therian Form,Hisui,Arceus/
-906,Enamorus,Incarnate Form,Hisui,Arceus/
-907,Sprigatito,,Paldea,Scarlet/Violet/
-908,Floragato,,Paldea,Scarlet/Violet/
-909,Meowscarada,,Paldea,Scarlet/Violet/
-910,Fuecoco,,Paldea,Scarlet/Violet/
-911,Crocalor,,Paldea,Scarlet/Violet/
-912,Skeledirge,,Paldea,Scarlet/Violet/
-913,Quaxly,,Paldea,Scarlet/Violet/
-914,Quaxwell,,Paldea,Scarlet/Violet/
-915,Quaquaval,,Paldea,Scarlet/Violet/
-916,Lechonk,,Paldea,Scarlet/Violet/
+905,Enamorus,Incarnate Form,Hisui,Arceus/
+906,Sprigatito,,Paldea,Scarlet/Violet/
+907,Floragato,,Paldea,Scarlet/Violet/
+908,Meowscarada,,Paldea,Scarlet/Violet/
+909,Fuecoco,,Paldea,Scarlet/Violet/
+910,Crocalor,,Paldea,Scarlet/Violet/
+911,Skeledirge,,Paldea,Scarlet/Violet/
+912,Quaxly,,Paldea,Scarlet/Violet/
+913,Quaxwell,,Paldea,Scarlet/Violet/
+914,Quaquaval,,Paldea,Scarlet/Violet/
+915,Lechonk,,Paldea,Scarlet/Violet/
 916,Oinkologne,,Paldea,Scarlet/Violet/
-917,Oinkologne,Female,Paldea,Scarlet/Violet/
-918,Tarountula,,Paldea,Scarlet/Violet/
-919,Spidops,,Paldea,Scarlet/Violet/
-920,Nymble,,Paldea,Scarlet/Violet/
-921,Lokix,,Paldea,Scarlet/Violet/
-922,Pawmi,,Paldea,Scarlet/Violet/
-923,Pawmo,,Paldea,Scarlet/Violet/
-924,Pawmot,,Paldea,Scarlet/Violet/
-925,Tandemaus,,Paldea,Scarlet/Violet/
+916,Oinkologne,Female,Paldea,Scarlet/Violet/
+917,Tarountula,,Paldea,Scarlet/Violet/
+918,Spidops,,Paldea,Scarlet/Violet/
+919,Nymble,,Paldea,Scarlet/Violet/
+920,Lokix,,Paldea,Scarlet/Violet/
+921,Pawmi,,Paldea,Scarlet/Violet/
+922,Pawmo,,Paldea,Scarlet/Violet/
+923,Pawmot,,Paldea,Scarlet/Violet/
+924,Tandemaus,,Paldea,Scarlet/Violet/
 925,Maushold,Family of 3,Paldea,Scarlet/Violet/
-926,Maushold,Family of 4,Paldea,Scarlet/Violet/
-927,Fidough,,Paldea,Scarlet/Violet/
-928,Dachsbun,,Paldea,Scarlet/Violet/
-929,Smoliv,,Paldea,Scarlet/Violet/
-930,Dolliv,,Paldea,Scarlet/Violet/
-931,Arboliva,,Paldea,Scarlet/Violet/
+925,Maushold,Family of 4,Paldea,Scarlet/Violet/
+926,Fidough,,Paldea,Scarlet/Violet/
+927,Dachsbun,,Paldea,Scarlet/Violet/
+928,Smoliv,,Paldea,Scarlet/Violet/
+929,Dolliv,,Paldea,Scarlet/Violet/
+930,Arboliva,,Paldea,Scarlet/Violet/
 931,Squawkabilly,Green,Paldea,Scarlet/Violet/
 931,Squawkabilly,Blue,Paldea,Scarlet/Violet/
 931,Squawkabilly,Yellow,Paldea,Scarlet/Violet/
-932,Squawkabilly,White,Paldea,Scarlet/Violet/
-933,Nacli,,Paldea,Scarlet/Violet/
-934,Naclstack,,Paldea,Scarlet/Violet/
-935,Garganacl,,Paldea,Scarlet/Violet/
-936,Charcadet,,Paldea,Scarlet/Violet/
-937,Armarouge,,Paldea,Scarlet/
-938,Ceruledge,,Paldea,Violet/
-939,Tadbulb,,Paldea,Scarlet/Violet/
-940,Bellibolt,,Paldea,Scarlet/Violet/
-941,Wattrel,,Paldea,Scarlet/Violet/
-942,Kilowattrel,,Paldea,Scarlet/Violet/
-943,Maschiff,,Paldea,Scarlet/Violet/
-944,Mabosstiff,,Paldea,Scarlet/Violet/
-945,Shroodle,,Paldea,Scarlet/Violet/
-946,Grafaiai,,Paldea,Scarlet/Violet/
-947,Bramblin,,Paldea,Scarlet/Violet/
-948,Brambleghast,,Paldea,Scarlet/Violet/
-949,Toedscool,,Paldea,Scarlet/Violet/
-950,Toedscruel,,Paldea,Scarlet/Violet/
-951,Klawf,,Paldea,Scarlet/Violet/
-952,Capsakid,,Paldea,Scarlet/Violet/
-953,Scovillain,,Paldea,Scarlet/Violet/
-954,Rellor,,Paldea,Scarlet/Violet/
-955,Rabsca,,Paldea,Scarlet/Violet/
-956,Flittle,,Paldea,Scarlet/Violet/
-957,Espathra,,Paldea,Scarlet/Violet/
-958,Tinkatink,,Paldea,Scarlet/Violet/
-959,Tinkatuff,,Paldea,Scarlet/Violet/
-960,Tinkaton,,Paldea,Scarlet/Violet/
-961,Wiglett,,Paldea,Scarlet/Violet/
-962,Wugtrio,,Paldea,Scarlet/Violet/
-963,Bombirdier,,Paldea,Scarlet/Violet/
-964,Finizen,,Paldea,Scarlet/Violet/
-965,Palafin,,Paldea,Scarlet/Violet/
-966,Varoom,,Paldea,Scarlet/Violet/
-967,Revavroom,,Paldea,Scarlet/Violet/
-968,Cyclizar,,Paldea,Scarlet/Violet/
-969,Orthworm,,Paldea,Scarlet/Violet/
-970,Glimmet,,Paldea,Scarlet/Violet/
-971,Glimmora,,Paldea,Scarlet/Violet/
-972,Greavard,,Paldea,Scarlet/Violet/
-973,Houndstone,,Paldea,Scarlet/Violet/
-974,Flamigo,,Paldea,Scarlet/Violet/
-975,Cetoddle,,Paldea,Scarlet/Violet/
-976,Cetitan,,Paldea,Scarlet/Violet/
-977,Veluza,,Paldea,Scarlet/Violet/
-978,Dondozo,,Paldea,Scarlet/Violet/
+931,Squawkabilly,White,Paldea,Scarlet/Violet/
+932,Nacli,,Paldea,Scarlet/Violet/
+933,Naclstack,,Paldea,Scarlet/Violet/
+934,Garganacl,,Paldea,Scarlet/Violet/
+935,Charcadet,,Paldea,Scarlet/Violet/
+936,Armarouge,,Paldea,Scarlet/
+937,Ceruledge,,Paldea,Violet/
+938,Tadbulb,,Paldea,Scarlet/Violet/
+939,Bellibolt,,Paldea,Scarlet/Violet/
+940,Wattrel,,Paldea,Scarlet/Violet/
+941,Kilowattrel,,Paldea,Scarlet/Violet/
+942,Maschiff,,Paldea,Scarlet/Violet/
+943,Mabosstiff,,Paldea,Scarlet/Violet/
+944,Shroodle,,Paldea,Scarlet/Violet/
+945,Grafaiai,,Paldea,Scarlet/Violet/
+946,Bramblin,,Paldea,Scarlet/Violet/
+947,Brambleghast,,Paldea,Scarlet/Violet/
+948,Toedscool,,Paldea,Scarlet/Violet/
+949,Toedscruel,,Paldea,Scarlet/Violet/
+950,Klawf,,Paldea,Scarlet/Violet/
+951,Capsakid,,Paldea,Scarlet/Violet/
+952,Scovillain,,Paldea,Scarlet/Violet/
+953,Rellor,,Paldea,Scarlet/Violet/
+954,Rabsca,,Paldea,Scarlet/Violet/
+955,Flittle,,Paldea,Scarlet/Violet/
+956,Espathra,,Paldea,Scarlet/Violet/
+957,Tinkatink,,Paldea,Scarlet/Violet/
+958,Tinkatuff,,Paldea,Scarlet/Violet/
+959,Tinkaton,,Paldea,Scarlet/Violet/
+960,Wiglett,,Paldea,Scarlet/Violet/
+961,Wugtrio,,Paldea,Scarlet/Violet/
+962,Bombirdier,,Paldea,Scarlet/Violet/
+963,Finizen,,Paldea,Scarlet/Violet/
+964,Palafin,,Paldea,Scarlet/Violet/
+965,Varoom,,Paldea,Scarlet/Violet/
+966,Revavroom,,Paldea,Scarlet/Violet/
+967,Cyclizar,,Paldea,Scarlet/Violet/
+968,Orthworm,,Paldea,Scarlet/Violet/
+969,Glimmet,,Paldea,Scarlet/Violet/
+970,Glimmora,,Paldea,Scarlet/Violet/
+971,Greavard,,Paldea,Scarlet/Violet/
+972,Houndstone,,Paldea,Scarlet/Violet/
+973,Flamigo,,Paldea,Scarlet/Violet/
+974,Cetoddle,,Paldea,Scarlet/Violet/
+975,Cetitan,,Paldea,Scarlet/Violet/
+976,Veluza,,Paldea,Scarlet/Violet/
+977,Dondozo,,Paldea,Scarlet/Violet/
 978,Tatsugiri,Curly,Paldea,Scarlet/Violet/
 978,Tatsugiri,Droopy,Paldea,Scarlet/Violet/
-979,Tatsugiri,Stretchy,Paldea,Scarlet/Violet/
-980,Annihilape,,Kanto,Red/Yellow/LG: Pikachu
-981,Clodsire,,Paldea,Scarlet/Violet/
-982,Farigiraf,,Johto,Gold/Silver/Heart Gold/Soul Silver
+978,Tatsugiri,Stretchy,Paldea,Scarlet/Violet/
+979,Annihilape,,Kanto,Red/Yellow/LG: Pikachu
+980,Clodsire,,Paldea,Scarlet/Violet/
+981,Farigiraf,,Johto,Gold/Silver/Heart Gold/Soul Silver
 982,Dudunsparce,2-Segment,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver
-983,Dudunsparce,3-Segment,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver
-984,Kingambit,,Unova,Black/White/Black 2/White 2
-985,Great Tusk,,Paldea,Scarlet/
-986,Scream Tail,,Paldea,Scarlet/
-987,Brute Bonnet,,Paldea,Scarlet/
-988,Flutter Mane,,Paldea,Scarlet/
-989,Slither Wing,,Paldea,Scarlet/
-990,Sandy Shocks,,Paldea,Scarlet/
-991,Iron Treads,,Paldea,Violet/
-992,Iron Bundle,,Paldea,Violet/
-993,Iron Hands,,Paldea,Violet/
-994,Iron Jugulis,,Paldea,Violet/
-995,Iron Moth,,Paldea,Violet/
-996,Iron Thorns,,Paldea,Violet/
-997,Frigibax,,Paldea,Scarlet/Violet/
-998,Arctibax,,Paldea,Scarlet/Violet/
-999,Baxcalibur,,Paldea,Scarlet/Violet/
+982,Dudunsparce,3-Segment,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver
+983,Kingambit,,Unova,Black/White/Black 2/White 2
+984,Great Tusk,,Paldea,Scarlet/
+985,Scream Tail,,Paldea,Scarlet/
+986,Brute Bonnet,,Paldea,Scarlet/
+987,Flutter Mane,,Paldea,Scarlet/
+988,Slither Wing,,Paldea,Scarlet/
+989,Sandy Shocks,,Paldea,Scarlet/
+990,Iron Treads,,Paldea,Violet/
+991,Iron Bundle,,Paldea,Violet/
+992,Iron Hands,,Paldea,Violet/
+993,Iron Jugulis,,Paldea,Violet/
+994,Iron Moth,,Paldea,Violet/
+995,Iron Thorns,,Paldea,Violet/
+996,Frigibax,,Paldea,Scarlet/Violet/
+997,Arctibax,,Paldea,Scarlet/Violet/
+998,Baxcalibur,,Paldea,Scarlet/Violet/
 999,Gimmighoul,Box Form,Paldea,Scarlet/Violet/
 999,Gimmighoul,Roaming Form,Go,Go/
 1000,Gholdengo,,Paldea,Scarlet/Violet/
