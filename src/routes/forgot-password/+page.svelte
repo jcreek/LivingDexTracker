@@ -146,11 +146,12 @@
 
 				<!-- Email Input -->
 				<div class="form-control">
-					<label class="label">
+					<label class="label" for="forgot-password-email">
 						<span class="label-text font-medium">Email</span>
 					</label>
 					<div class="relative">
 						<input
+							id="forgot-password-email"
 							type="email"
 							placeholder="your@email.com"
 							class="input input-bordered w-full pl-10"

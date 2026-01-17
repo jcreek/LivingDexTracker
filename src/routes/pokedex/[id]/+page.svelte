@@ -467,6 +467,11 @@
 										/>
 									</svg>
 									<span class="font-semibold">{pokedex.gameScope}</span>
+									{#if pokedex.dexScopes?.length}
+										<span class="text-xs text-base-content/60">
+											({pokedex.dexScopes.length} dex{pokedex.dexScopes.length === 1 ? '' : 'es'})
+										</span>
+									{/if}
 								</div>
 							{:else}
 								<div class="divider divider-horizontal mx-0"></div>

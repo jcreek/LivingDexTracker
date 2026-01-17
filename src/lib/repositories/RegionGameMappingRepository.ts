@@ -1,24 +1,35 @@
-import RegionGameMappingModel, { type RegionGameMapping } from '$lib/models/RegionGameMapping';
+import type { RegionGameMapping } from '$lib/models/RegionGameMapping';
 
 class RegionGameMappingRepository {
 	async findById(id: string): Promise<RegionGameMapping | null> {
-		return RegionGameMappingModel.findById(id).exec();
+		void id;
+		return null;
 	}
 
 	async findAll(): Promise<RegionGameMapping[]> {
-		return RegionGameMappingModel.find().exec();
+		return [];
 	}
 
 	async create(data: Partial<RegionGameMapping>): Promise<RegionGameMapping> {
-		return RegionGameMappingModel.create(data);
+		return {
+			id: data.id,
+			region: data.region ?? '',
+			game: data.game ?? ''
+		};
 	}
 
 	async update(id: string, data: Partial<RegionGameMapping>): Promise<RegionGameMapping | null> {
-		return RegionGameMappingModel.findByIdAndUpdate(id, data, { new: true }).exec();
+		void id;
+		if (!data.region || !data.game) return null;
+		return {
+			id: data.id,
+			region: data.region,
+			game: data.game
+		};
 	}
 
 	async delete(id: string): Promise<void> {
-		await RegionGameMappingModel.findByIdAndDelete(id).exec();
+		void id;
 	}
 }
 

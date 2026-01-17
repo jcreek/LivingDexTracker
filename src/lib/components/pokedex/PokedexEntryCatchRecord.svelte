@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { CatchRecord } from '$lib/models/CatchRecord';
-	import type { PokedexEntry } from '$lib/models/PokedexEntry';
+	import type { CatchInformationItem, PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokemonSprite from '../PokemonSprite.svelte';
 	import { createEventDispatcher } from 'svelte';
 
@@ -30,6 +30,10 @@
 	const dispatch = createEventDispatcher();
 
 	type UpdateCatchSource = 'toggle' | 'notes' | 'notes-blur';
+
+	const isCatchInformationItem = (
+		value: string | CatchInformationItem
+	): value is CatchInformationItem => typeof value !== 'string';
 
 	function updateCatchRecord(source: UpdateCatchSource) {
 		dispatch('updateCatch', { pokedexEntry, catchRecord, source });
@@ -193,11 +197,15 @@
 				<ul class="list-disc list-inside">
 					{#each pokedexEntry.catchInformation as info}
 						<li>
-							<ul>
-								<li><strong>Game:</strong> {info.game}</li>
-								<li><strong>Location:</strong> {info.location}</li>
-								<li><strong>Notes:</strong> {info.notes}</li>
-							</ul>
+							{#if isCatchInformationItem(info)}
+								<ul>
+									<li><strong>Game:</strong> {info.game}</li>
+									<li><strong>Location:</strong> {info.location}</li>
+									<li><strong>Notes:</strong> {info.notes}</li>
+								</ul>
+							{:else}
+								{info}
+							{/if}
 						</li>
 					{/each}
 				</ul>

@@ -47,8 +47,8 @@ class CombinedDataRepository {
 		let query = this.supabase.from('pokedex_entries').select('*');
 
 		if (!enableForms) {
-			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
-			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
+			// Filter to base forms: NULL or 'male' (gendered species), plus Unown "A".
+			query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
@@ -69,6 +69,83 @@ class CombinedDataRepository {
 			.order('formSortLabel', { ascending: true });
 
 		return query;
+	}
+
+	private buildDexEntriesQuery(dexScopes: string[], enableForms: boolean, region: string) {
+		let query = this.supabase.from('game_pokedex_entry_details').select('*').in('dexId', dexScopes);
+
+		if (!enableForms) {
+			// Filter to base forms: NULL or 'male' (gendered species), plus Unown "A".
+			query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
+		}
+
+		if (region) {
+			query = query.eq('regionToCatchIn', region);
+		}
+
+		// Stable ordering: dex order, dex number, Unown order, base/female/temporal, then form label.
+		query = query
+			.order('dexSortOrder', { ascending: true })
+			.order('dexNumber', { ascending: true })
+			.order('unownSortOrder', { ascending: true })
+			.order('formSortBucket', { ascending: true })
+			.order('formSortRegionOrder', { ascending: true })
+			.order('formSortRegionalSub', { ascending: true })
+			.order('formSortLabel', { ascending: true });
+
+		return query;
+	}
+
+	private async fetchAllDexEntries(
+		dexScopes: string[],
+		enableForms: boolean,
+		region: string
+	): Promise<PokedexEntryDB[]> {
+		if (dexScopes.length === 0) return [];
+
+		const entries: PokedexEntryDB[] = [];
+		let start = 0;
+		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
+
+		while (true) {
+			const end = start + maxRows - 1;
+			const { data, error } = await this.buildDexEntriesQuery(dexScopes, enableForms, region).range(
+				start,
+				end
+			);
+
+			if (error) {
+				console.error('Error finding dex-scoped combined data:', error);
+				return [];
+			}
+
+			if (!data || data.length === 0) {
+				break;
+			}
+
+			entries.push(...data);
+
+			if (data.length < maxRows) {
+				break;
+			}
+
+			start = end + 1;
+		}
+
+		return entries;
+	}
+
+	private dedupeEntries(entries: PokedexEntryDB[]): PokedexEntryDB[] {
+		const seen = new Set<number>();
+		const deduped: PokedexEntryDB[] = [];
+
+		for (const entry of entries) {
+			if (seen.has(entry.id)) continue;
+			seen.add(entry.id);
+			deduped.push(entry);
+		}
+
+		return deduped;
 	}
 
 	private async fetchEntriesByRange(
@@ -180,9 +257,13 @@ class CombinedDataRepository {
 		userId: string,
 		enableForms: boolean = true,
 		region: string = '',
-		game: string = ''
+		game: string = '',
+		dexScopes: string[] = []
 	): Promise<CombinedData[]> {
-		const entries = await this.fetchAllEntries(enableForms, region, game);
+		const entries =
+			dexScopes.length > 0
+				? this.dedupeEntries(await this.fetchAllDexEntries(dexScopes, enableForms, region))
+				: await this.fetchAllEntries(enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
 			return [];
@@ -220,11 +301,18 @@ class CombinedDataRepository {
 		limit: number = 20,
 		enableForms: boolean = true,
 		region: string = '',
-		game: string = ''
+		game: string = '',
+		dexScopes: string[] = []
 	): Promise<CombinedData[]> {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
-		const entries = await this.fetchEntriesByRange(from, to, enableForms, region, game);
+		const entries =
+			dexScopes.length > 0
+				? this.dedupeEntries(await this.fetchAllDexEntries(dexScopes, enableForms, region)).slice(
+						from,
+						to + 1
+				  )
+				: await this.fetchEntriesByRange(from, to, enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
 			return [];
@@ -256,13 +344,25 @@ class CombinedDataRepository {
 		return combinedData;
 	}
 
-	async countCombinedData(enableForms: boolean, region: string, game: string): Promise<number> {
+	async countCombinedData(
+		enableForms: boolean,
+		region: string,
+		game: string,
+		dexScopes: string[] = []
+	): Promise<number> {
+		if (dexScopes.length > 0) {
+			const entries = this.dedupeEntries(
+				await this.fetchAllDexEntries(dexScopes, enableForms, region)
+			);
+			return entries.length;
+		}
+
 		let query = this.supabase.from('pokedex_entries').select('id', { count: 'exact', head: true });
 
 		// Apply same filters as in findCombinedData
 		if (!enableForms) {
-			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
-			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
+			// Filter to base forms: NULL or 'male' (gendered species), plus Unown "A".
+			query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
 		}
 
 		if (region) {
