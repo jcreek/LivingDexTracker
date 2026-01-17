@@ -17,7 +17,7 @@
 		catchRecord = {
 			_id: '', // Empty string, not temp ID - will be created by server
 			userId: userId || '',
-			pokedexEntryId: pokedexEntry._id,
+			pokemonId: pokedexEntry._id,
 			pokedexId: pokedexId,
 			haveToEvolve: false,
 			caught: false,

@@ -7,7 +7,7 @@ function mkRecord(overrides: Partial<CatchRecord> = {}): CatchRecord {
 		_id: '',
 		userId: 'u1',
 		pokedexId: 'p1',
-		pokedexEntryId: '25',
+		pokemonId: '25',
 		haveToEvolve: false,
 		caught: false,
 		inHome: false,

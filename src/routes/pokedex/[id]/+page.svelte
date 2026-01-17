@@ -99,7 +99,7 @@
 
 	function applyOptimisticCatchRecordUpdate(next: CatchRecord) {
 		if (!combinedData) return;
-		const idx = combinedData.findIndex((cd) => cd.pokedexEntry._id === next.pokedexEntryId);
+		const idx = combinedData.findIndex((cd) => cd.pokedexEntry._id === next.pokemonId);
 		if (idx === -1) return;
 		// Replace the catchRecord entry with the updated version.
 		const current = combinedData[idx];
@@ -112,7 +112,7 @@
 		};
 		combinedData = [...combinedData.slice(0, idx), patched, ...combinedData.slice(idx + 1)];
 
-		if (selectedPokemon?.pokedexEntry._id === next.pokedexEntryId) {
+		if (selectedPokemon?.pokedexEntry._id === next.pokemonId) {
 			selectedPokemon = patched;
 		}
 	}
@@ -207,7 +207,7 @@
 				const baseRecord: CatchRecord = catchRecord ?? {
 					_id: '',
 					userId: localUser?.id || '',
-					pokedexEntryId: pokedexEntry._id,
+					pokemonId: pokedexEntry._id,
 					pokedexId: pokedexId,
 					haveToEvolve: false,
 					caught: false,
@@ -281,7 +281,7 @@
 			creatingRecords = true;
 			const newCatchRecords = pokedexEntries.map((entry: PokedexEntry) => ({
 				userId: localUser?.id,
-				pokedexEntryId: entry._id,
+				pokemonId: entry._id,
 				pokedexId: pokedexId,
 				haveToEvolve: false,
 				caught: false,
