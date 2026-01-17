@@ -71,11 +71,12 @@
 
 	<!-- Email Input -->
 	<div class="form-control">
-		<label class="label">
+		<label class="label" for="signin-email">
 			<span class="label-text font-medium">Email</span>
 		</label>
 		<div class="relative">
 			<input
+				id="signin-email"
 				type="email"
 				placeholder="your@email.com"
 				class="input input-bordered w-full pl-10"
@@ -101,11 +102,12 @@
 
 	<!-- Password Input -->
 	<div class="form-control">
-		<label class="label">
+		<label class="label" for="signin-password">
 			<span class="label-text font-medium">Password</span>
 		</label>
 		<div class="relative">
 			<input
+				id="signin-password"
 				type="password"
 				placeholder="••••••••"
 				class="input input-bordered w-full pl-10"

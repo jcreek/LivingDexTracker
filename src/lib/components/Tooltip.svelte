@@ -7,14 +7,16 @@
 </script>
 
 <div class="relative inline-block">
-	<div
-		class="tooltip-trigger cursor-pointer"
+	<button
+		type="button"
+		class="tooltip-trigger cursor-pointer bg-transparent border-0 p-0 appearance-none"
+		aria-expanded={show}
 		on:click={handleClick}
 		on:mouseenter={() => (show = true)}
 		on:mouseleave={() => (show = false)}
 	>
 		<slot name="hover-target" />
-	</div>
+	</button>
 
 	{#if show}
 		<div class="tooltip-content absolute z-10 mt-2 w-52">

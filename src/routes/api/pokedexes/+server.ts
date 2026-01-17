@@ -4,6 +4,7 @@ import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
 import { populatePokedexMappings } from '$lib/services/PokedexMappingService';
+import { resolveDexScopes, setPokedexDexScopes } from '$lib/services/PokedexDexScopeService';
 
 // GET: List all pokedexes for user
 export const GET = async (event: RequestEvent) => {
@@ -31,11 +32,19 @@ export const POST = async (event: RequestEvent) => {
 		const data: Partial<Pokedex> = await event.request.json();
 		requestedName = typeof data.name === 'string' ? data.name : undefined;
 		data.userId = userId;
+		const requestedDexScopes = Array.isArray(data.dexScopes) ? data.dexScopes : [];
 
 		const repo = new PokedexRepository(event.locals.supabase, userId);
 		const pokedex = await repo.create(data);
 		createdPokedexId = pokedex._id;
 		createdPokedexName = pokedex.name;
+
+		const resolvedDexScopes = await resolveDexScopes(event.locals.supabase, {
+			...pokedex,
+			dexScopes: requestedDexScopes
+		});
+		await setPokedexDexScopes(event.locals.supabase, pokedex._id, resolvedDexScopes);
+		pokedex.dexScopes = resolvedDexScopes;
 
 		// Populate pokedex_entries_mapping table with expected entries
 		try {

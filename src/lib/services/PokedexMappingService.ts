@@ -1,5 +1,6 @@
 import type { Pokedex } from '$lib/models/Pokedex';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { resolveDexScopes } from '$lib/services/PokedexDexScopeService';
 
 /**
  * Calculate expected pokedex entries based on pokedex configuration
@@ -10,12 +11,54 @@ export async function calculateExpectedEntries(
 	supabase: SupabaseClient,
 	pokedex: Pokedex
 ): Promise<number[]> {
+	const dexScopes = await resolveDexScopes(supabase, pokedex);
+
+	if (dexScopes.length > 0) {
+		const { data: dexEntries, error: dexError } = await supabase
+			.from('game_pokedex_entries')
+			.select('pokemonId')
+			.in('dexId', dexScopes);
+
+		if (dexError) {
+			console.error('Error calculating dex-scoped entries:', dexError);
+			throw new Error(`Failed to calculate dex-scoped entries: ${dexError.message}`);
+		}
+
+		const uniqueIds = Array.from(new Set(dexEntries?.map((row) => row.pokemonId) || []));
+		if (uniqueIds.length === 0) return [];
+
+		if (!pokedex.isFormDex) {
+			const { data: entries, error: entryError } = await supabase
+				.from('pokedex_entries')
+				.select('id, pokemon, form')
+				.in('id', uniqueIds);
+
+			if (entryError) {
+				console.error('Error filtering base forms for dex scopes:', entryError);
+				throw new Error(`Failed to filter base forms: ${entryError.message}`);
+			}
+
+			return (
+				entries
+					?.filter(
+						(entry) =>
+							entry.form === null ||
+							entry.form === 'male' ||
+							(entry.pokemon === 'Unown' && entry.form === 'A')
+					)
+					.map((entry) => entry.id) || []
+			);
+		}
+
+		return uniqueIds;
+	}
+
 	let query = supabase.from('pokedex_entries').select('id');
 
 	// Apply form filter: if isFormDex is false, only include base forms
 	// Base forms have form IS NULL, except Unown which has no base form (use 'A')
 	if (!pokedex.isFormDex) {
-		query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
+		query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
 	}
 
 	// Apply region filter: if gameScope is specified, filter by region

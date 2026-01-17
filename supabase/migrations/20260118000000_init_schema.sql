@@ -35,6 +35,22 @@ CREATE TABLE games (
 CREATE INDEX idx_games_region_id ON games("regionId");
 CREATE INDEX idx_games_release_year ON games("releaseYear");
 
+-- Reference data: game dexes (base, DLCs, islands, etc.)
+CREATE TABLE game_dexes (
+  id TEXT PRIMARY KEY,
+  "gameId" TEXT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+  "displayName" TEXT NOT NULL,
+  "sortOrder" INTEGER NOT NULL,
+  "isDlc" BOOLEAN DEFAULT FALSE,
+  "parentDexId" TEXT REFERENCES game_dexes(id) ON DELETE SET NULL,
+  "createdAt" TIMESTAMPTZ DEFAULT NOW(),
+  "updatedAt" TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE ("gameId", "displayName")
+);
+
+CREATE INDEX idx_game_dexes_game_id ON game_dexes("gameId");
+CREATE INDEX idx_game_dexes_sort_order ON game_dexes("sortOrder");
+
 -- Reference data: pokemon (one row per pokedexNumber + form)
 CREATE TABLE pokemon (
   id BIGSERIAL PRIMARY KEY,
@@ -74,14 +90,14 @@ CREATE INDEX idx_pokemon_origin_games_game_id ON pokemon_origin_games("gameId");
 
 -- Reference data: per-game pokedex entries (seeded from per-game CSVs)
 CREATE TABLE game_pokedex_entries (
-  "gameId" TEXT NOT NULL REFERENCES games(id) ON DELETE CASCADE,
+  "dexId" TEXT NOT NULL REFERENCES game_dexes(id) ON DELETE CASCADE,
   "pokemonId" BIGINT NOT NULL REFERENCES pokemon(id) ON DELETE CASCADE,
   "dexNumber" INTEGER,
   notes TEXT,
-  PRIMARY KEY ("gameId", "pokemonId")
+  PRIMARY KEY ("dexId", "pokemonId")
 );
 
-CREATE INDEX idx_game_pokedex_entries_game_id ON game_pokedex_entries("gameId");
+CREATE INDEX idx_game_pokedex_entries_dex_id ON game_pokedex_entries("dexId");
 CREATE INDEX idx_game_pokedex_entries_pokemon_id ON game_pokedex_entries("pokemonId");
 
 -- User-owned pokedexes
@@ -107,6 +123,16 @@ CREATE TABLE pokedexes (
 );
 
 CREATE INDEX idx_pokedexes_user_id ON pokedexes("userId");
+
+-- Selected dex scopes per user pokedex
+CREATE TABLE pokedex_dex_scopes (
+  "pokedexId" UUID NOT NULL REFERENCES pokedexes(id) ON DELETE CASCADE,
+  "dexId" TEXT NOT NULL REFERENCES game_dexes(id) ON DELETE CASCADE,
+  PRIMARY KEY ("pokedexId", "dexId")
+);
+
+CREATE INDEX idx_pokedex_dex_scopes_pokedex_id ON pokedex_dex_scopes("pokedexId");
+CREATE INDEX idx_pokedex_dex_scopes_dex_id ON pokedex_dex_scopes("dexId");
 
 -- User-owned expected entries per pokedex
 CREATE TABLE pokedex_pokemon_mapping (
@@ -167,6 +193,10 @@ CREATE TRIGGER update_games_updated_at
   BEFORE UPDATE ON games
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
+CREATE TRIGGER update_game_dexes_updated_at
+  BEFORE UPDATE ON game_dexes
+  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
 CREATE TRIGGER update_pokemon_updated_at
   BEFORE UPDATE ON pokemon
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -186,6 +216,10 @@ CREATE POLICY "Regions are publicly readable" ON regions
 
 ALTER TABLE games ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Games are publicly readable" ON games
+  FOR SELECT TO public USING (true);
+
+ALTER TABLE game_dexes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Game dexes are publicly readable" ON game_dexes
   FOR SELECT TO public USING (true);
 
 ALTER TABLE pokemon ENABLE ROW LEVEL SECURITY;
@@ -209,6 +243,24 @@ CREATE POLICY "Users can update own pokedexes" ON pokedexes
   FOR UPDATE USING (auth.uid() = "userId");
 CREATE POLICY "Users can delete own pokedexes" ON pokedexes
   FOR DELETE USING (auth.uid() = "userId");
+
+ALTER TABLE pokedex_dex_scopes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can view own dex scopes" ON pokedex_dex_scopes
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM pokedexes
+      WHERE pokedexes.id = pokedex_dex_scopes."pokedexId"
+      AND pokedexes."userId" = auth.uid()
+    )
+  );
+CREATE POLICY "Users can manage own dex scopes" ON pokedex_dex_scopes
+  FOR ALL USING (
+    EXISTS (
+      SELECT 1 FROM pokedexes
+      WHERE pokedexes.id = pokedex_dex_scopes."pokedexId"
+      AND pokedexes."userId" = auth.uid()
+    )
+  );
 
 ALTER TABLE pokedex_pokemon_mapping ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can view pokedex pokemon mapping"
@@ -334,6 +386,20 @@ LEFT JOIN games g ON g.id = pog."gameId"
 GROUP BY p.id, r.name, r."releaseOrder";
 
 GRANT SELECT ON pokedex_entries TO anon, authenticated;
+
+-- Dex-scoped view for ordering and filtering by native dexes
+CREATE OR REPLACE VIEW game_pokedex_entry_details AS
+SELECT
+  gpe."dexId",
+  gd."displayName" AS "dexDisplayName",
+  gd."sortOrder" AS "dexSortOrder",
+  gpe."dexNumber",
+  pe.*
+FROM game_pokedex_entries gpe
+JOIN game_dexes gd ON gd.id = gpe."dexId"
+JOIN pokedex_entries pe ON pe.id = gpe."pokemonId";
+
+GRANT SELECT ON game_pokedex_entry_details TO anon, authenticated;
 
 -- RPC: recalculate expected mappings for a pokedex
 CREATE OR REPLACE FUNCTION recalculate_pokedex_mappings(

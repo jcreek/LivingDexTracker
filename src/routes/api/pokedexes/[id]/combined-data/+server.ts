@@ -3,6 +3,7 @@ import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
 import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { getOptionalUserId } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
+import { resolveDexScopes } from '$lib/services/PokedexDexScopeService';
 
 // GET: Get combined data (pokédex entries + catch records) for specific pokédex
 export const GET = async (event: RequestEvent) => {
@@ -39,6 +40,7 @@ export const GET = async (event: RequestEvent) => {
 
 		// Use pokédex's gameScope as default filter if no manual game filter is set
 		const effectiveGame = game || pokedex.gameScope || '';
+		const dexScopes = await resolveDexScopes(event.locals.supabase, pokedex);
 
 		const repo = new CombinedDataRepository(event.locals.supabase, userId, pokedexId);
 
@@ -49,11 +51,12 @@ export const GET = async (event: RequestEvent) => {
 			limit,
 			enableForms,
 			region,
-			effectiveGame
+			effectiveGame,
+			dexScopes
 		);
 
 		// Get total count for pagination
-		const totalCount = await repo.countCombinedData(enableForms, region, effectiveGame);
+		const totalCount = await repo.countCombinedData(enableForms, region, effectiveGame, dexScopes);
 		const totalPages = Math.ceil(totalCount / limit);
 
 		return json({
