@@ -1,22 +1,24 @@
 -- Seed regions, games, pokemon, and origin game mappings.
 -- Auto-generated from data/csvs/*.csv
 
-INSERT INTO regions (name) VALUES
-  ('Kanto'),
-  ('Johto'),
-  ('Hoenn'),
-  ('Sinnoh'),
-  ('Unova'),
-  ('Galar'),
-  ('Alola'),
-  ('Kalos'),
-  ('Hisui'),
-  ('Paldea'),
-  ('Go'),
-  ('Home'),
-  ('Orre'),
-  ('Ranch')
-ON CONFLICT (name) DO NOTHING;
+INSERT INTO regions (name, "releaseOrder") VALUES
+  ('Kanto', 1),
+  ('Johto', 2),
+  ('Hoenn', 3),
+  ('Orre', 4),
+  ('Sinnoh', 5),
+  ('Ranch', 6),
+  ('Unova', 7),
+  ('Kalos', 8),
+  ('Alola', 9),
+  ('Go', 10),
+  ('Galar', 11),
+  ('Home', 12),
+  ('Hisui', 13),
+  ('Paldea', 14)
+ON CONFLICT (name) DO UPDATE SET
+  "releaseOrder" = EXCLUDED."releaseOrder",
+  "updatedAt" = NOW();
 
 INSERT INTO games (id, "displayName", "regionId", region, "releaseYear") VALUES
   ('red', 'Red', (SELECT id FROM regions WHERE name = 'Kanto'), 'Kanto', 1996),

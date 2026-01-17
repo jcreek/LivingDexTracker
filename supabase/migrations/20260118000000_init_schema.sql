@@ -16,6 +16,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE regions (
   id BIGSERIAL PRIMARY KEY,
   name TEXT NOT NULL UNIQUE,
+  "releaseOrder" INTEGER NOT NULL,
   "createdAt" TIMESTAMPTZ DEFAULT NOW(),
   "updatedAt" TIMESTAMPTZ DEFAULT NOW()
 );
@@ -283,6 +284,7 @@ SELECT
   p.form,
   p."canGigantamax",
   r.name AS "regionToCatchIn",
+  r."releaseOrder" AS "regionReleaseOrder",
   COALESCE(
     ARRAY_AGG(g."displayName" ORDER BY g."displayName") FILTER (WHERE g.id IS NOT NULL),
     ARRAY[]::TEXT[]
@@ -291,12 +293,45 @@ SELECT
   p."evolutionInformation",
   p."catchInformation",
   p."createdAt",
-  p."updatedAt"
+  p."updatedAt",
+  CASE
+    WHEN p.form IS NULL OR lower(p.form) = 'male' THEN 0
+    WHEN lower(p.form) = 'female' THEN 1
+    WHEN lower(p.form) LIKE '%alolan%'
+      OR lower(p.form) LIKE '%galarian%'
+      OR lower(p.form) LIKE '%hisuian%'
+      OR lower(p.form) LIKE '%paldean%'
+      THEN 2
+    ELSE 3
+  END AS "formSortBucket",
+  CASE
+    WHEN lower(p.form) LIKE '%alolan%'
+      OR lower(p.form) LIKE '%galarian%'
+      OR lower(p.form) LIKE '%hisuian%'
+      OR lower(p.form) LIKE '%paldean%'
+      THEN r."releaseOrder"
+    ELSE 0
+  END AS "formSortRegionOrder",
+  CASE
+    WHEN lower(p.form) LIKE 'female-%' THEN 1
+    ELSE 0
+  END AS "formSortRegionalSub",
+  COALESCE(lower(p.form), '') AS "formSortLabel",
+  CASE
+    WHEN p.pokemon = 'Unown' THEN
+      CASE
+        WHEN p.form = '?' THEN 26
+        WHEN p.form = '!' THEN 27
+        WHEN length(p.form) = 1 AND ascii(upper(p.form)) BETWEEN 65 AND 90 THEN ascii(upper(p.form)) - 65
+        ELSE 28
+      END
+    ELSE 0
+  END AS "unownSortOrder"
 FROM pokemon p
 JOIN regions r ON r.id = p."originRegionId"
 LEFT JOIN pokemon_origin_games pog ON pog."pokemonId" = p.id
 LEFT JOIN games g ON g.id = pog."gameId"
-GROUP BY p.id, r.name;
+GROUP BY p.id, r.name, r."releaseOrder";
 
 GRANT SELECT ON pokedex_entries TO anon, authenticated;
 
