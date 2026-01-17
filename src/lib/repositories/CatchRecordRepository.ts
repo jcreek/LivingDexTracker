@@ -16,6 +16,7 @@ class CatchRecordRepository {
 			_id: record.id,
 			userId: record.userId,
 			pokemonId: record.pokemonId.toString(),
+			pokedexId: record.pokedexId,
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
 			inHome: record.inHome,

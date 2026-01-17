@@ -3,6 +3,7 @@ export interface CatchRecord {
 	_id: string; // Maps to Supabase 'id' field for frontend compatibility
 	userId: string;
 	pokemonId: string;
+	pokedexId: string;
 	haveToEvolve: boolean;
 	caught: boolean;
 	inHome: boolean;

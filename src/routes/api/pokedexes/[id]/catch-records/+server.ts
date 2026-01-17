@@ -31,7 +31,7 @@ export const GET = async (event: RequestEvent) => {
 		const repo = new CatchRecordRepository(event.locals.supabase, userId, pokedexId);
 		const catchData = await repo.findAll();
 		const sortedData = catchData.sort(
-			(a, b) => Number(a.pokedexEntryId) - Number(b.pokedexEntryId)
+			(a, b) => Number(a.pokemonId) - Number(b.pokemonId)
 		);
 		return json(sortedData);
 	} catch (err) {
@@ -99,17 +99,18 @@ export const POST = async (event: RequestEvent) => {
 		}
 		const invalidIndex = body.findIndex((r) => {
 			if (!r || typeof r !== 'object') return true;
-			const entryId = (r as Partial<CatchRecord>).pokedexEntryId;
-			return entryId === undefined || entryId === null || entryId === '';
+			const record = r as Partial<CatchRecord>;
+			const pokemonId = record.pokemonId;
+			return pokemonId === undefined || pokemonId === null || pokemonId === '';
 		});
 		if (invalidIndex !== -1) {
 			return json(
-				{ error: `Record at index ${invalidIndex} is missing required field "pokedexEntryId"` },
+				{ error: `Record at index ${invalidIndex} is missing required field "pokemonId"` },
 				{ status: 400 }
 			);
 		}
 
-		const records = body as Array<Partial<CatchRecord> & Pick<CatchRecord, 'pokedexEntryId'>>;
+		const records = body as Array<Partial<CatchRecord> & Pick<CatchRecord, 'pokemonId'>>;
 
 		const { session } = await event.locals.safeGetSession();
 		if (session) {

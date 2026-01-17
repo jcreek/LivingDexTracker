@@ -4,6 +4,8 @@ import { type CombinedData } from '$lib/models/CombinedData';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 class CombinedDataRepository {
+	private static readonly MAX_ROWS_PER_REQUEST = 1000;
+
 	constructor(
 		private supabase: SupabaseClient,
 		private userId: string | null,
@@ -31,8 +33,7 @@ class CombinedDataRepository {
 		return {
 			_id: record.id,
 			userId: record.userId,
-			// Backwards-compatible field name; DB column is pokemonId
-			pokedexEntryId: record.pokemonId.toString(),
+			pokemonId: record.pokemonId.toString(),
 			pokedexId: record.pokedexId,
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
@@ -42,15 +43,9 @@ class CombinedDataRepository {
 		};
 	}
 
-	async findAllCombinedData(
-		userId: string,
-		enableForms: boolean = true,
-		region: string = '',
-		game: string = ''
-	): Promise<CombinedData[]> {
+	private buildEntriesQuery(enableForms: boolean, region: string, game: string) {
 		let query = this.supabase.from('pokedex_entries').select('*');
 
-		// Apply filters
 		if (!enableForms) {
 			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
 			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
@@ -64,16 +59,126 @@ class CombinedDataRepository {
 			query = query.contains('gamesToCatchIn', [game]);
 		}
 
-		// Always order by national dex number
-		// Note: Regional dex ordering would require joining with regional_dex_numbers table
-		query = query.order('pokedexNumber', { ascending: true });
+		// Stable ordering: national dex number, then base form first, then form name.
+		query = query
+			.order('pokedexNumber', { ascending: true })
+			.order('form', { ascending: true, nullsFirst: true });
 
-		const { data: entries, error: entriesError } = await query;
+		return query;
+	}
 
-		if (entriesError) {
-			console.error('Error finding combined data:', entriesError);
-			return [];
+	private async fetchEntriesByRange(
+		from: number,
+		to: number,
+		enableForms: boolean,
+		region: string,
+		game: string
+	): Promise<PokedexEntryDB[]> {
+		const entries: PokedexEntryDB[] = [];
+		let start = from;
+		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
+
+		while (start <= to) {
+			const end = Math.min(to, start + maxRows - 1);
+			const { data, error } = await this.buildEntriesQuery(enableForms, region, game).range(
+				start,
+				end
+			);
+
+			if (error) {
+				console.error('Error finding paginated combined data:', error);
+				return [];
+			}
+
+			if (!data || data.length === 0) {
+				break;
+			}
+
+			entries.push(...data);
+
+			if (data.length < end - start + 1) {
+				break;
+			}
+
+			start = end + 1;
 		}
+
+		return entries;
+	}
+
+	private async fetchAllEntries(
+		enableForms: boolean,
+		region: string,
+		game: string
+	): Promise<PokedexEntryDB[]> {
+		const entries: PokedexEntryDB[] = [];
+		let start = 0;
+		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
+
+		while (true) {
+			const end = start + maxRows - 1;
+			const { data, error } = await this.buildEntriesQuery(enableForms, region, game).range(
+				start,
+				end
+			);
+
+			if (error) {
+				console.error('Error finding combined data:', error);
+				return [];
+			}
+
+			if (!data || data.length === 0) {
+				break;
+			}
+
+			entries.push(...data);
+
+			if (data.length < maxRows) {
+				break;
+			}
+
+			start = end + 1;
+		}
+
+		return entries;
+	}
+
+	private async fetchCatchRecords(entryIds: number[], userId: string): Promise<CatchRecordDB[]> {
+		if (!this.pokedexId) return [];
+		if (entryIds.length === 0) return [];
+
+		const records: CatchRecordDB[] = [];
+		const chunkSize = 1000;
+
+		for (let i = 0; i < entryIds.length; i += chunkSize) {
+			const chunk = entryIds.slice(i, i + chunkSize);
+			const { data, error } = await this.supabase
+				.from('catch_records')
+				.select('*')
+				.eq('userId', userId)
+				.eq('pokedexId', this.pokedexId)
+				.in('pokemonId', chunk);
+
+			if (error) {
+				console.error('Error loading catch records:', error);
+				continue;
+			}
+
+			if (data) {
+				records.push(...data);
+			}
+		}
+
+		return records;
+	}
+
+	async findAllCombinedData(
+		userId: string,
+		enableForms: boolean = true,
+		region: string = '',
+		game: string = ''
+	): Promise<CombinedData[]> {
+		const entries = await this.fetchAllEntries(enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
 			return [];
@@ -83,16 +188,7 @@ class CombinedDataRepository {
 		let catchRecords: CatchRecordDB[] = [];
 		if (userId && this.pokedexId) {
 			const entryIds = entries.map((entry) => entry.id);
-			const { data: records, error: recordsError } = await this.supabase
-				.from('catch_records')
-				.select('*')
-				.eq('userId', userId)
-				.eq('pokedexId', this.pokedexId)
-				.in('pokemonId', entryIds);
-
-			if (!recordsError && records) {
-				catchRecords = records;
-			}
+			catchRecords = await this.fetchCatchRecords(entryIds, userId);
 		}
 
 		// Combine the data exactly like master branch
@@ -125,32 +221,7 @@ class CombinedDataRepository {
 		const from = (page - 1) * limit;
 		const to = from + limit - 1;
 
-		let query = this.supabase.from('pokedex_entries').select('*').range(from, to);
-
-		// Apply filters
-		if (!enableForms) {
-			// Filter to only base forms (form is NULL) OR Unown "A" (since Unown has no base form)
-			query = query.or('form.is.null,and(pokemon.eq.Unown,form.eq.A)');
-		}
-
-		if (region) {
-			query = query.eq('regionToCatchIn', region);
-		}
-
-		if (game) {
-			query = query.contains('gamesToCatchIn', [game]);
-		}
-
-		// Always order by national dex number
-		// Note: Regional dex ordering would require joining with regional_dex_numbers table
-		query = query.order('pokedexNumber', { ascending: true });
-
-		const { data: entries, error: entriesError } = await query;
-
-		if (entriesError) {
-			console.error('Error finding paginated combined data:', entriesError);
-			return [];
-		}
+		const entries = await this.fetchEntriesByRange(from, to, enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
 			return [];
@@ -160,16 +231,7 @@ class CombinedDataRepository {
 		let catchRecords: CatchRecordDB[] = [];
 		if (userId && this.pokedexId) {
 			const entryIds = entries.map((entry) => entry.id);
-			const { data: records, error: recordsError } = await this.supabase
-				.from('catch_records')
-				.select('*')
-				.eq('userId', userId)
-				.eq('pokedexId', this.pokedexId)
-				.in('pokemonId', entryIds);
-
-			if (!recordsError && records) {
-				catchRecords = records;
-			}
+			catchRecords = await this.fetchCatchRecords(entryIds, userId);
 		}
 
 		// Combine the data exactly like master branch
