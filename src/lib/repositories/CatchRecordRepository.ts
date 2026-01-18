@@ -15,7 +15,7 @@ class CatchRecordRepository {
 		return {
 			_id: record.id,
 			userId: record.userId,
-			pokedexEntryId: record.pokedexEntryId.toString(),
+			pokemonId: record.pokemonId.toString(),
 			pokedexId: record.pokedexId,
 			haveToEvolve: record.haveToEvolve,
 			caught: record.caught,
@@ -28,12 +28,12 @@ class CatchRecordRepository {
 	// Transform frontend data to database format (minimal transformation)
 	private transformToDatabase(data: Partial<CatchRecord>): Partial<CatchRecordDB> {
 		const dbData: Partial<CatchRecordDB> = {};
-		if (data.pokedexEntryId !== undefined && data.pokedexEntryId !== null) {
-			const numericId = Number(data.pokedexEntryId);
+		if (data.pokemonId !== undefined && data.pokemonId !== null) {
+			const numericId = Number(data.pokemonId);
 			if (isNaN(numericId)) {
-				throw new Error(`Invalid pokedexEntryId: ${data.pokedexEntryId}`);
+				throw new Error(`Invalid pokemonId: ${data.pokemonId}`);
 			}
-			dbData.pokedexEntryId = numericId;
+			dbData.pokemonId = numericId;
 		}
 		if (data.pokedexId !== undefined) dbData.pokedexId = data.pokedexId;
 		if (data.haveToEvolve !== undefined) dbData.haveToEvolve = data.haveToEvolve;
@@ -53,14 +53,14 @@ class CatchRecordRepository {
 	 * catch the error and fall back to per-record upserts.
 	 */
 	async bulkUpsert(
-		records: Array<PartialExcept<CatchRecord, 'pokedexEntryId'>>
+		records: Array<PartialExcept<CatchRecord, 'pokemonId'>>
 	): Promise<CatchRecord[]> {
 		if (records.length === 0) return [];
 
 		const dbRows: Partial<CatchRecordDB>[] = records.map((r, index) => {
-			if (r.pokedexEntryId === undefined || r.pokedexEntryId === null || r.pokedexEntryId === '') {
+			if (r.pokemonId === undefined || r.pokemonId === null || r.pokemonId === '') {
 				throw new Error(
-					`CatchRecordRepository.bulkUpsert: record at index ${index} is missing required field "pokedexEntryId"`
+					`CatchRecordRepository.bulkUpsert: record at index ${index} is missing required field "pokemonId"`
 				);
 			}
 
@@ -81,9 +81,9 @@ class CatchRecordRepository {
 			mapped.userId = this.userId;
 			mapped.pokedexId = this.pokedexId;
 
-			if (mapped.pokedexEntryId === undefined || mapped.pokedexEntryId === null) {
+			if (mapped.pokemonId === undefined || mapped.pokemonId === null) {
 				throw new Error(
-					`CatchRecordRepository.bulkUpsert: record at index ${index} produced no pokedexEntryId after transform`
+					`CatchRecordRepository.bulkUpsert: record at index ${index} produced no pokemonId after transform`
 				);
 			}
 
@@ -93,7 +93,7 @@ class CatchRecordRepository {
 		const { data: result, error } = await this.supabase
 			.from('catch_records')
 			.upsert(dbRows, {
-				onConflict: '"userId","pokedexId","pokedexEntryId"'
+				onConflict: '"userId","pokedexId","pokemonId"'
 			})
 			.select();
 
@@ -198,13 +198,9 @@ class CatchRecordRepository {
 	async upsert(data: Partial<CatchRecord>): Promise<CatchRecord | null> {
 		if (data._id) {
 			return this.update(data._id, data);
-		} else if (data.pokedexEntryId) {
+		} else if (data.pokemonId) {
 			// Try to find existing record for this user, pokemon, and pokedex
-			const existing = await this.findByUserAndPokemon(
-				this.userId,
-				data.pokedexEntryId,
-				this.pokedexId
-			);
+			const existing = await this.findByUserAndPokemon(this.userId, data.pokemonId, this.pokedexId);
 			if (existing) {
 				return this.update(existing._id, data);
 			} else {
@@ -216,10 +212,10 @@ class CatchRecordRepository {
 
 	async findByUserAndPokemon(
 		userId: string,
-		pokedexEntryId: string,
+		pokemonId: string,
 		pokedexId: string
 	): Promise<CatchRecord | null> {
-		const numericId = Number(pokedexEntryId);
+		const numericId = Number(pokemonId);
 		if (isNaN(numericId)) {
 			return null;
 		}
@@ -227,7 +223,7 @@ class CatchRecordRepository {
 			.from('catch_records')
 			.select('*')
 			.eq('userId', userId)
-			.eq('pokedexEntryId', numericId)
+			.eq('pokemonId', numericId)
 			.eq('pokedexId', pokedexId)
 			.single();
 

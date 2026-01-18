@@ -31,11 +31,12 @@
 				<slot />
 			</div>
 		</div>
-		<div
+		<button
+			type="button"
 			class="modal-backdrop bg-black/50"
+			aria-label="Close modal"
 			on:click={handleBackdropClick}
-			on:keydown={() => {}}
-		></div>
+		></button>
 	</div>
 {/if}
 
@@ -46,6 +47,8 @@
 		left: 0;
 		width: 100%;
 		height: 100%;
+		border: 0;
+		padding: 0;
 	}
 
 	.modal-box-custom {

@@ -4,6 +4,7 @@ import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
 import { recalculatePokedexMappings } from '$lib/services/PokedexMappingService';
+import { resolveDexScopes, setPokedexDexScopes } from '$lib/services/PokedexDexScopeService';
 
 // GET: Get single pokedex by ID
 export const GET = async (event: RequestEvent) => {
@@ -71,12 +72,35 @@ export const PUT = async (event: RequestEvent) => {
 			return json({ error: 'Pokedex not found' }, { status: 404 });
 		}
 
+		const dexScopesProvided = Object.prototype.hasOwnProperty.call(data, 'dexScopes');
+		const requestedDexScopes =
+			dexScopesProvided && Array.isArray(data.dexScopes)
+				? data.dexScopes
+				: existingPokedex.dexScopes || [];
+
+		const resolvedDexScopes = await resolveDexScopes(event.locals.supabase, {
+			...pokedex,
+			dexScopes: requestedDexScopes
+		});
+		pokedex.dexScopes = resolvedDexScopes;
+
+		const existingDexScopes = new Set(existingPokedex.dexScopes || []);
+		const nextDexScopes = new Set(resolvedDexScopes);
+		const dexScopesChanged =
+			existingDexScopes.size !== nextDexScopes.size ||
+			[...existingDexScopes].some((dexId) => !nextDexScopes.has(dexId));
+
+		if (dexScopesChanged) {
+			await setPokedexDexScopes(event.locals.supabase, id, resolvedDexScopes);
+		}
+
 		// Recalculate pokedex_entries_mapping if configuration changed
-		// Only recalculate if isFormDex or gameScope actually changed (these are the only fields that affect mapping)
+		// Only recalculate if isFormDex, gameScope, or dexScopes changed
 		// Compare the persisted result (pokedex) to existingPokedex to catch changes that repo.update may normalize or default
 		const configChanged =
 			pokedex.isFormDex !== existingPokedex.isFormDex ||
-			pokedex.gameScope !== existingPokedex.gameScope;
+			pokedex.gameScope !== existingPokedex.gameScope ||
+			dexScopesChanged;
 
 		if (configChanged) {
 			await recalculatePokedexMappings(event.locals.supabase, id, pokedex);

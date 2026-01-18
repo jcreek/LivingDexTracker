@@ -38,10 +38,11 @@
 
 <form class="card-body">
 	<div class="form-control">
-		<label class="label">
+		<label class="label" for="signup-email">
 			<span class="label-text">Email</span>
 		</label>
 		<input
+			id="signup-email"
 			type="email"
 			placeholder="email"
 			class="input input-bordered"
@@ -50,10 +51,11 @@
 		/>
 	</div>
 	<div class="form-control">
-		<label class="label">
+		<label class="label" for="signup-password">
 			<span class="label-text">Password</span>
 		</label>
 		<input
+			id="signup-password"
 			type="password"
 			placeholder="password"
 			class="input input-bordered"

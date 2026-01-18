@@ -1,0 +1,1391 @@
+pokedexNumber,pokemon,form,originRegionToCatchIn,originGamesToCatchIn,notes,spriteKey
+1,Bulbasaur,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,1
+2,Ivysaur,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,2
+3,Venusaur,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,3
+3,Venusaur,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,3
+4,Charmander,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,4
+5,Charmeleon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,5
+6,Charizard,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,6
+7,Squirtle,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,7
+8,Wartortle,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,8
+9,Blastoise,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,9
+10,Caterpie,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,10
+11,Metapod,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,11
+12,Butterfree,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,12
+12,Butterfree,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,12
+13,Weedle,,Kanto,Red/Blue/LG: Pikachu/LG: Eevee,,13
+14,Kakuna,,Kanto,Red/Blue/LG: Pikachu/LG: Eevee,,14
+15,Beedrill,,Kanto,Red/Blue/LG: Pikachu/LG: Eevee,,15
+16,Pidgey,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,16
+17,Pidgeotto,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,17
+18,Pidgeot,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,18
+19,Rattata,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,19
+19,Rattata,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,19
+19,Rattata,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10091
+20,Raticate,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,20
+20,Raticate,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,20
+20,Raticate,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10092
+21,Spearow,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,21
+22,Fearow,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,22
+23,Ekans,,Kanto,Red/Blue/LG: Eevee,,23
+24,Arbok,,Kanto,Red/Blue/LG: Eevee,,24
+25,Pikachu,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Alola),25
+25,Pikachu,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,25
+25,Pikachu,Original Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10094
+25,Pikachu,Hoenn Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10095
+25,Pikachu,Sinnoh Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10096
+25,Pikachu,Unova Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10097
+25,Pikachu,Kalos Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10098
+25,Pikachu,Alola Cap,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10099
+25,Pikachu,Partner Cap,Galar,Sword/Shield,,10148
+25,Pikachu,World Cap,Galar,Sword/Shield,,10160
+26,Raichu,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,26
+26,Raichu,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,26
+26,Raichu,Alolan,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,10100
+27,Sandshrew,,Kanto,Blue/Yellow/LG: Pikachu,,27
+27,Sandshrew,Alolan,Alola,Moon/Ultra Moon,,10101
+28,Sandslash,,Kanto,Blue/Yellow/LG: Pikachu,,28
+28,Sandslash,Alolan,Alola,Moon/Ultra Moon,,10102
+29,Nidoran♀,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,29
+30,Nidorina,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,30
+31,Nidoqueen,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,31
+32,Nidoran♂,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,32
+33,Nidorino,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,33
+34,Nidoking,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,34
+35,Clefairy,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,35
+36,Clefable,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,36
+37,Vulpix,,Kanto,Blue/Yellow/LG: Eevee,,37
+37,Vulpix,Alolan,Alola,Sun/Ultra Sun,,10103
+38,Ninetales,,Kanto,Blue/Yellow/LG: Eevee,,38
+38,Ninetales,Alolan,Alola,Sun/Ultra Sun,,10104
+39,Jigglypuff,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,39
+40,Wigglytuff,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,40
+41,Zubat,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Crobat),41
+41,Zubat,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,41
+42,Golbat,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,42
+42,Golbat,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,42
+43,Oddish,,Kanto,Red/Yellow/LG: Pikachu,Catch 2 (one for Bellossom),43
+44,Gloom,,Kanto,Red/Yellow/LG: Pikachu,,44
+44,Gloom,Female,Kanto,Red/Yellow/LG: Pikachu,,44
+45,Vileplume,,Kanto,Red/Yellow/LG: Pikachu,,45
+45,Vileplume,Female,Kanto,Red/Yellow/LG: Pikachu,,45
+46,Paras,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,46
+47,Parasect,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,47
+48,Venonat,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,48
+49,Venomoth,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,49
+50,Diglett,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,50
+50,Diglett,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10105
+51,Dugtrio,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,51
+51,Dugtrio,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10106
+52,Meowth,,Kanto,Blue/LG: Eevee,,52
+52,Meowth,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10107
+52,Meowth,Galarian,Galar,Sword/Shield,,10161
+53,Persian,,Kanto,Blue/LG: Eevee,,53
+53,Persian,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10108
+54,Psyduck,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,54
+55,Golduck,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,55
+56,Mankey,,Kanto,Red/Yellow/LG: Pikachu,Catch 2 (one for Annihilape),56
+57,Primeape,,Kanto,Red/Yellow/LG: Pikachu,,57
+58,Growlithe,,Kanto,Red/Yellow/LG: Pikachu,,58
+58,Growlithe,Hisuian,Hisui,Legends: Arceus,,10229
+59,Arcanine,,Kanto,Red/Yellow/LG: Pikachu/LG: Eevee,,59
+59,Arcanine,Hisuian,Hisui,Legends: Arceus,,10230
+60,Poliwag,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 3 (Politoed both genders),60
+61,Poliwhirl,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,61
+62,Poliwrath,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,62
+63,Abra,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,63
+64,Kadabra,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,64
+64,Kadabra,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,64
+65,Alakazam,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,65
+65,Alakazam,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,65
+66,Machop,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,66
+67,Machoke,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,67
+68,Machamp,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,68
+69,Bellsprout,,Kanto,Blue/Yellow/LG: Eevee,,69
+70,Weepinbell,,Kanto,Blue/Yellow/LG: Eevee,,70
+71,Victreebel,,Kanto,Blue/Yellow/LG: Eevee,,71
+72,Tentacool,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,72
+73,Tentacruel,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,73
+74,Geodude,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,74
+74,Geodude,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10109
+75,Graveler,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,75
+75,Graveler,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10110
+76,Golem,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,76
+76,Golem,Alolan,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10111
+77,Ponyta,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,77
+77,Ponyta,Galarian,Galar,Shield,,10162
+78,Rapidash,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,78
+78,Rapidash,Galarian,Galar,Shield,,10163
+79,Slowpoke,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for slowking),79
+79,Slowpoke,Galarian,Galar,Sword/Shield,,10164
+80,Slowbro,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,80
+80,Slowbro,Galarian,Galar,Sword/Shield,,10165
+81,Magnemite,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Magnezone),81
+82,Magneton,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,82
+83,Farfetch’d,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,83
+83,Farfetch’d,Galarian,Galar,Sword,,10166
+84,Doduo,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,84
+84,Doduo,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,84
+85,Dodrio,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,85
+85,Dodrio,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,85
+86,Seel,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,86
+87,Dewgong,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,87
+88,Grimer,,Kanto,Red/Blue/Yellow/LG: Pikachu,,88
+88,Grimer,Alolan,Alola,Ultra Sun,,10112
+89,Muk,,Kanto,Red/Blue/Yellow/LG: Pikachu,,89
+89,Muk,Alolan,Alola,Ultra Sun,,10113
+90,Shellder,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,90
+91,Cloyster,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,91
+92,Gastly,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,92
+93,Haunter,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,93
+94,Gengar,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,94
+95,Onix,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 3 (Steelix male and female),95
+96,Drowzee,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,96
+97,Hypno,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,97
+97,Hypno,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,97
+98,Krabby,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,98
+99,Kingler,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,99
+100,Voltorb,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,100
+100,Voltorb,Hisuian,Hisui,Legends: Arceus,,10231
+101,Electrode,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,101
+101,Electrode,Hisuian,Hisui,Legends: Arceus,,10232
+102,Exeggcute,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,102
+103,Exeggutor,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,103
+103,Exeggutor,Alolan,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,10114
+104,Cubone,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Alola),104
+105,Marowak,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,105
+105,Marowak,Alolan,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,10115
+106,Hitmonlee,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,106
+107,Hitmonchan,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,107
+108,Lickitung,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Lickilicky),108
+109,Koffing,,Kanto,Red/Blue/LG: Eevee,Catch 2 (one for Galar),109
+110,Weezing,,Kanto,Red/Blue/LG: Eevee,,110
+110,Weezing,Galarian,Kanto,Red/Blue/LG: Eevee,,10167
+111,Rhyhorn,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Rhyperior),111
+111,Rhyhorn,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Female Catch 2 (one for Rhyperior),111
+112,Rhydon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,112
+112,Rhydon,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,112
+113,Chansey,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Blissey),113
+114,Tangela,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 3 (Tangrowth both genders),114
+115,Kangaskhan,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,115
+116,Horsea,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 2 (one for Kingdra),116
+117,Seadra,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,117
+118,Goldeen,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,118
+118,Goldeen,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,118
+119,Seaking,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,119
+119,Seaking,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,119
+120,Staryu,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,120
+121,Starmie,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,121
+122,Mr. Mime,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,122
+122,Mr. Mime,Galarian,Galar,Sword/Shield,,10168
+123,Scyther,,Kanto,Red/Yellow/LG: Pikachu,Catch 3 (one each for Scizor and Kleavor),123
+123,Scyther,Female,Kanto,Red/Yellow/LG: Pikachu,Female Catch 2 (one for scizor),123
+124,Jynx,,Kanto,Red/Blue/LG: Pikachu/LG: Eevee,,124
+125,Electabuzz,,Kanto,Red/LG: Pikachu/LG: Eevee,Catch 2 (one for Electrivire),125
+126,Magmar,,Kanto,Blue/LG: Pikachu/LG: Eevee,Catch 2 (one for Magmortar),126
+127,Pinsir,,Kanto,Blue/Yellow/LG: Eevee,,127
+128,Tauros,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,128
+128,Tauros,Paldean,Paldea,Scarlet/Violet,,10250
+128,Tauros,Paldean-Fire,Paldea,Scarlet,,10251
+128,Tauros,Paldean-Water,Paldea,Violet,,10252
+129,Magikarp,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,129
+129,Magikarp,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,129
+130,Gyarados,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,130
+130,Gyarados,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,130
+131,Lapras,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,131
+132,Ditto,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,132
+133,Eevee,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,Catch 9 (one each for Eeveelutions),133
+133,Eevee,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,133
+134,Vaporeon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,134
+135,Jolteon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,135
+136,Flareon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,136
+137,Porygon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,137
+138,Omanyte,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,138
+139,Omastar,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,139
+140,Kabuto,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,140
+141,Kabutops,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,141
+142,Aerodactyl,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,142
+143,Snorlax,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,143
+144,Articuno,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,144
+144,Articuno,Galarian,Galar,Sword/Shield,,10169
+145,Zapdos,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,145
+145,Zapdos,Galarian,Galar,Sword/Shield,,10170
+146,Moltres,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,146
+146,Moltres,Galarian,Galar,Sword/Shield,,10171
+147,Dratini,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,147
+148,Dragonair,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,148
+149,Dragonite,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,149
+150,Mewtwo,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,150
+151,Mew,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,151
+152,Chikorita,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,152
+153,Bayleef,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,153
+154,Meganium,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,154
+154,Meganium,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,154
+155,Cyndaquil,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,155
+156,Quilava,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,156
+157,Typhlosion,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,157
+157,Typhlosion,Hisuian,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,10233
+158,Totodile,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,158
+159,Croconaw,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,159
+160,Feraligatr,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,160
+161,Sentret,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,161
+162,Furret,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,162
+163,Hoothoot,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,163
+164,Noctowl,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,164
+165,Ledyba,,Johto,Silver/Crystal/Soul Silver,,165
+165,Ledyba,Female,Johto,Silver/Crystal/Soul Silver,,165
+166,Ledian,,Johto,Silver/Crystal/Soul Silver,,166
+166,Ledian,Female,Johto,Silver/Crystal/Soul Silver,,166
+167,Spinarak,,Johto,Gold/Crystal/Heart Gold,,167
+168,Ariados,,Johto,Gold/Crystal/Heart Gold,,168
+169,Crobat,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,169
+170,Chinchou,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,170
+171,Lanturn,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,171
+172,Pichu,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,172
+173,Cleffa,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,173
+174,Igglybuff,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,174
+175,Togepi,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for togekiss),175
+176,Togetic,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,176
+177,Natu,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,177
+178,Xatu,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,178
+178,Xatu,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,178
+179,Mareep,,Johto,Gold/Silver/Heart Gold/Soul Silver,,179
+180,Flaaffy,,Johto,Gold/Silver/Heart Gold/Soul Silver,,180
+181,Ampharos,,Johto,Gold/Silver/Heart Gold/Soul Silver,,181
+182,Bellossom,,Kanto,Red/Yellow/LG: Pikachu,,182
+183,Marill,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,183
+184,Azumarill,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,184
+185,Sudowoodo,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,185
+185,Sudowoodo,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,185
+186,Politoed,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,186
+186,Politoed,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,186
+187,Hoppip,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,187
+188,Skiploom,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,188
+189,Jumpluff,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,189
+190,Aipom,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for ambipom),190
+190,Aipom,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Female Catch 2 (one for ambipom),190
+191,Sunkern,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,191
+192,Sunflora,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,192
+193,Yanma,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for Yanmega),193
+194,Wooper,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,194
+194,Wooper,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,194
+194,Wooper,Paldean,Paldea,Scarlet/Violet,,10253
+195,Quagsire,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,195
+195,Quagsire,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,195
+196,Espeon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,196
+197,Umbreon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,197
+198,Murkrow,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for Honchcrow),198
+198,Murkrow,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,198
+199,Slowking,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,199
+199,Slowking,Galarian,Galar,Sword/Shield,,10172
+200,Misdreavus,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for Mismagius),200
+201,Unown,A,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-a
+201,Unown,B,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-b
+201,Unown,C,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-c
+201,Unown,D,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-d
+201,Unown,E,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-e
+201,Unown,F,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-f
+201,Unown,G,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-g
+201,Unown,H,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-h
+201,Unown,I,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-i
+201,Unown,J,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-j
+201,Unown,K,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-k
+201,Unown,L,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-l
+201,Unown,M,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-m
+201,Unown,N,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-n
+201,Unown,O,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-o
+201,Unown,P,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-p
+201,Unown,Q,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-q
+201,Unown,R,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-r
+201,Unown,S,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-s
+201,Unown,T,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-t
+201,Unown,U,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-u
+201,Unown,V,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-v
+201,Unown,W,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-w
+201,Unown,X,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-x
+201,Unown,Y,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-y
+201,Unown,Z,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,201-z
+201,Unown,!,Johto,Heart Gold/Soul Silver/Heart Gold/Soul Silver,,201-exclamation
+201,Unown,?,Johto,Heart Gold/Soul Silver/Heart Gold/Soul Silver,,201-question
+202,Wobbuffet,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,202
+202,Wobbuffet,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,202
+203,Girafarig,,Johto,Gold/Silver/Heart Gold/Soul Silver,Catch 2 (one for Farigiraf),203
+203,Girafarig,Female,Johto,Gold/Silver/Heart Gold/Soul Silver,,203
+204,Pineco,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,204
+205,Forretress,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,205
+206,Dunsparce,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch as many as you can (for Dudunsparce 2 and 3 segment),206
+207,Gligar,,Johto,Gold/Crystal/Heart Gold,Catch 2 (one for Gliscor),207
+207,Gligar,Female,Johto,Gold/Crystal/Heart Gold,,207
+208,Steelix,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,208
+208,Steelix,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,208
+209,Snubbull,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,209
+210,Granbull,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,210
+211,Qwilfish,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,211
+211,Qwilfish,Hisuian,Hisui,Legends: Arceus,,10234
+212,Scizor,,Kanto,Red/Yellow/LG: Pikachu,,212
+212,Scizor,Female,Kanto,Red/Yellow/LG: Pikachu,,212
+213,Shuckle,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,213
+214,Heracross,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,214
+214,Heracross,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,214
+215,Sneasel,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for Weavile),215
+215,Sneasel,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Female Catch 2 (one for Weavile),215
+215,Sneasel,Hisuian,Hisui,Legends: Arceus,,10235
+215,Sneasel,Female-Hisuian,Hisui,Legends: Arceus,,10235
+216,Teddiursa,,Johto,Gold/Crystal/Soul Silver,,216
+217,Ursaring,,Johto,Gold/Crystal/Soul Silver,Catch 2 (one for Ursaluna),217
+217,Ursaring,Female,Johto,Gold/Crystal/Soul Silver,,217
+218,Slugma,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,218
+219,Magcargo,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,219
+220,Swinub,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 3 (Mamoswine Male and Female),220
+221,Piloswine,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,221
+221,Piloswine,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,221
+222,Corsola,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,222
+222,Corsola,Galarian,Galar,Shield,,10173
+223,Remoraid,,Johto,Gold/Silver/Heart Gold/Soul Silver,,223
+224,Octillery,,Johto,Gold/Silver/Heart Gold/Soul Silver,,224
+224,Octillery,Female,Johto,Gold/Silver/Heart Gold/Soul Silver,,224
+225,Delibird,,Johto,Silver/Crystal/Soul Silver,,225
+226,Mantine,,Johto,Gold/Crystal/Heart Gold,,226
+227,Skarmory,,Johto,Silver/Crystal/Soul Silver,,227
+228,Houndour,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,228
+229,Houndoom,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,229
+229,Houndoom,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,229
+230,Kingdra,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,230
+231,Phanpy,,Johto,Silver/Crystal/Heart Gold,,231
+232,Donphan,,Johto,Silver/Crystal/Heart Gold,,232
+232,Donphan,Female,Johto,Silver/Crystal/Heart Gold,,232
+233,Porygon2,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,233
+234,Stantler,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,Catch 2 (one for Wyrdeer),234
+235,Smeargle,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,235
+236,Tyrogue,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,236
+237,Hitmontop,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,237
+238,Smoochum,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,238
+239,Elekid,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,239
+240,Magby,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,240
+241,Miltank,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,241
+242,Blissey,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,242
+243,Raikou,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,243
+244,Entei,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,244
+245,Suicune,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,245
+246,Larvitar,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,246
+247,Pupitar,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,247
+248,Tyranitar,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,248
+249,Lugia,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,249
+250,Ho-Oh,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,250
+251,Celebi,,Johto,Crystal,,251
+252,Treecko,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,252
+253,Grovyle,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,253
+254,Sceptile,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,254
+255,Torchic,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,255
+255,Torchic,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,255
+256,Combusken,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,256
+256,Combusken,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,256
+257,Blaziken,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,257
+257,Blaziken,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,257
+258,Mudkip,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,258
+259,Marshtomp,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,259
+260,Swampert,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,260
+261,Poochyena,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,261
+262,Mightyena,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,262
+263,Zigzagoon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,263
+263,Zigzagoon,Galarian,Galar,Sword/Shield,,10174
+264,Linoone,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,264
+264,Linoone,Galarian,Galar,Sword/Shield,,10175
+265,Wurmple,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,265
+266,Silcoon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,266
+267,Beautifly,male,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,267
+267,Beautifly,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,267
+268,Cascoon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,268
+269,Dustox,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,269
+269,Dustox,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,269
+270,Lotad,,Hoenn,Sapphire/Emerald/Alpha Sapphire,,270
+271,Lombre,,Hoenn,Sapphire/Emerald/Alpha Sapphire,,271
+272,Ludicolo,,Hoenn,Sapphire/Emerald/Alpha Sapphire,,272
+272,Ludicolo,Female,Hoenn,Sapphire/Emerald/Alpha Sapphire,,272
+273,Seedot,,Hoenn,Ruby/Emerald/Omega Ruby,,273
+274,Nuzleaf,,Hoenn,Ruby/Emerald/Omega Ruby,,274
+274,Nuzleaf,Female,Hoenn,Ruby/Emerald/Omega Ruby,,274
+275,Shiftry,,Hoenn,Ruby/Emerald/Omega Ruby,,275
+275,Shiftry,Female,Hoenn,Ruby/Emerald/Omega Ruby,,275
+276,Taillow,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,276
+277,Swellow,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,277
+278,Wingull,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,278
+279,Pelipper,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,279
+280,Ralts,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,Catch 2 (one for gallade) (male),280
+281,Kirlia,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,281
+282,Gardevoir,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,282
+283,Surskit,,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,283
+284,Masquerain,,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,284
+285,Shroomish,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,285
+286,Breloom,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,286
+287,Slakoth,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,287
+288,Vigoroth,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,288
+289,Slaking,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,289
+290,Nincada,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,290
+291,Ninjask,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,291
+292,Shedinja,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,292
+293,Whismur,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,293
+294,Loudred,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,294
+295,Exploud,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,295
+296,Makuhita,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,296
+297,Hariyama,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,297
+298,Azurill,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,298
+299,Nosepass,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,Catch 2 (one for probopass),299
+300,Skitty,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,300
+301,Delcatty,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,301
+302,Sableye,,Hoenn,Sapphire/Emerald/Alpha Sapphire,,302
+303,Mawile,,Hoenn,Ruby/Emerald/Omega Ruby,,303
+304,Aron,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,304
+305,Lairon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,305
+306,Aggron,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,306
+307,Meditite,,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,307
+307,Meditite,Female,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,307
+308,Medicham,,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,308
+308,Medicham,Female,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,308
+309,Electrike,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,309
+310,Manectric,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,310
+311,Plusle,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,311
+312,Minun,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,312
+313,Volbeat,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,313
+314,Illumise,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,314
+315,Roselia,,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,315
+315,Roselia,Female,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,Female Catch 2 (one for roserade),315
+316,Gulpin,male,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,316
+316,Gulpin,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,316
+317,Swalot,male,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,317
+317,Swalot,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,317
+318,Carvanha,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,318
+319,Sharpedo,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,319
+320,Wailmer,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,320
+321,Wailord,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,321
+322,Numel,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,322
+322,Numel,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,322
+323,Camerupt,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,323
+323,Camerupt,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,323
+324,Torkoal,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,324
+325,Spoink,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,325
+326,Grumpig,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,326
+327,Spinda,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,327
+328,Trapinch,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,328
+329,Vibrava,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,329
+330,Flygon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,330
+331,Cacnea,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,331
+332,Cacturne,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,332
+332,Cacturne,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,332
+333,Swablu,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,333
+334,Altaria,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,334
+335,Zangoose,,Hoenn,Ruby/Omega Ruby,,335
+336,Seviper,,Hoenn,Sapphire/Emerald/Alpha Sapphire,,336
+337,Lunatone,,Hoenn,Sapphire/Alpha Sapphire,,337
+338,Solrock,,Hoenn,Ruby/Emerald/Omega Ruby,,338
+339,Barboach,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,339
+340,Whiscash,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,340
+341,Corphish,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,341
+342,Crawdaunt,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,342
+343,Baltoy,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,343
+344,Claydol,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,344
+345,Lileep,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,345
+346,Cradily,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,346
+347,Anorith,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,347
+348,Armaldo,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,348
+349,Feebas,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,349
+350,Milotic,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,350
+350,Milotic,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,350
+351,Castform,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,351
+352,Kecleon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,352
+353,Shuppet,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,353
+354,Banette,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,354
+355,Duskull,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,Catch 2 (one for dusknoir),355
+356,Dusclops,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,356
+357,Tropius,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,357
+358,Chimecho,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,358
+359,Absol,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,359
+360,Wynaut,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,360
+361,Snorunt,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,x2 (froslass),361
+362,Glalie,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,362
+363,Spheal,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,363
+364,Sealeo,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,364
+365,Walrein,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,365
+366,Clamperl,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,366
+367,Huntail,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,367
+368,Gorebyss,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,368
+369,Relicanth,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,369
+369,Relicanth,Female,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,369
+370,Luvdisc,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,370
+371,Bagon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,371
+372,Shelgon,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,372
+373,Salamence,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,373
+374,Beldum,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,374
+375,Metang,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,375
+376,Metagross,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,376
+377,Regirock,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,377
+378,Regice,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,378
+379,Registeel,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,379
+380,Latias,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,380
+381,Latios,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,381
+382,Kyogre,,Hoenn,Sapphire/Emerald/Alpha Sapphire,,382
+383,Groudon,,Hoenn,Ruby/Emerald/Omega Ruby,,383
+384,Rayquaza,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,384
+385,Jirachi,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,385
+386,Deoxys,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,386
+386,Deoxys,Attack Form,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,10001
+386,Deoxys,Defense Form,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,10002
+386,Deoxys,Speed Form,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,10003
+387,Turtwig,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,387
+388,Grotle,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,388
+389,Torterra,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,389
+390,Chimchar,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,390
+391,Monferno,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,391
+392,Infernape,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,392
+393,Piplup,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,393
+394,Prinplup,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,394
+395,Empoleon,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,395
+396,Starly,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,396
+396,Starly,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,396
+397,Staravia,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,397
+397,Staravia,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,397
+398,Staraptor,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,398
+398,Staraptor,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,398
+399,Bidoof,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,399
+399,Bidoof,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,399
+400,Bibarel,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,400
+400,Bibarel,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,400
+401,Kricketot,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,401
+401,Kricketot,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,401
+402,Kricketune,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,402
+402,Kricketune,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,402
+403,Shinx,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,403
+403,Shinx,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,403
+404,Luxio,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,404
+404,Luxio,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,404
+405,Luxray,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,405
+405,Luxray,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,405
+406,Budew,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,406
+407,Roserade,,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,407
+407,Roserade,Female,Hoenn,Ruby/Sapphire/Omega Ruby/Alpha Sapphire,,407
+408,Cranidos,,Sinnoh,Diamond/Platinum/Brilliant Diamond,,408
+409,Rampardos,,Sinnoh,Diamond/Platinum/Brilliant Diamond,,409
+410,Shieldon,,Sinnoh,Pearl/Platinum/Shining Pearl,,410
+411,Bastiodon,,Sinnoh,Pearl/Platinum/Shining Pearl,,411
+412,Burmy,Leaf Cloak,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,412-plant
+412,Burmy,Sand Cloak,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,412-sandy
+412,Burmy,Trash Cloak,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,412-trash
+413,Wormadam,Leaf Cloak,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,413
+413,Wormadam,Sand Cloak,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10004
+413,Wormadam,Trash Cloak,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10005
+414,Mothim,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,414
+415,Combee,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,415
+415,Combee,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,415
+416,Vespiquen,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,416
+417,Pachirisu,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,417
+417,Pachirisu,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,417
+418,Buizel,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,418
+418,Buizel,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,418
+419,Floatzel,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,419
+419,Floatzel,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,419
+420,Cherubi,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,420
+421,Cherrim,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,421
+422,Shellos,East Sea,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,422-east
+422,Shellos,West Sea,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,422-west
+423,Gastrodon,East Sea,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,423-east
+423,Gastrodon,West Sea,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,423-west
+424,Ambipom,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,424
+424,Ambipom,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,424
+425,Drifloon,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,425
+426,Drifblim,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,426
+427,Buneary,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,427
+428,Lopunny,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,428
+429,Mismagius,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,429
+430,Honchkrow,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,430
+431,Glameow,,Sinnoh,Pearl/Shining Pearl,,431
+432,Purugly,,Sinnoh,Pearl/Shining Pearl,,432
+433,Chingling,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,433
+434,Stunky,,Sinnoh,Diamond/Brilliant Diamond,,434
+435,Skuntank,,Sinnoh,Diamond/Brilliant Diamond,,435
+436,Bronzor,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,436
+437,Bronzong,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,437
+438,Bonsly,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,438
+439,Mime Jr.,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,439
+440,Happiny,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,440
+441,Chatot,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,441
+442,Spiritomb,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,442
+443,Gible,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,443
+443,Gible,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,443
+444,Gabite,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,444
+444,Gabite,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,444
+445,Garchomp,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,445
+445,Garchomp,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,445
+446,Munchlax,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,446
+447,Riolu,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,447
+448,Lucario,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,448
+449,Hippopotas,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,449
+449,Hippopotas,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,449
+450,Hippowdon,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,450
+450,Hippowdon,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,450
+451,Skorupi,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,451
+452,Drapion,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,452
+453,Croagunk,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,453
+453,Croagunk,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,453
+454,Toxicroak,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,454
+454,Toxicroak,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,454
+455,Carnivine,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,455
+456,Finneon,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,456
+456,Finneon,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,456
+457,Lumineon,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,457
+457,Lumineon,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,457
+458,Mantyke,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,458
+459,Snover,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,459
+459,Snover,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,459
+460,Abomasnow,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,460
+460,Abomasnow,Female,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,460
+461,Weavile,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,461
+461,Weavile,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,461
+462,Magnezone,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,462
+463,Lickilicky,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,463
+464,Rhyperior,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,464
+464,Rhyperior,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,464
+465,Tangrowth,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,465
+465,Tangrowth,Female,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,465
+466,Electivire,,Kanto,Red/LG: Pikachu/LG: Eevee,,466
+467,Magmortar,,Kanto,Blue/LG: Pikachu/LG: Eevee,,467
+468,Togekiss,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,468
+469,Yanmega,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,469
+470,Leafeon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,470
+471,Glaceon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,471
+472,Gliscor,,Johto,Gold/Crystal/Heart Gold,,472
+473,Mamoswine,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,473
+473,Mamoswine,Female,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,473
+474,Porygon-Z,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,474
+475,Gallade,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,475
+476,Probopass,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,476
+477,Dusknoir,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,477
+478,Froslass,,Hoenn,Ruby/Sapphire/Emerald/Omega Ruby/Alpha Sapphire,,478
+479,Rotom,Lightbulb,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,479
+479,Rotom,Oven,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10008
+479,Rotom,Washer,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10009
+479,Rotom,Fridge,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10010
+479,Rotom,Fan,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10011
+479,Rotom,Mower,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,10012
+480,Uxie,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,480
+481,Mesprit,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,481
+482,Azelf,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,482
+483,Dialga,,Sinnoh,Diamond/Platinum/Brilliant Diamond,,483
+484,Palkia,,Sinnoh,Pearl/Platinum/Shining Pearl,,484
+485,Heatran,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,485
+486,Regigigas,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,486
+487,Giratina,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,487
+488,Cresselia,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,488
+489,Phione,,Sinnoh,Diamond/Pearl/Platinum/Legends: Arceus,,489
+490,Manaphy,,Sinnoh,Diamond/Pearl/Platinum/Legends: Arceus,,490
+491,Darkrai,,Sinnoh,Diamond/Pearl/Platinum/Legends: Arceus,,491
+492,Shaymin,Normal Form,Sinnoh,Diamond/Pearl/Platinum/Legends: Arceus,,492
+492,Shaymin,Sky Form,Sinnoh,Diamond/Pearl/Platinum/Legends: Arceus,,10006
+493,Arceus,,Sinnoh,Diamond/Pearl/Platinum/Brilliant Diamond/Shining Pearl,,493
+494,Victini,,Unova,Black/White,,494
+495,Snivy,,Unova,Black/White/Black 2/White 2,,495
+496,Servine,,Unova,Black/White/Black 2/White 2,,496
+497,Serperior,,Unova,Black/White/Black 2/White 2,,497
+498,Tepig,,Unova,Black/White/Black 2/White 2,,498
+499,Pignite,,Unova,Black/White/Black 2/White 2,,499
+500,Emboar,,Unova,Black/White/Black 2/White 2,,500
+501,Oshawott,,Unova,Black/White/Black 2/White 2,Catch 2 (one for hisui),501
+502,Dewott,,Unova,Black/White/Black 2/White 2,,502
+503,Samurott,,Unova,Black/White/Black 2/White 2,,503
+503,Samurott,Hisuian,Unova,Black/White/Black 2/White 2,,10236
+504,Patrat,,Unova,Black/White/Black 2/White 2,,504
+505,Watchog,,Unova,Black/White/Black 2/White 2,,505
+506,Lillipup,,Unova,Black/White/Black 2/White 2,,506
+507,Herdier,,Unova,Black/White/Black 2/White 2,,507
+508,Stoutland,,Unova,Black/White/Black 2/White 2,,508
+509,Purrloin,,Unova,Black/White/Black 2/White 2,,509
+510,Liepard,,Unova,Black/White/Black 2/White 2,,510
+511,Pansage,,Unova,Black/White/Black 2/White 2,,511
+512,Simisage,,Unova,Black/White/Black 2/White 2,,512
+513,Pansear,,Unova,Black/White/Black 2/White 2,,513
+514,Simisear,,Unova,Black/White/Black 2/White 2,,514
+515,Panpour,,Unova,Black/White/Black 2/White 2,,515
+516,Simipour,,Unova,Black/White/Black 2/White 2,,516
+517,Munna,,Unova,Black/White/Black 2/White 2,,517
+518,Musharna,,Unova,Black/White/Black 2/White 2,,518
+519,Pidove,,Unova,Black/White/Black 2/White 2,,519
+520,Tranquill,,Unova,Black/White/Black 2/White 2,,520
+521,Unfezant,,Unova,Black/White/Black 2/White 2,,521
+521,Unfezant,Female,Unova,Black/White/Black 2/White 2,,521
+522,Blitzle,,Unova,Black/White/Black 2/White 2,,522
+523,Zebstrika,,Unova,Black/White/Black 2/White 2,,523
+524,Roggenrola,,Unova,Black/White/Black 2/White 2,,524
+525,Boldore,,Unova,Black/White/Black 2/White 2,,525
+526,Gigalith,,Unova,Black/White/Black 2/White 2,,526
+527,Woobat,,Unova,Black/White/Black 2/White 2,,527
+528,Swoobat,,Unova,Black/White/Black 2/White 2,,528
+529,Drilbur,,Unova,Black/White/Black 2/White 2,,529
+530,Excadrill,,Unova,Black/White/Black 2/White 2,,530
+531,Audino,,Unova,Black/White/Black 2/White 2,,531
+532,Timburr,,Unova,Black/White/Black 2/White 2,,532
+533,Gurdurr,,Unova,Black/White/Black 2/White 2,,533
+534,Conkeldurr,,Unova,Black/White/Black 2/White 2,,534
+535,Tympole,,Unova,Black/White/Black 2/White 2,,535
+536,Palpitoad,,Unova,Black/White/Black 2/White 2,,536
+537,Seismitoad,,Unova,Black/White/Black 2/White 2,,537
+538,Throh,,Unova,White/Black 2/White 2,,538
+539,Sawk,,Unova,Black/Black 2/White 2,,539
+540,Sewaddle,,Unova,Black/White/Black 2/White 2,,540
+541,Swadloon,,Unova,Black/White/Black 2/White 2,,541
+542,Leavanny,,Unova,Black/White/Black 2/White 2,,542
+543,Venipede,,Unova,Black/White/Black 2/White 2,,543
+544,Whirlipede,,Unova,Black/White/Black 2/White 2,,544
+545,Scolipede,,Unova,Black/White/Black 2/White 2,,545
+546,Cottonee,,Unova,Black/Black 2,,546
+547,Whimsicott,,Unova,Black/Black 2,,547
+548,Petilil,,Unova,White/White 2,Catch 2 (one for hisui),548
+549,Lilligant,,Unova,White/White 2,,549
+549,Lilligant,Hisuian,Unova,White/White 2,,10237
+550,Basculin,Red-striped,Unova,Black/White/Black 2/White 2,,550
+550,Basculin,Blue-striped,Unova,Black/White/Black 2/White 2,,10016
+550,Basculin,White-striped,Hisui,Legends: Arceus,,10247
+551,Sandile,,Unova,Black/White/Black 2/White 2,,551
+552,Krokorok,,Unova,Black/White/Black 2/White 2,,552
+553,Krookodile,,Unova,Black/White/Black 2/White 2,,553
+554,Darumaka,,Unova,Black/White/Black 2/White 2,,554
+554,Darumaka,Galarian,Galar,Sword,,10176
+555,Darmanitan,,Unova,Black/White/Black 2/White 2,,555
+555,Darmanitan,Galarian,Galar,Sword,,10177
+556,Maractus,,Unova,Black/White/Black 2/White 2,,556
+557,Dwebble,,Unova,Black/White/Black 2/White 2,,557
+558,Crustle,,Unova,Black/White/Black 2/White 2,,558
+559,Scraggy,,Unova,Black/White/Black 2/White 2,,559
+560,Scrafty,,Unova,Black/White/Black 2/White 2,,560
+561,Sigilyph,,Unova,Black/White/Black 2/White 2,,561
+562,Yamask,,Unova,Black/White/Black 2/White 2,,562
+562,Yamask,Galarian,Galar,Sword/Shield,,10179
+563,Cofagrigus,,Unova,Black/White/Black 2/White 2,,563
+564,Tirtouga,,Unova,Black/White/Black 2/White 2,,564
+565,Carracosta,,Unova,Black/White/Black 2/White 2,,565
+566,Archen,,Unova,Black/White/Black 2/White 2,,566
+567,Archeops,,Unova,Black/White/Black 2/White 2,,567
+568,Trubbish,,Unova,Black/White/Black 2/White 2,,568
+569,Garbodor,,Unova,Black/White/Black 2/White 2,,569
+570,Zorua,,Unova,Black/White/Black 2/White 2,,570
+570,Zorua,Hisuian,Hisui,Legends: Arceus,,10238
+571,Zoroark,,Unova,Black/White/Black 2/White 2,,571
+571,Zoroark,Hisuian,Hisui,Legends: Arceus,,10239
+572,Minccino,,Unova,Black/White/Black 2/White 2,,572
+573,Cinccino,,Unova,Black/White/Black 2/White 2,,573
+574,Gothita,,Unova,Black/Black 2,,574
+575,Gothorita,,Unova,Black/Black 2,,575
+576,Gothitelle,,Unova,Black/Black 2,,576
+577,Solosis,,Unova,White/White 2,,577
+578,Duosion,,Unova,White/White 2,,578
+579,Reuniclus,,Unova,White/White 2,,579
+580,Ducklett,,Unova,Black/White/Black 2/White 2,,580
+581,Swanna,,Unova,Black/White/Black 2/White 2,,581
+582,Vanillite,,Unova,Black/White/Black 2/White 2,,582
+583,Vanillish,,Unova,Black/White/Black 2/White 2,,583
+584,Vanilluxe,,Unova,Black/White/Black 2/White 2,,584
+585,Deerling,Spring,Unova,Black/White/Black 2/White 2,,585-spring
+585,Deerling,Summer,Unova,Black/White/Black 2/White 2,,585-summer
+585,Deerling,Autumn,Unova,Black/White/Black 2/White 2,,585-autumn
+585,Deerling,Winter,Unova,Black/White/Black 2/White 2,,585-winter
+586,Sawsbuck,Spring,Unova,Black/White/Black 2/White 2,,586-spring
+586,Sawsbuck,Summer,Unova,Black/White/Black 2/White 2,,586-summer
+586,Sawsbuck,Autumn,Unova,Black/White/Black 2/White 2,,586-autumn
+586,Sawsbuck,Winter,Unova,Black/White/Black 2/White 2,,586-winter
+587,Emolga,,Unova,Black/White/Black 2/White 2,,587
+588,Karrablast,,Unova,Black/White/Black 2/White 2,,588
+589,Escavalier,,Unova,Black/White/Black 2/White 2,,589
+590,Foongus,,Unova,Black/White/Black 2/White 2,,590
+591,Amoonguss,,Unova,Black/White/Black 2/White 2,,591
+592,Frillish,,Unova,Black/White/Black 2/White 2,,592
+592,Frillish,Female,Unova,Black/White/Black 2/White 2,,592
+593,Jellicent,,Unova,Black/White/Black 2/White 2,,593
+593,Jellicent,Female,Unova,Black/White/Black 2/White 2,,593
+594,Alomomola,,Unova,Black/White/Black 2/White 2,,594
+595,Joltik,,Unova,Black/White/Black 2/White 2,,595
+596,Galvantula,,Unova,Black/White/Black 2/White 2,,596
+597,Ferroseed,,Unova,Black/White/Black 2/White 2,,597
+598,Ferrothorn,,Unova,Black/White/Black 2/White 2,,598
+599,Klink,,Unova,Black/White/Black 2/White 2,,599
+600,Klang,,Unova,Black/White/Black 2/White 2,,600
+601,Klinklang,,Unova,Black/White/Black 2/White 2,,601
+602,Tynamo,,Unova,Black/White/Black 2/White 2,,602
+603,Eelektrik,,Unova,Black/White/Black 2/White 2,,603
+604,Eelektross,,Unova,Black/White/Black 2/White 2,,604
+605,Elgyem,,Unova,Black/White/Black 2/White 2,,605
+606,Beheeyem,,Unova,Black/White/Black 2/White 2,,606
+607,Litwick,,Unova,Black/White/Black 2/White 2,,607
+608,Lampent,,Unova,Black/White/Black 2/White 2,,608
+609,Chandelure,,Unova,Black/White/Black 2/White 2,,609
+610,Axew,,Unova,Black/White/Black 2/White 2,,610
+611,Fraxure,,Unova,Black/White/Black 2/White 2,,611
+612,Haxorus,,Unova,Black/White/Black 2/White 2,,612
+613,Cubchoo,,Unova,Black/White/Black 2/White 2,,613
+614,Beartic,,Unova,Black/White/Black 2/White 2,,614
+615,Cryogonal,,Unova,Black/White/Black 2/White 2,,615
+616,Shelmet,,Unova,Black/White/Black 2/White 2,,616
+617,Accelgor,,Unova,Black/White/Black 2/White 2,,617
+618,Stunfisk,,Unova,Black/White/Black 2/White 2,,618
+618,Stunfisk,Galarian,Galar,Sword/Shield,,10180
+619,Mienfoo,,Unova,Black/White/Black 2/White 2,,619
+620,Mienshao,,Unova,Black/White/Black 2/White 2,,620
+621,Druddigon,,Unova,Black/White/Black 2/White 2,,621
+622,Golett,,Unova,Black/White/Black 2/White 2,,622
+623,Golurk,,Unova,Black/White/Black 2/White 2,,623
+624,Pawniard,,Unova,Black/White/Black 2/White 2,,624
+625,Bisharp,,Unova,Black/White/Black 2/White 2,Catch 2,625
+626,Bouffalant,,Unova,Black/White/Black 2/White 2,,626
+627,Rufflet,,Unova,White/White 2,Catch 2,627
+628,Braviary,,Unova,White/White 2,,628
+628,Braviary,Hisuian,Unova,White/White 2,,10240
+629,Vullaby,,Unova,Black/Black 2,,629
+630,Mandibuzz,,Unova,Black/Black 2,,630
+631,Heatmor,,Unova,Black/White/Black 2/White 2,,631
+632,Durant,,Unova,Black/White/Black 2/White 2,,632
+633,Deino,,Unova,Black/White/Black 2/White 2,,633
+634,Zweilous,,Unova,Black/White/Black 2/White 2,,634
+635,Hydreigon,,Unova,Black/White/Black 2/White 2,,635
+636,Larvesta,,Unova,Black/White/Black 2/White 2,,636
+637,Volcarona,,Unova,Black/White/Black 2/White 2,,637
+638,Cobalion,,Unova,Black/White/Black 2/White 2,,638
+639,Terrakion,,Unova,Black/White/Black 2/White 2,,639
+640,Virizion,,Unova,Black/White/Black 2/White 2,,640
+641,Tornadus,Incarnate Form,Unova,Black/Black 2/White 2/Dream Radar,,641
+641,Tornadus,Therian Form,Unova,Black 2/White 2/Dream Radar/Black 2/White 2/Dream Radar,,10019
+642,Thundurus,Incarnate Form,Unova,White/Black 2/White 2/Dream Radar,,642
+642,Thundurus,Therian Form,Unova,Black 2/White 2/Dream Radar/Black 2/White 2/Dream Radar,,10020
+643,Reshiram,,Unova,Black/White 2,,643
+644,Zekrom,,Unova,White/Black 2,,644
+645,Landorus,Incarnate Form,Unova,Black/White/Black 2/White 2/Dream Radar,,645
+645,Landorus,Therian Form,Unova,Black 2/White 2/Dream Radar/Black 2/White 2/Dream Radar,,10021
+646,Kyurem,,Unova,Black/White/Black 2/White 2,,646
+647,Keldeo,,Unova,Black/White/Black 2/White 2,,647
+647,Keldeo,Resolute Form,Unova,Black 2/White 2,,10024
+648,Meloetta,,Unova,Black/White/Black 2/White 2,,648
+649,Genesect,,Unova,Black 2/White 2,,649
+650,Chespin,,Kalos,X/Y,,650
+651,Quilladin,,Kalos,X/Y,,651
+652,Chesnaught,,Kalos,X/Y,,652
+653,Fennekin,,Kalos,X/Y,,653
+654,Braixen,,Kalos,X/Y,,654
+655,Delphox,,Kalos,X/Y,,655
+656,Froakie,,Kalos,X/Y,,656
+657,Frogadier,,Kalos,X/Y,,657
+658,Greninja,,Kalos,X/Y,,658
+658,Greninja,Battle Bond Ability,Alola,Moon (demo),,10116
+659,Bunnelby,,Kalos,X/Y,,659
+660,Diggersby,,Kalos,X/Y,,660
+661,Fletchling,,Kalos,X/Y,,661
+662,Fletchinder,,Kalos,X/Y,,662
+663,Talonflame,,Kalos,X/Y,,663
+664,Scatterbug,,Kalos,X/Y,,664
+665,Spewpa,,Kalos,X/Y,,665
+666,Vivillon,Icy Snow (Canada-Northwest Territories),Kalos,X/Y,,666-icy-snow
+666,Vivillon,Polar (Canada-Alberta),Kalos,X/Y,,666-polar
+666,Vivillon,Tundra (Japan-Aomori),Kalos,X/Y,,666-tundra
+666,Vivillon,Continental (Argentina-Chubut),Kalos,X/Y,,666-continental
+666,Vivillon,Garden (UK-England) [Not Ultra Sun compatible],Kalos,X/Y,,666-garden
+666,Vivillon,Elegant (Japan) [Not Ultra Sun compatible],Kalos,X/Y,,666-elegant
+666,Vivillon,Meadow (France-Alsace) [Not Ultra Sun compatible],Kalos,X/Y,,666-meadow
+666,Vivillon,Modern (Canada-Manitoba),Kalos,X/Y,,666-modern
+666,Vivillon,Marine (Chile-Antofagasta),Kalos,X/Y,,666-marine
+666,Vivillon,Archipelago (Mexico-Yucatan),Kalos,X/Y,,666-archipelago
+666,Vivillon,High Plains (Canada-British Columbia),Kalos,X/Y,,666-high-plains
+666,Vivillon,Sandstorm (Saudi Arabia-Al Bahah),Kalos,X/Y,,666-sandstorm
+666,Vivillon,River (Australia-Capital Territory) [Not Ultra Sun compatible],Kalos,X/Y,,666-river
+666,Vivillon,Monsoon (Japan-Okinawa),Kalos,X/Y,,666-monsoon
+666,Vivillon,Savanna (Argentina-Buenos Aires),Kalos,X/Y,,666-savanna
+666,Vivillon,Sun (Belize-Belize),Kalos,X/Y,,666-sun
+666,Vivillon,Ocean (Ultra Sun-Hawai'i),Kalos,X/Y,,666-ocean
+666,Vivillon,Jungle (Brazil-Acre),Kalos,X/Y,,666-jungle
+666,Vivillon,Fancy (Event),Kalos,X/Y/Scarlet/Violet,,666-fancy
+666,Vivillon,Pokeball (Event),Kalos,X/Y,,666-poke-ball
+667,Litleo,,Kalos,X/Y,,667
+668,Pyroar,,Kalos,X/Y,,668
+668,Pyroar,Female,Kalos,X/Y,,668
+669,Flabébé,Red,Kalos,X/Y,,669-red
+669,Flabébé,Yellow,Kalos,X/Y,,669-yellow
+669,Flabébé,Orange,Kalos,X/Y,,669-orange
+669,Flabébé,Blue,Kalos,X/Y,,669-blue
+669,Flabébé,White,Kalos,X/Y,,669-white
+670,Floette,Red,Kalos,X/Y,,670-red
+670,Floette,Yellow,Kalos,X/Y,,670-yellow
+670,Floette,Orange,Kalos,X/Y,,670-orange
+670,Floette,Blue,Kalos,X/Y,,670-blue
+670,Floette,White,Kalos,X/Y,,670-white
+671,Florges,Red,Kalos,X/Y,,671-red
+671,Florges,Yellow,Kalos,X/Y,,671-yellow
+671,Florges,Orange,Kalos,X/Y,,671-orange
+671,Florges,Blue,Kalos,X/Y,,671-blue
+671,Florges,White,Kalos,X/Y,,671-white
+672,Skiddo,,Kalos,X/Y,,672
+673,Gogoat,,Kalos,X/Y,,673
+674,Pancham,,Kalos,X/Y,,674
+675,Pangoro,,Kalos,X/Y,,675
+676,Furfrou,,Kalos,X/Y,,676
+676,Furfrou,Heart,Go,Go,,676-heart
+676,Furfrou,Star,Go,Go,,676-star
+676,Furfrou,Diamond,Go,Go,,676-diamond
+676,Furfrou,Debutante,Go,Go,,676-debutante
+676,Furfrou,Matron,Go,Go,,676-matron
+676,Furfrou,Dandy,Go,Go,,676-dandy
+676,Furfrou,La Reine,Go,Go,,676-la-reine
+676,Furfrou,Kabuki,Go,Go,,676-kabuki
+676,Furfrou,Pharaoh,Go,Go,,676-pharaoh
+677,Espurr,,Kalos,X/Y,,677
+678,Meowstic,,Kalos,X/Y,,678
+678,Meowstic,Female,Kalos,X/Y,,678
+679,Honedge,,Kalos,X/Y,,679
+680,Doublade,,Kalos,X/Y,,680
+681,Aegislash,,Kalos,X/Y,,681
+682,Spritzee,,Kalos,Y,,682
+683,Aromatisse,,Kalos,Y,,683
+684,Swirlix,,Kalos,X,,684
+685,Slurpuff,,Kalos,X,,685
+686,Inkay,,Kalos,X/Y,,686
+687,Malamar,,Kalos,X/Y,,687
+688,Binacle,,Kalos,X/Y,,688
+689,Barbaracle,,Kalos,X/Y,,689
+690,Skrelp,,Kalos,Y,,690
+691,Dragalge,,Kalos,Y,,691
+692,Clauncher,,Kalos,X,,692
+693,Clawitzer,,Kalos,X,,693
+694,Helioptile,,Kalos,X/Y,,694
+695,Heliolisk,,Kalos,X/Y,,695
+696,Tyrunt,,Kalos,X/Y,,696
+697,Tyrantrum,,Kalos,X/Y,,697
+698,Amaura,,Kalos,X/Y,,698
+699,Aurorus,,Kalos,X/Y,,699
+700,Sylveon,,Kanto,Red/Blue/Yellow/LG: Pikachu/LG: Eevee,,700
+701,Hawlucha,,Kalos,X/Y,,701
+702,Dedenne,,Kalos,X/Y,,702
+703,Carbink,,Kalos,X/Y,,703
+704,Goomy,,Kalos,X/Y,x3 (hisui),704
+705,Sliggoo,,Kalos,X/Y,,705
+705,Sliggoo,Hisuian,Kalos,X/Y,,10241
+706,Goodra,,Kalos,X/Y,,706
+706,Goodra,Hisuian,Kalos,X/Y,,10242
+707,Klefki,,Kalos,X/Y,,707
+708,Phantump,,Kalos,X/Y,,708
+709,Trevenant,,Kalos,X/Y,,709
+710,Pumpkaboo,Small,Kalos,X/Y,,10027
+710,Pumpkaboo,Medium,Kalos,X/Y,,710
+710,Pumpkaboo,Large,Kalos,X/Y,,10028
+710,Pumpkaboo,Super,Kalos,X/Y,,10029
+711,Gourgeist,Small,Kalos,X/Y,,10030
+711,Gourgeist,Medium,Kalos,X/Y,,711
+711,Gourgeist,Large,Kalos,X/Y,,10031
+711,Gourgeist,Super,Kalos,X/Y,,10032
+712,Bergmite,,Kalos,X/Y,Catch 2 (one for hisui),712
+713,Avalugg,,Kalos,X/Y,,713
+713,Avalugg,Hisuian,Kalos,X/Y,,10243
+714,Noibat,,Kalos,X/Y,,714
+715,Noivern,,Kalos,X/Y,,715
+716,Xerneas,,Kalos,X,,716
+717,Yveltal,,Kalos,Y,,717
+718,Zygarde,10%,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10181
+718,Zygarde,10% Power Construct,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10118
+718,Zygarde,50%,Kalos,X/Y,,718
+718,Zygarde,50% Power Construct,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10119
+719,Diancie,,Kalos,X/Y,,719
+720,Hoopa,Confined,Kalos,X/Y,,720
+720,Hoopa,Unbound,Kalos,X/Y,,10086
+721,Volcanion,,Kalos,X/Y,,721
+722,Rowlet,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,Catch 2 (one for hisui),722
+723,Dartrix,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,723
+724,Decidueye,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,724
+724,Decidueye,Hisuian,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10244
+725,Litten,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,725
+726,Torracat,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,726
+727,Incineroar,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,727
+728,Popplio,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,728
+729,Brionne,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,729
+730,Primarina,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,730
+731,Pikipek,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,731
+732,Trumbeak,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,732
+733,Toucannon,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,733
+734,Yungoos,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,734
+735,Gumshoos,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,735
+736,Grubbin,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,736
+737,Charjabug,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,737
+738,Vikavolt,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,738
+739,Crabrawler,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,739
+740,Crabominable,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,740
+741,Oricorio,Baile (Red),Alola,Sun/Moon/Ultra Sun/Ultra Moon,,741
+741,Oricorio,Pom-pom (yellow),Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10123
+741,Oricorio,Pa'u (pink),Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10124
+741,Oricorio,Sensu (purple),Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10125
+742,Cutiefly,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,742
+743,Ribombee,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,743
+744,Rockruff,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,744
+744,Rockruff,Own Tempo,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,744
+745,Lycanroc,Midday,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,745
+745,Lycanroc,Midnight,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10126
+745,Lycanroc,Dusk,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10152
+746,Wishiwashi,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,746
+747,Mareanie,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,747
+748,Toxapex,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,748
+749,Mudbray,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,749
+750,Mudsdale,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,750
+751,Dewpider,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,751
+752,Araquanid,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,752
+753,Fomantis,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,753
+754,Lurantis,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,754
+755,Morelull,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,755
+756,Shiinotic,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,756
+757,Salandit,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,757
+758,Salazzle,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,758
+759,Stufful,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,759
+760,Bewear,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,760
+761,Bounsweet,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,761
+762,Steenee,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,762
+763,Tsareena,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,763
+764,Comfey,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,764
+765,Oranguru,,Alola,Moon/Ultra Moon,,765
+766,Passimian,,Alola,Sun/Ultra Sun,,766
+767,Wimpod,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,767
+768,Golisopod,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,768
+769,Sandygast,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,769
+770,Palossand,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,770
+771,Pyukumuku,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,771
+772,Type: Null,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,772
+773,Silvally,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,773
+774,Minior,Red,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10136
+774,Minior,Orange,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10137
+774,Minior,Yellow,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10138
+774,Minior,Green,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10139
+774,Minior,Blue,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10140
+774,Minior,Indigo,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10141
+774,Minior,Violet,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,10142
+775,Komala,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,775
+776,Turtonator,,Alola,Sun/Ultra Sun,,776
+777,Togedemaru,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,777
+778,Mimikyu,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,778
+779,Bruxish,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,779
+780,Drampa,,Alola,Moon/Ultra Moon,,780
+781,Dhelmise,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,781
+782,Jangmo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,782
+783,Hakamo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,783
+784,Kommo-o,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,784
+785,Tapu Koko,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,785
+786,Tapu Lele,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,786
+787,Tapu Bulu,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,787
+788,Tapu Fini,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,788
+789,Cosmog,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,789
+790,Cosmoem,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,790
+791,Solgaleo,,Alola,Sun/Ultra Sun,,791
+792,Lunala,,Alola,Moon/Ultra Moon,,792
+793,Nihilego,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,793
+794,Buzzwole,,Alola,Sun/Ultra Sun,,794
+795,Pheromosa,,Alola,Moon/Ultra Moon,,795
+796,Xurkitree,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,796
+797,Celesteela,,Alola,Moon/Ultra Moon,,797
+798,Kartana,,Alola,Sun/Ultra Sun,,798
+799,Guzzlord,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,799
+800,Necrozma,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,800
+801,Magearna,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,801
+801,Magearna,Original Color,Home,Home,,10147
+802,Marshadow,,Alola,Sun/Moon/Ultra Sun/Ultra Moon,,802
+803,Poipole,,Alola,Ultra Sun/Ultra Moon,,803
+804,Naganadel,,Alola,Ultra Sun/Ultra Moon,,804
+805,Stakataka,,Alola,Ultra Moon,,805
+806,Blacephalon,,Alola,Ultra Sun,,806
+807,Zeraora,,Alola,Ultra Sun,,807
+808,Meltan,,Go,Go,,808
+809,Melmetal,,Go,Go,,809
+810,Grookey,,Galar,Sword/Shield,,810
+811,Thwackey,,Galar,Sword/Shield,,811
+812,Rillaboom,,Galar,Sword/Shield,,812
+813,Scorbunny,,Galar,Sword/Shield,,813
+814,Raboot,,Galar,Sword/Shield,,814
+815,Cinderace,,Galar,Sword/Shield,,815
+816,Sobble,,Galar,Sword/Shield,,816
+817,Drizzile,,Galar,Sword/Shield,,817
+818,Inteleon,,Galar,Sword/Shield,,818
+819,Skwovet,,Galar,Sword/Shield,,819
+820,Greedent,,Galar,Sword/Shield,,820
+821,Rookidee,,Galar,Sword/Shield,,821
+822,Corvisquire,,Galar,Sword/Shield,,822
+823,Corviknight,,Galar,Sword/Shield,,823
+824,Blipbug,,Galar,Sword/Shield,,824
+825,Dottler,,Galar,Sword/Shield,,825
+826,Orbeetle,,Galar,Sword/Shield,,826
+827,Nickit,,Galar,Sword/Shield,,827
+828,Thievul,,Galar,Sword/Shield,,828
+829,Gossifleur,,Galar,Sword/Shield,,829
+830,Eldegoss,,Galar,Sword/Shield,,830
+831,Wooloo,,Galar,Sword/Shield,,831
+832,Dubwool,,Galar,Sword/Shield,,832
+833,Chewtle,,Galar,Sword/Shield,,833
+834,Drednaw,,Galar,Sword/Shield,,834
+835,Yamper,,Galar,Sword/Shield,,835
+836,Boltund,,Galar,Sword/Shield,,836
+837,Rolycoly,,Galar,Sword/Shield,,837
+838,Carkol,,Galar,Sword/Shield,,838
+839,Coalossal,,Galar,Sword/Shield,,839
+840,Applin,,Galar,Sword/Shield,,840
+841,Flapple,,Galar,Sword,,841
+842,Appletun,,Galar,Shield,,842
+843,Silicobra,,Galar,Sword/Shield,,843
+844,Sandaconda,,Galar,Sword/Shield,,844
+845,Cramorant,,Galar,Sword/Shield,,845
+846,Arrokuda,,Galar,Sword/Shield,,846
+847,Barraskewda,,Galar,Sword/Shield,,847
+848,Toxel,,Galar,Sword/Shield,,848
+849,Toxtricity,Amped,Galar,Sword/Shield,,849
+849,Toxtricity,Low-key,Galar,Sword/Shield,,10184
+850,Sizzlipede,,Galar,Sword/Shield,,850
+851,Centiskorch,,Galar,Sword/Shield,,851
+852,Clobbopus,,Galar,Sword/Shield,,852
+853,Grapploct,,Galar,Sword/Shield,,853
+854,Sinistea,Phony,Galar,Sword/Shield,,854
+854,Sinistea,Antique,Galar,Sword/Shield,,854
+855,Polteageist,Phony,Galar,Sword/Shield,,855
+855,Polteageist,Antique,Galar,Sword/Shield,,855
+856,Hatenna,,Galar,Sword/Shield,,856
+857,Hattrem,,Galar,Sword/Shield,,857
+858,Hatterene,,Galar,Sword/Shield,,858
+859,Impidimp,,Galar,Sword/Shield,,859
+860,Morgrem,,Galar,Sword/Shield,,860
+861,Grimmsnarl,,Galar,Sword/Shield,,861
+862,Obstagoon,,Galar,Sword/Shield,,862
+863,Perrserker,,Galar,Sword/Shield,,863
+864,Cursola,,Galar,Shield,,864
+865,Sirfetch’d,,Galar,Sword,,865
+866,Mr. Rime,,Galar,Sword/Shield,,866
+867,Runerigus,,Galar,Sword/Shield,,867
+868,Milcery,,Galar,Sword/Shield,,868
+869,Alcremie,Vanilla Strawberry,Galar,Sword/Shield,,869-vanilla-cream-strawberry-sweet
+869,Alcremie,Vanilla Berry,Galar,Sword/Shield,,869-vanilla-cream-berry-sweet
+869,Alcremie,Vanilla Love,Galar,Sword/Shield,,869-vanilla-cream-love-sweet
+869,Alcremie,Vanilla Flower,Galar,Sword/Shield,,869-vanilla-cream-flower-sweet
+869,Alcremie,Vanilla Clover,Galar,Sword/Shield,,869-vanilla-cream-clover-sweet
+869,Alcremie,Vanilla Star,Galar,Sword/Shield,,869-vanilla-cream-star-sweet
+869,Alcremie,Vanilla Ribbon,Galar,Sword/Shield,,869-vanilla-cream-ribbon-sweet
+869,Alcremie,Ruby Cream Strawberry,Galar,Sword/Shield,,869-ruby-cream-strawberry-sweet
+869,Alcremie,Ruby Cream Berry,Galar,Sword/Shield,,869-ruby-cream-berry-sweet
+869,Alcremie,Ruby Cream Love,Galar,Sword/Shield,,869-ruby-cream-love-sweet
+869,Alcremie,Ruby Cream Flower,Galar,Sword/Shield,,869-ruby-cream-flower-sweet
+869,Alcremie,Ruby Cream Clover,Galar,Sword/Shield,,869-ruby-cream-clover-sweet
+869,Alcremie,Ruby Cream Star,Galar,Sword/Shield,,869-ruby-cream-star-sweet
+869,Alcremie,Ruby Cream Ribbon,Galar,Sword/Shield,,869-ruby-cream-ribbon-sweet
+869,Alcremie,Matcha Strawberyy,Galar,Sword/Shield,,869-matcha-cream-strawberry-sweet
+869,Alcremie,Mactha Berry,Galar,Sword/Shield,,869-matcha-cream-berry-sweet
+869,Alcremie,Matcha Love,Galar,Sword/Shield,,869-matcha-cream-love-sweet
+869,Alcremie,Matcha Flower,Galar,Sword/Shield,,869-matcha-cream-flower-sweet
+869,Alcremie,Matcha Clover,Galar,Sword/Shield,,869-matcha-cream-clover-sweet
+869,Alcremie,Matcha Star,Galar,Sword/Shield,,869-matcha-cream-star-sweet
+869,Alcremie,Matcha Ribbon,Galar,Sword/Shield,,869-matcha-cream-ribbon-sweet
+869,Alcremie,Mint Strawberry,Galar,Sword/Shield,,869-mint-cream-strawberry-sweet
+869,Alcremie,Mint Berry,Galar,Sword/Shield,,869-mint-cream-berry-sweet
+869,Alcremie,Mint Love,Galar,Sword/Shield,,869-mint-cream-love-sweet
+869,Alcremie,Mint Flower,Galar,Sword/Shield,,869-mint-cream-flower-sweet
+869,Alcremie,Mint Clover,Galar,Sword/Shield,,869-mint-cream-clover-sweet
+869,Alcremie,Mint Star,Galar,Sword/Shield,,869-mint-cream-star-sweet
+869,Alcremie,Mint Ribbon,Galar,Sword/Shield,,869-mint-cream-ribbon-sweet
+869,Alcremie,Lemon Strawberry,Galar,Sword/Shield,,869-lemon-cream-strawberry-sweet
+869,Alcremie,Lemon Berry,Galar,Sword/Shield,,869-lemon-cream-berry-sweet
+869,Alcremie,Lemon Love,Galar,Sword/Shield,,869-lemon-cream-love-sweet
+869,Alcremie,Lemon Flower,Galar,Sword/Shield,,869-lemon-cream-flower-sweet
+869,Alcremie,Lemon Clover,Galar,Sword/Shield,,869-lemon-cream-clover-sweet
+869,Alcremie,Lemon Star,Galar,Sword/Shield,,869-lemon-cream-star-sweet
+869,Alcremie,Lemon Ribbon,Galar,Sword/Shield,,869-lemon-cream-ribbon-sweet
+869,Alcremie,Salted Strawberry,Galar,Sword/Shield,,869-salted-cream-strawberry-sweet
+869,Alcremie,Salted Berry,Galar,Sword/Shield,,869-salted-cream-berry-sweet
+869,Alcremie,Salted Love,Galar,Sword/Shield,,869-salted-cream-love-sweet
+869,Alcremie,Salted Flower,Galar,Sword/Shield,,869-salted-cream-flower-sweet
+869,Alcremie,Salted Clover,Galar,Sword/Shield,,869-salted-cream-clover-sweet
+869,Alcremie,Salted Star,Galar,Sword/Shield,,869-salted-cream-star-sweet
+869,Alcremie,Salted Ribbon,Galar,Sword/Shield,,869-salted-cream-ribbon-sweet
+869,Alcremie,Ruby Swirl Strawberry,Galar,Sword/Shield,,869-ruby-swirl-strawberry-sweet
+869,Alcremie,Ruby Swirl Berry,Galar,Sword/Shield,,869-ruby-swirl-berry-sweet
+869,Alcremie,Ruby Swirl Love,Galar,Sword/Shield,,869-ruby-swirl-love-sweet
+869,Alcremie,Ruby Swirl Flower,Galar,Sword/Shield,,869-ruby-swirl-flower-sweet
+869,Alcremie,Ruby Swirl Clover,Galar,Sword/Shield,,869-ruby-swirl-clover-sweet
+869,Alcremie,Ruby Swirl Star,Galar,Sword/Shield,,869-ruby-swirl-star-sweet
+869,Alcremie,Ruby Swirl Ribbon,Galar,Sword/Shield,,869-ruby-swirl-ribbon-sweet
+869,Alcremie,Caramel Strawberry,Galar,Sword/Shield,,869-caramel-swirl-strawberry-sweet
+869,Alcremie,Caramel Berry,Galar,Sword/Shield,,869-caramel-swirl-berry-sweet
+869,Alcremie,Caramel Love,Galar,Sword/Shield,,869-caramel-swirl-love-sweet
+869,Alcremie,Caramel Flower,Galar,Sword/Shield,,869-caramel-swirl-flower-sweet
+869,Alcremie,Caramel Clover,Galar,Sword/Shield,,869-caramel-swirl-clover-sweet
+869,Alcremie,Caramel Star,Galar,Sword/Shield,,869-caramel-swirl-star-sweet
+869,Alcremie,Caramel Ribbon,Galar,Sword/Shield,,869-caramel-swirl-ribbon-sweet
+869,Alcremie,Rainbow Strawberry,Galar,Sword/Shield,,869-rainbow-swirl-strawberry-sweet
+869,Alcremie,Rainbow Berry,Galar,Sword/Shield,,869-rainbow-swirl-berry-sweet
+869,Alcremie,Rainbow Love,Galar,Sword/Shield,,869-rainbow-swirl-love-sweet
+869,Alcremie,Rainbow Flower,Galar,Sword/Shield,,869-rainbow-swirl-flower-sweet
+869,Alcremie,Rainbow Clover,Galar,Sword/Shield,,869-rainbow-swirl-clover-sweet
+869,Alcremie,Rainbow Star,Galar,Sword/Shield,,869-rainbow-swirl-star-sweet
+869,Alcremie,Rainbow Ribbon,Galar,Sword/Shield,,869-rainbow-swirl-ribbon-sweet
+870,Falinks,,Galar,Sword/Shield,,870
+871,Pincurchin,,Galar,Sword/Shield,,871
+872,Snom,,Galar,Sword/Shield,,872
+873,Frosmoth,,Galar,Sword/Shield,,873
+874,Stonjourner,,Galar,Sword,,874
+875,Eiscue,,Galar,Shield,,875
+876,Indeedee,,Galar,Sword,,876
+876,Indeedee,Female,Galar,Shield,,876
+877,Morpeko,,Galar,Sword/Shield,,877
+878,Cufant,,Galar,Sword/Shield,,878
+879,Copperajah,,Galar,Sword/Shield,,879
+880,Dracozolt,,Galar,Sword/Shield,Bird and Drake,880
+881,Arctozolt,,Galar,Sword/Shield,Bird and Dino,881
+882,Dracovish,,Galar,Sword/Shield,Fish and Drake,882
+883,Arctovish,,Galar,Sword/Shield,Fish and Dino,883
+884,Duraludon,,Galar,Sword/Shield,x2 (Archaludon),884
+885,Dreepy,,Galar,Sword/Shield,,885
+886,Drakloak,,Galar,Sword/Shield,,886
+887,Dragapult,,Galar,Sword/Shield,,887
+888,Zacian,,Galar,Sword,,888
+889,Zamazenta,,Galar,Shield,,889
+890,Eternatus,,Galar,Sword/Shield,,890
+891,Kubfu,,Galar,Sword/Shield,,891
+892,Urshifu,Single,Galar,Sword/Shield,,892
+892,Urshifu,Rapid,Galar,Sword/Shield,,10191
+893,Zarude,,Galar,Sword/Shield,,893
+893,Zarude,Dada,Galar,Sword/Shield,,10192
+894,Regieleki,,Galar,Sword/Shield,,894
+895,Regidrago,,Galar,Sword/Shield,,895
+896,Glastrier,,Galar,Sword/Shield,,896
+897,Spectrier,,Galar,Sword/Shield,,897
+898,Calyrex,,Galar,Sword/Shield,,898
+999,Wyrdeer,,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,999
+900,Kleavor,,Kanto,Red/Yellow/LG: Pikachu,,900
+901,Ursaluna,,Johto,Gold/Crystal/Heart Gold/Soul Silver,,901
+902,Ursaluna,Bloodmoon,Paldea,Violet,,10272
+902,Basculegion,,Hisui,Legends: Arceus,,902
+902,Basculegion,Female,Hisui,Legends: Arceus,,902
+903,Sneasler,,Hisui,Legends: Arceus,,903
+904,Overqwil,,Hisui,Legends: Arceus,,904
+905,Enamorus,Therian Form,Hisui,Legends: Arceus,,10249
+905,Enamorus,Incarnate Form,Hisui,Legends: Arceus,,905
+906,Sprigatito,,Paldea,Scarlet/Violet,,906
+907,Floragato,,Paldea,Scarlet/Violet,,907
+908,Meowscarada,,Paldea,Scarlet/Violet,,908
+909,Fuecoco,,Paldea,Scarlet/Violet,,909
+910,Crocalor,,Paldea,Scarlet/Violet,,910
+911,Skeledirge,,Paldea,Scarlet/Violet,,911
+912,Quaxly,,Paldea,Scarlet/Violet,,912
+913,Quaxwell,,Paldea,Scarlet/Violet,,913
+914,Quaquaval,,Paldea,Scarlet/Violet,,914
+915,Lechonk,,Paldea,Scarlet/Violet,,915
+916,Oinkologne,,Paldea,Scarlet/Violet,,916
+916,Oinkologne,Female,Paldea,Scarlet/Violet,,916
+917,Tarountula,,Paldea,Scarlet/Violet,,917
+918,Spidops,,Paldea,Scarlet/Violet,,918
+919,Nymble,,Paldea,Scarlet/Violet,,919
+920,Lokix,,Paldea,Scarlet/Violet,,920
+921,Pawmi,,Paldea,Scarlet/Violet,,921
+922,Pawmo,,Paldea,Scarlet/Violet,,922
+923,Pawmot,,Paldea,Scarlet/Violet,,923
+924,Tandemaus,,Paldea,Scarlet/Violet,,924
+925,Maushold,Family of 3,Paldea,Scarlet/Violet,,10257
+925,Maushold,Family of 4,Paldea,Scarlet/Violet,,925
+926,Fidough,,Paldea,Scarlet/Violet,,926
+927,Dachsbun,,Paldea,Scarlet/Violet,,927
+928,Smoliv,,Paldea,Scarlet/Violet,,928
+929,Dolliv,,Paldea,Scarlet/Violet,,929
+930,Arboliva,,Paldea,Scarlet/Violet,,930
+931,Squawkabilly,Green,Paldea,Scarlet/Violet,,931
+931,Squawkabilly,Blue,Paldea,Scarlet/Violet,,10260
+931,Squawkabilly,Yellow,Paldea,Scarlet/Violet,,10261
+931,Squawkabilly,White,Paldea,Scarlet/Violet,,10262
+932,Nacli,,Paldea,Scarlet/Violet,,932
+933,Naclstack,,Paldea,Scarlet/Violet,,933
+934,Garganacl,,Paldea,Scarlet/Violet,,934
+935,Charcadet,,Paldea,Scarlet/Violet,,935
+936,Armarouge,,Paldea,Scarlet,,936
+937,Ceruledge,,Paldea,Violet,,937
+938,Tadbulb,,Paldea,Scarlet/Violet,,938
+939,Bellibolt,,Paldea,Scarlet/Violet,,939
+940,Wattrel,,Paldea,Scarlet/Violet,,940
+941,Kilowattrel,,Paldea,Scarlet/Violet,,941
+942,Maschiff,,Paldea,Scarlet/Violet,,942
+943,Mabosstiff,,Paldea,Scarlet/Violet,,943
+944,Shroodle,,Paldea,Scarlet/Violet,,944
+945,Grafaiai,,Paldea,Scarlet/Violet,,945
+946,Bramblin,,Paldea,Scarlet/Violet,,946
+947,Brambleghast,,Paldea,Scarlet/Violet,,947
+948,Toedscool,,Paldea,Scarlet/Violet,,948
+949,Toedscruel,,Paldea,Scarlet/Violet,,949
+950,Klawf,,Paldea,Scarlet/Violet,,950
+951,Capsakid,,Paldea,Scarlet/Violet,,951
+952,Scovillain,,Paldea,Scarlet/Violet,,952
+953,Rellor,,Paldea,Scarlet/Violet,,953
+954,Rabsca,,Paldea,Scarlet/Violet,,954
+955,Flittle,,Paldea,Scarlet/Violet,,955
+956,Espathra,,Paldea,Scarlet/Violet,,956
+957,Tinkatink,,Paldea,Scarlet/Violet,,957
+958,Tinkatuff,,Paldea,Scarlet/Violet,,958
+959,Tinkaton,,Paldea,Scarlet/Violet,,959
+960,Wiglett,,Paldea,Scarlet/Violet,,960
+961,Wugtrio,,Paldea,Scarlet/Violet,,961
+962,Bombirdier,,Paldea,Scarlet/Violet,,962
+963,Finizen,,Paldea,Scarlet/Violet,,963
+964,Palafin,,Paldea,Scarlet/Violet,,964
+965,Varoom,,Paldea,Scarlet/Violet,,965
+966,Revavroom,,Paldea,Scarlet/Violet,,966
+967,Cyclizar,,Paldea,Scarlet/Violet,,967
+968,Orthworm,,Paldea,Scarlet/Violet,,968
+969,Glimmet,,Paldea,Scarlet/Violet,,969
+970,Glimmora,,Paldea,Scarlet/Violet,,970
+971,Greavard,,Paldea,Scarlet/Violet,,971
+972,Houndstone,,Paldea,Scarlet/Violet,,972
+973,Flamigo,,Paldea,Scarlet/Violet,,973
+974,Cetoddle,,Paldea,Scarlet/Violet,,974
+975,Cetitan,,Paldea,Scarlet/Violet,,975
+976,Veluza,,Paldea,Scarlet/Violet,,976
+977,Dondozo,,Paldea,Scarlet/Violet,,977
+978,Tatsugiri,Curly,Paldea,Scarlet/Violet,,978
+978,Tatsugiri,Droopy,Paldea,Scarlet/Violet,,10258
+978,Tatsugiri,Stretchy,Paldea,Scarlet/Violet,,10259
+979,Annihilape,,Kanto,Red/Yellow/LG: Pikachu,,979
+980,Clodsire,,Paldea,Scarlet/Violet,,980
+981,Farigiraf,,Johto,Gold/Silver/Heart Gold/Soul Silver,,981
+982,Dudunsparce,2-Segment,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,982
+982,Dudunsparce,3-Segment,Johto,Gold/Silver/Crystal/Heart Gold/Soul Silver,,10255
+983,Kingambit,,Unova,Black/White/Black 2/White 2,,983
+984,Great Tusk,,Paldea,Scarlet,,984
+985,Scream Tail,,Paldea,Scarlet,,985
+986,Brute Bonnet,,Paldea,Scarlet,,986
+987,Flutter Mane,,Paldea,Scarlet,,987
+988,Slither Wing,,Paldea,Scarlet,,988
+989,Sandy Shocks,,Paldea,Scarlet,,989
+990,Iron Treads,,Paldea,Violet,,990
+991,Iron Bundle,,Paldea,Violet,,991
+992,Iron Hands,,Paldea,Violet,,992
+993,Iron Jugulis,,Paldea,Violet,,993
+994,Iron Moth,,Paldea,Violet,,994
+995,Iron Thorns,,Paldea,Violet,,995
+996,Frigibax,,Paldea,Scarlet/Violet,,996
+997,Arctibax,,Paldea,Scarlet/Violet,,997
+998,Baxcalibur,,Paldea,Scarlet/Violet,,998
+999,Gimmighoul,Box Form,Paldea,Scarlet/Violet,,999
+999,Gimmighoul,Roaming Form,Go,Go,,10263
+1000,Gholdengo,,Paldea,Scarlet/Violet,,1000
+1001,Wo-Chien,,Paldea,Scarlet/Violet,,1001
+1002,Chien-Pao,,Paldea,Scarlet/Violet,,1002
+1003,Ting-Lu,,Paldea,Scarlet/Violet,,1003
+1004,Chi-Yu,,Paldea,Scarlet/Violet,,1004
+1005,Roaring Moon,,Paldea,Scarlet,,1005
+1006,Iron Valiant,,Paldea,Violet,,1006
+1007,Koraidon,,Paldea,Scarlet,,1007
+1008,Miraidon,,Paldea,Violet,,1008
+1009,Walking Wake,,Paldea,Scarlet,,1009
+1010,Iron Leaves,,Paldea,Violet,,1010
+1011,Dipplin,,Galar,Sword/Shield,,1011
+1012,Poltchageist,Phony,Paldea,Scarlet/Violet,,1012
+1012,Poltchageist,Antique,Paldea,Scarlet/Violet,,1012
+1013,Sinistcha,Phony,Paldea,Scarlet/Violet,,1013
+1013,Sinistcha,Antique,Paldea,Scarlet/Violet,,1013
+1014,Okidogi,,Paldea,Scarlet/Violet,,1014
+1015,Munkidori,,Paldea,Scarlet/Violet,,1015
+1016,Fezandipiti,,Paldea,Scarlet/Violet,,1016
+1017,Ogerpon,,Paldea,Scarlet/Violet,,1017
+1018,Archaludon,,Galar,Sword/Shield,,1018
+1019,Hydrapple,,Galar,Sword/Shield,,1019
+1020,Gouging Fire,,Paldea,Scarlet,,1020
+1021,Raging Bolt,,Paldea,Scarlet,,1021
+1022,Iron Boulder,,Paldea,Violet,,1022
+1023,Iron Crown,,Paldea,Violet,,1023
+1024,Terapagos,,Paldea,Scarlet/Violet,,1024
+1025,Pecharunt,,Paldea,Scarlet/Violet,,1025

@@ -353,7 +353,7 @@
 						<div class="mb-8">
 							<div class="flex flex-wrap items-center justify-between gap-3 mb-4 relative z-20">
 								<h2 class="text-xl font-bold">Box {boxNumber}</h2>
-								<div class="relative" on:click|stopPropagation>
+								<div class="relative">
 									<button
 										type="button"
 										class="btn btn-sm btn-outline relative z-[210]"
@@ -376,12 +376,11 @@
 										<ul
 											id={bulkMenuId}
 											class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
-											on:click|stopPropagation
 										>
 											<li>
 												<button
 													type="button"
-													on:click={() => {
+													on:click|stopPropagation={() => {
 														markBoxAsNotCaught(boxNumber);
 														openBulkMenuForBox = null;
 													}}
@@ -392,7 +391,7 @@
 											<li>
 												<button
 													type="button"
-													on:click={() => {
+													on:click|stopPropagation={() => {
 														markBoxAsCaught(boxNumber);
 														openBulkMenuForBox = null;
 													}}
@@ -403,7 +402,7 @@
 											<li>
 												<button
 													type="button"
-													on:click={() => {
+													on:click|stopPropagation={() => {
 														markBoxAsNeedsToEvolve(boxNumber);
 														openBulkMenuForBox = null;
 													}}
@@ -414,7 +413,7 @@
 											<li>
 												<button
 													type="button"
-													on:click={() => {
+													on:click|stopPropagation={() => {
 														markBoxAsInHome(boxNumber);
 														openBulkMenuForBox = null;
 													}}
@@ -425,7 +424,7 @@
 											<li>
 												<button
 													type="button"
-													on:click={() => {
+													on:click|stopPropagation={() => {
 														markBoxAsNotInHome(boxNumber);
 														openBulkMenuForBox = null;
 													}}
@@ -531,6 +530,7 @@
 															pokemonName={pokedexEntry.pokemon}
 															pokedexNumber={pokedexEntry.pokedexNumber}
 															form={pokedexEntry.form}
+															spriteKey={pokedexEntry.spriteKey}
 															shiny={showShiny}
 														/>
 													</div>
