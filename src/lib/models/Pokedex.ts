@@ -8,6 +8,7 @@ export interface Pokedex {
 	isOriginDex: boolean;
 	isFormDex: boolean;
 	gameScope: string | null;
+	dexScopes: string[];
 }
 
 export interface PokedexDB {

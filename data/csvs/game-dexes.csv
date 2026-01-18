@@ -1,0 +1,52 @@
+dexId,gameDisplayName,dexDisplayName,sortOrder,isDlc,parentDexId,file
+red-kanto,Red,Kanto,1,false,,native-game-dexes/red-blue-yellow.csv
+blue-kanto,Blue,Kanto,1,false,,native-game-dexes/red-blue-yellow.csv
+yellow-kanto,Yellow,Kanto,1,false,,native-game-dexes/red-blue-yellow.csv
+gold-johto,Gold,Johto,1,false,,native-game-dexes/gold-silver-crystal.csv
+silver-johto,Silver,Johto,1,false,,native-game-dexes/gold-silver-crystal.csv
+crystal-johto,Crystal,Johto,1,false,,native-game-dexes/gold-silver-crystal.csv
+ruby-hoenn,Ruby,Hoenn,1,false,,native-game-dexes/ruby-sapphire-emerald.csv
+sapphire-hoenn,Sapphire,Hoenn,1,false,,native-game-dexes/ruby-sapphire-emerald.csv
+emerald-hoenn,Emerald,Hoenn,1,false,,native-game-dexes/ruby-sapphire-emerald.csv
+firered-kanto,FireRed,Kanto,1,false,,native-game-dexes/fire-red-leaf-green.csv
+leafgreen-kanto,LeafGreen,Kanto,1,false,,native-game-dexes/fire-red-leaf-green.csv
+diamond-sinnoh,Diamond,Sinnoh,1,false,,native-game-dexes/diamond-pearl.csv
+pearl-sinnoh,Pearl,Sinnoh,1,false,,native-game-dexes/diamond-pearl.csv
+platinum-sinnoh,Platinum,Sinnoh,1,false,,native-game-dexes/platinum.csv
+heart-gold-johto,Heart Gold,Johto,1,false,,native-game-dexes/heart-gold-soul-silver.csv
+soul-silver-johto,Soul Silver,Johto,1,false,,native-game-dexes/heart-gold-soul-silver.csv
+black-unova,Black,Unova,1,false,,native-game-dexes/black-white.csv
+white-unova,White,Unova,1,false,,native-game-dexes/black-white.csv
+black-2-unova,Black 2,Unova,1,false,,native-game-dexes/black-2-white-2.csv
+white-2-unova,White 2,Unova,1,false,,native-game-dexes/black-2-white-2.csv
+x-central-kalos,X,Central Kalos,1,false,,native-game-dexes/x-y-central-kalos.csv
+x-coastal-kalos,X,Coastal Kalos,2,false,,native-game-dexes/x-y-coastal-kalos.csv
+x-mountain-kalos,X,Mountain Kalos,3,false,,native-game-dexes/x-y-mountain-kalos.csv
+y-central-kalos,Y,Central Kalos,1,false,,native-game-dexes/x-y-central-kalos.csv
+y-coastal-kalos,Y,Coastal Kalos,2,false,,native-game-dexes/x-y-coastal-kalos.csv
+y-mountain-kalos,Y,Mountain Kalos,3,false,,native-game-dexes/x-y-mountain-kalos.csv
+omega-ruby-hoenn,Omega Ruby,Hoenn,1,false,,native-game-dexes/omega-ruby-alpha-sapphire.csv
+alpha-sapphire-hoenn,Alpha Sapphire,Hoenn,1,false,,native-game-dexes/omega-ruby-alpha-sapphire.csv
+sun-alola,Sun,Alola,1,false,,native-game-dexes/sun-moon-alola.csv
+moon-alola,Moon,Alola,1,false,,native-game-dexes/sun-moon-alola.csv
+ultra-sun-alola,Ultra Sun,Alola,1,false,,native-game-dexes/ultra-sun-ultra-moon-alola.csv
+ultra-moon-alola,Ultra Moon,Alola,1,false,,native-game-dexes/ultra-sun-ultra-moon-alola.csv
+lg-pikachu-kanto,LG: Pikachu,Kanto,1,false,,native-game-dexes/lets-go-pikachu-eevee.csv
+lg-eevee-kanto,LG: Eevee,Kanto,1,false,,native-game-dexes/lets-go-pikachu-eevee.csv
+sword-galar,Sword,Galar,1,false,,native-game-dexes/sword-shield.csv
+sword-isle-armor,Sword,Isle of Armor,2,true,sword-galar,native-game-dexes/sword-shield-isle-armor.csv
+sword-crown-tundra,Sword,Crown Tundra,3,true,sword-galar,native-game-dexes/sword-shield-crown-tundra.csv
+shield-galar,Shield,Galar,1,false,,native-game-dexes/sword-shield.csv
+shield-isle-armor,Shield,Isle of Armor,2,true,shield-galar,native-game-dexes/sword-shield-isle-armor.csv
+shield-crown-tundra,Shield,Crown Tundra,3,true,shield-galar,native-game-dexes/sword-shield-crown-tundra.csv
+brilliant-diamond-sinnoh,Brilliant Diamond,Sinnoh,1,false,,native-game-dexes/brilliant-diamond-shining-pearl.csv
+shining-pearl-sinnoh,Shining Pearl,Sinnoh,1,false,,native-game-dexes/brilliant-diamond-shining-pearl.csv
+legends-arceus-hisui,Legends: Arceus,Hisui,1,false,,native-game-dexes/legends-arceus.csv
+scarlet-paldea,Scarlet,Paldea,1,false,,native-game-dexes/scarlet-violet.csv
+scarlet-kitakami,Scarlet,Kitakami,2,true,scarlet-paldea,native-game-dexes/scarlet-violet-kitakami.csv
+scarlet-blueberry,Scarlet,Blueberry,3,true,scarlet-paldea,native-game-dexes/scarlet-violet-blueberry.csv
+violet-paldea,Violet,Paldea,1,false,,native-game-dexes/scarlet-violet.csv
+violet-kitakami,Violet,Kitakami,2,true,violet-paldea,native-game-dexes/scarlet-violet-kitakami.csv
+violet-blueberry,Violet,Blueberry,3,true,violet-paldea,native-game-dexes/scarlet-violet-blueberry.csv
+legends-z-a-kalos,Legends: Z-A,Kalos,1,false,,native-game-dexes/legends-z-a.csv
+legends-z-a-mega-dimension,Legends: Z-A,Mega Dimension,2,true,legends-z-a-kalos,native-game-dexes/legends-z-a-mega-dimension.csv

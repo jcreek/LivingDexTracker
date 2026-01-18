@@ -7,7 +7,7 @@ class PokedexRepository {
 		private userId: string
 	) {}
 
-	private transform(db: PokedexDB): Pokedex {
+	private transform(db: PokedexDB, dexScopes: string[] = []): Pokedex {
 		return {
 			_id: db.id,
 			userId: db.userId,
@@ -17,7 +17,8 @@ class PokedexRepository {
 			isShinyDex: db.isShinyDex,
 			isOriginDex: db.isOriginDex,
 			isFormDex: db.isFormDex,
-			gameScope: db.gameScope
+			gameScope: db.gameScope,
+			dexScopes
 		};
 	}
 
@@ -33,6 +34,23 @@ class PokedexRepository {
 		return dbData;
 	}
 
+	private async fetchDexScopesMap(pokedexIds: string[]): Promise<Map<string, string[]>> {
+		if (pokedexIds.length === 0) return new Map();
+		const { data, error } = await this.supabase
+			.from('pokedex_dex_scopes')
+			.select('pokedexId, dexId')
+			.in('pokedexId', pokedexIds);
+
+		if (error || !data) return new Map();
+
+		const map = new Map<string, string[]>();
+		for (const row of data) {
+			if (!map.has(row.pokedexId)) map.set(row.pokedexId, []);
+			map.get(row.pokedexId)?.push(row.dexId);
+		}
+		return map;
+	}
+
 	async findById(id: string): Promise<Pokedex | null> {
 		const { data, error } = await this.supabase
 			.from('pokedexes')
@@ -42,7 +60,8 @@ class PokedexRepository {
 			.single();
 
 		if (error || !data) return null;
-		return this.transform(data);
+		const dexScopesMap = await this.fetchDexScopesMap([data.id]);
+		return this.transform(data, dexScopesMap.get(data.id) || []);
 	}
 
 	async findAll(): Promise<Pokedex[]> {
@@ -53,7 +72,8 @@ class PokedexRepository {
 			.order('createdAt', { ascending: true });
 
 		if (error || !data) return [];
-		return data.map((d) => this.transform(d));
+		const dexScopesMap = await this.fetchDexScopesMap(data.map((d) => d.id));
+		return data.map((d) => this.transform(d, dexScopesMap.get(d.id) || []));
 	}
 
 	async create(data: Partial<Pokedex>): Promise<Pokedex> {

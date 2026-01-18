@@ -174,11 +174,12 @@
 
 				<!-- New Password Input -->
 				<div class="form-control">
-					<label class="label">
+					<label class="label" for="reset-password-new">
 						<span class="label-text font-medium">New Password</span>
 					</label>
 					<div class="relative">
 						<input
+							id="reset-password-new"
 							type="password"
 							placeholder="••••••••"
 							class="input input-bordered w-full pl-10"
@@ -203,11 +204,12 @@
 
 				<!-- Confirm Password Input -->
 				<div class="form-control">
-					<label class="label">
+					<label class="label" for="reset-password-confirm">
 						<span class="label-text font-medium">Confirm Password</span>
 					</label>
 					<div class="relative">
 						<input
+							id="reset-password-confirm"
 							type="password"
 							placeholder="••••••••"
 							class="input input-bordered w-full pl-10"

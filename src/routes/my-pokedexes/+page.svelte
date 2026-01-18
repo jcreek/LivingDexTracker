@@ -15,7 +15,8 @@
 		isShinyDex: false,
 		isOriginDex: false,
 		isFormDex: false,
-		gameScope: null
+		gameScope: null,
+		dexScopes: []
 	};
 
 	$: mode = editingPokedex ? ('edit' as const) : ('create' as const);
@@ -55,7 +56,8 @@
 			isShinyDex: false,
 			isOriginDex: false,
 			isFormDex: false,
-			gameScope: null
+			gameScope: null,
+			dexScopes: []
 		};
 		showModal = true;
 	}
@@ -199,6 +201,11 @@
 			</h3>
 			<PokedexForm bind:pokedex={formData} {mode} onSubmit={handleSubmit} onCancel={closeModal} />
 		</div>
-		<div class="modal-backdrop" on:click={closeModal}></div>
+		<button
+			type="button"
+			class="modal-backdrop"
+			aria-label="Close modal"
+			on:click={closeModal}
+		></button>
 	</div>
 {/if}

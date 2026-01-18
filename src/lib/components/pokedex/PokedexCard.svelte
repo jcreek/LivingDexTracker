@@ -36,6 +36,12 @@
 				<span class="font-semibold">Game:</span>
 				{pokedex.gameScope}
 			</div>
+			{#if pokedex.dexScopes?.length}
+				<div class="text-sm text-base-content/70">
+					<span class="font-semibold">Dexes:</span>
+					{pokedex.dexScopes.length}
+				</div>
+			{/if}
 		{:else}
 			<div class="text-sm text-base-content/70">
 				<span class="font-semibold">Scope:</span> All Games

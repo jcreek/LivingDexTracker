@@ -11,6 +11,7 @@
 	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
 
 	$: webManifestLink = pwaInfo ? pwaInfo.webManifest.linkTag : '';
+	const pwaDescription = (pwaAssetsHead as { description?: { content: string } }).description;
 
 	export let data;
 	let { supabase } = data;
@@ -22,8 +23,10 @@
 	});
 	onDestroy(unsubscribe);
 
-	onMount(async () => {
-		await getUser();
+	let authSubscription: { unsubscribe: () => void } | null = null;
+
+	onMount(() => {
+		void getUser();
 
 		// Listen for auth state changes to keep the user store in sync
 		const {
@@ -36,27 +39,30 @@
 			}
 			user.set(localUser);
 		});
+		authSubscription = subscription;
 
 		if (pwaInfo) {
-			const { registerSW } = await import('virtual:pwa-register');
-			registerSW({
-				immediate: true,
-				onRegistered(r) {
-					// uncomment following code if you want check for updates
-					// r && setInterval(() => {
-					//    console.log('Checking for sw update')
-					//    r.update()
-					// }, 20000 /* 20s for testing purposes */)
-					console.log(`SW Registered: ${r}`);
-				},
-				onRegisterError(error) {
-					console.log('SW registration error', error);
-				}
-			});
+			void (async () => {
+				const { registerSW } = await import('virtual:pwa-register');
+				registerSW({
+					immediate: true,
+					onRegistered(r) {
+						// uncomment following code if you want check for updates
+						// r && setInterval(() => {
+						//    console.log('Checking for sw update')
+						//    r.update()
+						// }, 20000 /* 20s for testing purposes */)
+						console.log(`SW Registered: ${r}`);
+					},
+					onRegisterError(error) {
+						console.log('SW registration error', error);
+					}
+				});
+			})();
 		}
 
 		return () => {
-			subscription.unsubscribe();
+			authSubscription?.unsubscribe();
 		};
 	});
 
@@ -80,8 +86,8 @@
 	{#if pwaAssetsHead.themeColor}
 		<meta name="theme-color" content={pwaAssetsHead.themeColor.content} />
 	{/if}
-	{#if pwaAssetsHead.description}
-		<meta name="description" content={pwaAssetsHead.description.content} />
+	{#if pwaDescription}
+		<meta name="description" content={pwaDescription.content} />
 	{/if}
 	{#each pwaAssetsHead.links as link}
 		<link {...link} />

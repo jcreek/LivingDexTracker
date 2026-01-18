@@ -53,7 +53,7 @@ export type FlushOptions = {
 };
 
 function keyFor(record: CatchRecord): string {
-	return `${record.userId}:${record.pokedexId}:${record.pokedexEntryId}`;
+	return `${record.userId}:${record.pokedexId}:${record.pokemonId}`;
 }
 
 function backoffMs(attempts: number): number {
