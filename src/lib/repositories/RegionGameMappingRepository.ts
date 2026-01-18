@@ -10,11 +10,12 @@ class RegionGameMappingRepository {
 		return [];
 	}
 
-	async create(data: Partial<RegionGameMapping>): Promise<RegionGameMapping> {
+	async create(data: Partial<RegionGameMapping>): Promise<RegionGameMapping | null> {
+		if (!data.region || !data.game) return null;
 		return {
 			id: data.id,
-			region: data.region ?? '',
-			game: data.game ?? ''
+			region: data.region,
+			game: data.game
 		};
 	}
 
