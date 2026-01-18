@@ -82,6 +82,7 @@ export const PUT = async (event: RequestEvent) => {
 			...pokedex,
 			dexScopes: requestedDexScopes
 		});
+		pokedex.dexScopes = resolvedDexScopes;
 
 		const existingDexScopes = new Set(existingPokedex.dexScopes || []);
 		const nextDexScopes = new Set(resolvedDexScopes);
@@ -91,7 +92,6 @@ export const PUT = async (event: RequestEvent) => {
 
 		if (dexScopesChanged) {
 			await setPokedexDexScopes(event.locals.supabase, id, resolvedDexScopes);
-			pokedex.dexScopes = resolvedDexScopes;
 		}
 
 		// Recalculate pokedex_entries_mapping if configuration changed

@@ -19,10 +19,12 @@ class RegionGameMappingRepository {
 	}
 
 	async update(id: string, data: Partial<RegionGameMapping>): Promise<RegionGameMapping | null> {
-		void id;
 		if (!data.region || !data.game) return null;
+		const normalizedId = Number(id);
+		const resolvedId = Number.isFinite(normalizedId) ? normalizedId : data.id;
+		if (typeof resolvedId !== 'number' || !Number.isFinite(resolvedId)) return null;
 		return {
-			id: data.id,
+			id: resolvedId,
 			region: data.region,
 			game: data.game
 		};

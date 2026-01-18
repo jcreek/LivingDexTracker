@@ -501,6 +501,7 @@ RETURNS TABLE (
   updated_at TIMESTAMPTZ
 )
 SECURITY DEFINER
+SET search_path = public, pg_temp
 LANGUAGE plpgsql
 AS $$
 DECLARE
