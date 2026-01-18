@@ -10,6 +10,7 @@ export interface PokedexEntry {
 	pokedexNumber: number;
 	pokemon: string;
 	form: string;
+	spriteKey: string;
 	canGigantamax: boolean;
 	regionToCatchIn: string;
 	gamesToCatchIn: string[];
@@ -25,6 +26,7 @@ export interface PokedexEntryDB {
 	pokedexNumber: number;
 	pokemon: string;
 	form: string | null;
+	spriteKey: string | null;
 	canGigantamax: boolean;
 	regionToCatchIn: string | null;
 	gamesToCatchIn: string[] | null;

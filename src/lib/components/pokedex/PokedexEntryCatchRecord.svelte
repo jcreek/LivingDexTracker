@@ -68,6 +68,7 @@
 					pokemonName={pokedexEntry.pokemon}
 					pokedexNumber={pokedexEntry.pokedexNumber}
 					form={pokedexEntry.form}
+					spriteKey={pokedexEntry.spriteKey}
 					shiny={showShiny}
 				/>
 			</div>

@@ -19,6 +19,7 @@ class CombinedDataRepository {
 			pokedexNumber: entry.pokedexNumber,
 			pokemon: entry.pokemon,
 			form: entry.form || '',
+			spriteKey: entry.spriteKey || '',
 			canGigantamax: entry.canGigantamax,
 			regionToCatchIn: entry.regionToCatchIn || '',
 			gamesToCatchIn: entry.gamesToCatchIn || [],

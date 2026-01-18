@@ -47,6 +47,7 @@ class PokedexEntryRepository {
 			pokedexNumber: entry.pokedexNumber,
 			pokemon: entry.pokemon,
 			form: entry.form || '',
+			spriteKey: entry.spriteKey || '',
 			canGigantamax: entry.canGigantamax,
 			regionToCatchIn: entry.regionToCatchIn || '',
 			gamesToCatchIn: entry.gamesToCatchIn || [],
@@ -83,6 +84,7 @@ class PokedexEntryRepository {
 		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
 		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
 		if (data.form !== undefined) dbData.form = data.form;
+		if (data.spriteKey !== undefined) dbData.spriteKey = data.spriteKey;
 		if (data.canGigantamax !== undefined) dbData.canGigantamax = data.canGigantamax;
 		if (data.regionToCatchIn !== undefined) dbData.regionToCatchIn = data.regionToCatchIn;
 		if (data.gamesToCatchIn !== undefined) dbData.gamesToCatchIn = data.gamesToCatchIn;
@@ -110,6 +112,7 @@ class PokedexEntryRepository {
 		if (data.pokedexNumber !== undefined) dbData.pokedexNumber = data.pokedexNumber;
 		if (data.pokemon !== undefined) dbData.pokemon = data.pokemon;
 		if (data.form !== undefined) dbData.form = data.form;
+		if (data.spriteKey !== undefined) dbData.spriteKey = data.spriteKey;
 		if (data.canGigantamax !== undefined) dbData.canGigantamax = data.canGigantamax;
 		if (data.regionToCatchIn !== undefined) dbData.regionToCatchIn = data.regionToCatchIn;
 		if (data.gamesToCatchIn !== undefined) dbData.gamesToCatchIn = data.gamesToCatchIn;
