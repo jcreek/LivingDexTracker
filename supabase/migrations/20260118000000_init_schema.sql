@@ -266,7 +266,13 @@ CREATE POLICY "Users can manage own dex scopes" ON pokedex_dex_scopes
 ALTER TABLE pokedex_pokemon_mapping ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Anyone can view pokedex pokemon mapping"
   ON pokedex_pokemon_mapping
-  FOR SELECT USING (true);
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM pokedexes
+      WHERE pokedexes.id = pokedex_pokemon_mapping."pokedexId"
+      AND pokedexes."userId" = auth.uid()
+    )
+  );
 CREATE POLICY "Users can insert own pokedex pokemon mappings"
   ON pokedex_pokemon_mapping
   FOR INSERT WITH CHECK (
