@@ -500,6 +500,8 @@ BEGIN
   SELECT v_pokemon_caught, v_total_users, v_completed_pokedexes, v_updated_at AS updated_at;
 END;
 $$;
+REVOKE EXECUTE ON FUNCTION update_and_get_stats() FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION update_and_get_stats() TO service_role;
 
 CREATE OR REPLACE FUNCTION get_public_stats()
 RETURNS TABLE (
