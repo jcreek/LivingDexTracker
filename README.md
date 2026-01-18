@@ -19,6 +19,10 @@ A web app to track completion of a living Pokédex.
    N.B. All local emails are captured by MailPit when running Supabase in Docker.
 8. You can now use [the app](http://localhost:5173/).
 
+## Reference Data Updates
+
+The seed data lives in `supabase/migrations/20260118001000_seed_reference_data.sql`. Update that migration directly when new data is added.
+
 ## Building
 
 To create a production version:
