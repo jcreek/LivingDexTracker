@@ -39,20 +39,20 @@ export const POST = async (event: RequestEvent) => {
 		createdPokedexId = pokedex._id;
 		createdPokedexName = pokedex.name;
 
-		const resolvedDexScopes = await resolveDexScopes(event.locals.supabase, {
-			...pokedex,
-			dexScopes: requestedDexScopes
-		});
-		await setPokedexDexScopes(event.locals.supabase, pokedex._id, resolvedDexScopes);
-		pokedex.dexScopes = resolvedDexScopes;
-
-		// Populate pokedex_entries_mapping table with expected entries
+		// Populate dex scopes and pokedex_entries_mapping table with expected entries
 		try {
+			const resolvedDexScopes = await resolveDexScopes(event.locals.supabase, {
+				...pokedex,
+				dexScopes: requestedDexScopes
+			});
+			await setPokedexDexScopes(event.locals.supabase, pokedex._id, resolvedDexScopes);
+			pokedex.dexScopes = resolvedDexScopes;
+
 			await populatePokedexMappings(event.locals.supabase, pokedex._id, pokedex);
 		} catch (mappingError) {
 			// Rollback: delete the partially-initialised pokedex to prevent dangling records
 			console.error(
-				`Failed to populate pokedex mappings for pokedex id="${createdPokedexId}" name="${createdPokedexName}":`,
+				`Failed to initialize pokedex id="${createdPokedexId}" name="${createdPokedexName}":`,
 				mappingError
 			);
 			try {
