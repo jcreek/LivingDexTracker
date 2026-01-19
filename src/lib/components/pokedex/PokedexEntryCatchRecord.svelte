@@ -63,6 +63,14 @@
 >
 	<div class="dex-column pokedex-entry-container">
 		<div class="flex mb-2">
+			<div class="pl-2">
+				<h3 class="text-xl font-bold pt-1">{pokedexEntry.pokemon}</h3>
+				<sub class="text-primary-content/80"
+					>#{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</sub
+				>
+			</div>
+		</div>
+		<div class="flex mb-2">
 			<div class="sprite-container flex justify-center items-center bg-base-100 rounded-lg p-2">
 				<PokemonSprite
 					pokemonName={pokedexEntry.pokemon}
@@ -71,12 +79,6 @@
 					spriteKey={pokedexEntry.spriteKey}
 					shiny={showShiny}
 				/>
-			</div>
-			<div class="pl-2">
-				<h3 class="text-xl font-bold pt-1">{pokedexEntry.pokemon}</h3>
-				<sub class="text-primary-content/80"
-					>#{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</sub
-				>
 			</div>
 		</div>
 
@@ -239,7 +241,8 @@
 	}
 
 	.sprite-container {
-		width: 68px;
-		height: 68px;
+		width: 100%;
+		/* height: 300px; */
+		aspect-ratio: 1;
 	}
 </style>
