@@ -8,7 +8,10 @@ import {
 	precacheAndRoute,
 	precache
 } from 'workbox-precaching';
-// import { NavigationRoute, registerRoute } from 'workbox-routing';
+import { registerRoute } from 'workbox-routing';
+import { CacheFirst } from 'workbox-strategies';
+import { CacheableResponsePlugin } from 'workbox-cacheable-response';
+import { ExpirationPlugin } from 'workbox-expiration';
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -28,6 +31,21 @@ if (Array.isArray(manifest)) {
 
 // clean old assets
 cleanupOutdatedCaches();
+
+registerRoute(
+	({ request }) => request.destination === 'image',
+	new CacheFirst({
+		cacheName: 'image-cache',
+		plugins: [
+			new CacheableResponsePlugin({ statuses: [0, 200] }),
+			new ExpirationPlugin({
+				maxEntries: 3000,
+				maxAgeSeconds: 60 * 60 * 24 * 30,
+				purgeOnQuotaError: true
+			})
+		]
+	})
+);
 
 // let allowlist: undefined | RegExp[];
 // if (import.meta.env.DEV) allowlist = [/^\/$/];
