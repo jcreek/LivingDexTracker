@@ -45,10 +45,27 @@ export default defineConfig({
 				background_color: '#f0f0f0'
 			},
 			injectManifest: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}']
+				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
+				globIgnores: ['**/sprites/**', '**/sprites-small/**']
 			},
 			workbox: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}']
+				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
+				globIgnores: ['**/sprites/**', '**/sprites-small/**'],
+				runtimeCaching: [
+					{
+						urlPattern: ({ request }) => request.destination === 'image',
+						handler: 'CacheFirst',
+						options: {
+							cacheName: 'image-cache',
+							cacheableResponse: { statuses: [0, 200] },
+							expiration: {
+								maxEntries: 3000,
+								maxAgeSeconds: 60 * 60 * 24 * 30,
+								purgeOnQuotaError: true
+							}
+						}
+					}
+				]
 			},
 			devOptions: {
 				enabled: false,

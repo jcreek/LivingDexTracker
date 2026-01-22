@@ -33,6 +33,18 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
+## Sprites
+
+The app uses WebP sprites from `static/sprites-small`. During builds we generate this folder from the
+full-resolution PNGs in `static/sprites`:
+
+```bash
+npm run sprites:build
+```
+
+If you want to serve sprites locally, set `PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER="true"` in `.env`.
+Otherwise the app defaults to GitHub raw for `static/sprites-small`.
+
 ## Hosting
 
 The app is hosted on [Netlify](https://www.netlify.com/) at [pokedex.jcreek.co.uk](https://pokedex.jcreek.co.uk/).
@@ -43,4 +55,6 @@ User authentication is handled by [Supabase Auth](https://supabase.com/auth).
 
 ## Dependencies
 
-The living dex tracker's sprite collection is taken from [PokéAPI Sprites](https://github.com/PokeAPI/sprites), which is licensed under [the Creative Commons CC0 1.0 Universal license](https://github.com/PokeAPI/sprites/blob/master/LICENCE.txt).
+The living dex tracker's sprite collection is derived from [PokéAPI Sprites](https://github.com/PokeAPI/sprites)
+and converted to smaller WebP files in `static/sprites-small`. PokéAPI sprites are licensed under
+[the Creative Commons CC0 1.0 Universal license](https://github.com/PokeAPI/sprites/blob/master/LICENCE.txt).
