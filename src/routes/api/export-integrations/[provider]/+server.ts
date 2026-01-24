@@ -26,6 +26,9 @@ export const PUT = async (event: RequestEvent) => {
 		const patch: Record<string, unknown> = {};
 		if (body.folderId !== undefined) patch.folderId = body.folderId;
 		if (body.path !== undefined) patch.path = body.path;
+		if (Object.keys(patch).length === 0) {
+			return json({ error: 'No fields to update' }, { status: 400 });
+		}
 
 		const { data, error } = await event.locals.supabase
 			.from('pokedex_export_integrations')

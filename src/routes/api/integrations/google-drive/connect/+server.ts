@@ -31,7 +31,10 @@ export const GET = async (event: RequestEvent) => {
 	const env = getEnv();
 	const clientId = env.GOOGLE_OAUTH_CLIENT_ID;
 	if (!clientId) {
-		throw redirect(302, `/pokedex/${pokedexId}?export=google-missing-client`);
+		const missingClientRedirect = pokedexId
+			? `/pokedex/${pokedexId}?export=google-missing-client`
+			: '/pokedex?export=google-missing-client';
+		throw redirect(302, missingClientRedirect);
 	}
 
 	const state = createOAuthState();

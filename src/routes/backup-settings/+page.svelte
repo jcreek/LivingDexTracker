@@ -121,6 +121,7 @@
 								<a
 									href={getGoogleFolderUrl(googleIntegration.folderId)}
 									target="_blank"
+									rel="noopener noreferrer"
 									class="link link-primary"
 								>
 									Open Drive folder
@@ -156,6 +157,7 @@
 								<a
 									href={getDropboxFolderUrl(dropboxIntegration.path)}
 									target="_blank"
+									rel="noopener noreferrer"
 									class="link link-primary"
 								>
 									Open Dropbox folder

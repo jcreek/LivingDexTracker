@@ -64,6 +64,21 @@
 	let exportInFlightGeneration = 0;
 	let toggleFlushTimer: ReturnType<typeof setTimeout> | null = null;
 
+	function resetExportState() {
+		if (exportTimer) {
+			clearTimeout(exportTimer);
+			exportTimer = null;
+		}
+		if (toggleFlushTimer) {
+			clearTimeout(toggleFlushTimer);
+			toggleFlushTimer = null;
+		}
+		exportAfterFlush = false;
+		exportInFlight = false;
+		exportGeneration = 0;
+		exportInFlightGeneration = 0;
+	}
+
 	function scheduleExportIfIdle() {
 		if (!browser) return;
 		if (!pokedexId) return;
@@ -77,10 +92,15 @@
 			exportInFlight = true;
 			exportInFlightGeneration = exportGeneration;
 			try {
-				await fetch(`/api/pokedexes/${pokedexId}/export`, {
+				const response = await fetch(`/api/pokedexes/${pokedexId}/export`, {
 					method: 'POST',
 					credentials: 'include'
 				});
+				if (!response.ok) {
+					const body = await response.text().catch(() => '');
+					console.error('Auto-export failed:', response.status, body);
+					return;
+				}
 				if (exportGeneration === exportInFlightGeneration) {
 					exportAfterFlush = false;
 				}
@@ -121,6 +141,9 @@
 		catchWriteQueueUnsubscribe?.();
 		catchWriteQueueUnsubscribe = null;
 	});
+	onDestroy(() => {
+		resetExportState();
+	});
 
 	function openPokemonModal(pokemon: CombinedData) {
 		selectedPokemon = pokemon;
@@ -138,6 +161,8 @@
 		if (!localUser?.id) return;
 		const desiredKey = `${localUser.id}:${pokedexId}`;
 		if (catchWriteQueue && catchWriteQueueKey === desiredKey) return;
+
+		resetExportState();
 
 		// Unsubscribe from the previous queue's status store before replacing the queue.
 		catchWriteQueueUnsubscribe?.();

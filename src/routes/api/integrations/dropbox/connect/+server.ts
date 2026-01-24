@@ -31,7 +31,10 @@ export const GET = async (event: RequestEvent) => {
 	const env = getEnv();
 	const clientId = env.DROPBOX_OAUTH_CLIENT_ID;
 	if (!clientId) {
-		throw redirect(302, `/pokedex/${pokedexId}?export=dropbox-missing-client`);
+		const missingClientRedirect = pokedexId
+			? `/pokedex/${pokedexId}?export=dropbox-missing-client`
+			: '/pokedex?export=dropbox-missing-client';
+		throw redirect(302, missingClientRedirect);
 	}
 
 	const state = createOAuthState();

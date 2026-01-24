@@ -89,16 +89,21 @@ export const GET = async (event: RequestEvent) => {
 		const fileName = oauthState.fileName?.trim() ? oauthState.fileName : null;
 		const folderId = oauthState.folderId?.trim() ? oauthState.folderId : null;
 
-		await repo.upsert({
-			provider: 'google_drive',
-			enabled: true,
-			fileName,
-			folderId,
-			accessToken: tokenData.access_token,
-			refreshToken: tokenData.refresh_token ?? null,
-			accessTokenExpiresAt: expiresAt,
-			metadata: tokenData.scope ? { scope: tokenData.scope } : null
-		});
+		try {
+			await repo.upsert({
+				provider: 'google_drive',
+				enabled: true,
+				fileName,
+				folderId,
+				accessToken: tokenData.access_token,
+				refreshToken: tokenData.refresh_token ?? null,
+				accessTokenExpiresAt: expiresAt,
+				metadata: tokenData.scope ? { scope: tokenData.scope } : null
+			});
+		} catch (saveError) {
+			console.error('Google Drive integration save failed:', saveError);
+			throw redirect(302, `${returnTo}-error`);
+		}
 
 		throw redirect(302, `${returnTo}-connected`);
 	} catch (err) {
