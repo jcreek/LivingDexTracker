@@ -1,3 +1,5 @@
+import { env } from '$env/dynamic/private';
+
 export function getEnv() {
-	return process.env;
+	return env;
 }

@@ -21,7 +21,7 @@ A web app to track completion of a living Pokédex.
 
 ## Reference Data Updates
 
-The seed data lives in `supabase/migrations/20260118001000_seed_reference_data.sql`. Update that migration directly when new data is added.
+The seed data lives in `supabase/migrations/20260118001000_seed_reference_data.sql`. Update that migration directly when new data is added. You can access a local copy of [Supabase](http://localhost:54323/) to check it.
 
 ## Building
 
