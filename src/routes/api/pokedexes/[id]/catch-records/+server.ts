@@ -2,6 +2,7 @@ import { json } from '@sveltejs/kit';
 import { type CatchRecord } from '$lib/models/CatchRecord';
 import CatchRecordRepository from '$lib/repositories/CatchRecordRepository';
 import PokedexRepository from '$lib/repositories/PokedexRepository';
+import { exportPokedexIfConfigured } from '$lib/services/PokedexExportService';
 import { requireAuth } from '$lib/utils/auth';
 import type { RequestEvent } from '@sveltejs/kit';
 
@@ -73,6 +74,11 @@ export const PUT = async (event: RequestEvent) => {
 
 		const repo = new CatchRecordRepository(event.locals.supabase, userId, pokedexId);
 		const upsertedRecord = await repo.upsert(data);
+		try {
+			await exportPokedexIfConfigured(event.locals.supabase, userId, pokedexId);
+		} catch (exportError) {
+			console.error('Failed to export pokedex after catch record update:', exportError);
+		}
 		return json(upsertedRecord);
 	} catch (err) {
 		console.error(err);
@@ -137,6 +143,11 @@ export const POST = async (event: RequestEvent) => {
 		// Prefer a single bulk upsert when the DB supports it; fall back to per-record upserts.
 		try {
 			const upserted = await repo.bulkUpsert(scoped);
+			try {
+				await exportPokedexIfConfigured(event.locals.supabase, userId, pokedexId);
+			} catch (exportError) {
+				console.error('Failed to export pokedex after bulk catch record update:', exportError);
+			}
 			return json(upserted);
 		} catch (bulkErr) {
 			console.warn('Bulk upsert failed; falling back to per-record upserts:', bulkErr);
@@ -144,6 +155,14 @@ export const POST = async (event: RequestEvent) => {
 			for (const record of scoped) {
 				const upsertedRecord = await repo.upsert(record);
 				insertedRecords.push(upsertedRecord);
+			}
+			try {
+				await exportPokedexIfConfigured(event.locals.supabase, userId, pokedexId);
+			} catch (exportError) {
+				console.error(
+					'Failed to export pokedex after per-record catch updates:',
+					exportError
+				);
 			}
 			return json(insertedRecords);
 		}

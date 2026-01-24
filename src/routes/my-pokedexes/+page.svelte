@@ -167,7 +167,10 @@
 <div class="container mx-auto p-4">
 	<div class="flex justify-between items-center mb-6">
 		<h1 class="text-3xl font-bold">My Pokédexes</h1>
-		<button class="btn btn-primary" on:click={openCreateModal}> Create New Pokédex </button>
+		<div class="flex items-center gap-2">
+			<a class="btn btn-outline" href="/backup-settings">Backup Settings</a>
+			<button class="btn btn-primary" on:click={openCreateModal}> Create New Pokédex </button>
+		</div>
 	</div>
 
 	{#if pokedexes.length === 0}

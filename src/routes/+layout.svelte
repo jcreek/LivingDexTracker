@@ -159,6 +159,9 @@
 								<li>
 									<a href="/my-pokedexes"> My Pokédexes </a>
 								</li>
+								<li>
+									<a href="/backup-settings"> Backup Settings </a>
+								</li>
 								<li><SignOut {supabase} on:signedOut={getUser} /></li>
 							{:else}
 								<li><SignIn {supabase} on:signedIn={getUser} /></li>

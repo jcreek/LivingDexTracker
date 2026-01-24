@@ -17,6 +17,7 @@
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
 
+
 	export let data: PageData;
 
 	// Get pokédex from server load (guarded for transient undefined during navigation/HMR)
@@ -24,6 +25,13 @@
 	let pokedexId = '';
 	$: pokedex = data?.pokedex;
 	$: pokedexId = pokedex?._id ?? '';
+	$: if (browser && pokedexId) {
+		try {
+			localStorage.setItem('activePokedexId', pokedexId);
+		} catch {
+			// Ignore storage errors (private mode, etc.)
+		}
+	}
 
 	let combinedData = null as CombinedData[] | null;
 	let currentPage = 1 as number;
@@ -49,6 +57,57 @@
 		lastFlushAttemptAt: null,
 		lastSuccessfulFlushAt: null
 	};
+	let exportAfterFlush = false;
+	let exportInFlight = false;
+	let exportTimer: ReturnType<typeof setTimeout> | null = null;
+	let exportGeneration = 0;
+	let exportInFlightGeneration = 0;
+	let toggleFlushTimer: ReturnType<typeof setTimeout> | null = null;
+
+	function scheduleExportIfIdle() {
+		if (!browser) return;
+		if (!pokedexId) return;
+		const isIdle = catchWriteStatus.pending === 0 && catchWriteStatus.inFlight === 0;
+		if (!isIdle) return;
+		if (!exportAfterFlush || exportInFlight) return;
+		if (exportTimer) return;
+		exportTimer = setTimeout(async () => {
+			exportTimer = null;
+			if (!exportAfterFlush || exportInFlight) return;
+			exportInFlight = true;
+			exportInFlightGeneration = exportGeneration;
+			try {
+				await fetch(`/api/pokedexes/${pokedexId}/export`, {
+					method: 'POST',
+					credentials: 'include'
+				});
+				if (exportGeneration === exportInFlightGeneration) {
+					exportAfterFlush = false;
+				}
+			} catch (error) {
+				console.error('Failed to auto-export pokedex:', error);
+			} finally {
+				exportInFlight = false;
+				scheduleExportIfIdle();
+			}
+		}, 400);
+	}
+
+	function scheduleToggleFlush() {
+		if (!catchWriteQueue) return;
+		if (toggleFlushTimer) {
+			clearTimeout(toggleFlushTimer);
+		}
+		toggleFlushTimer = setTimeout(async () => {
+			toggleFlushTimer = null;
+			try {
+				await catchWriteQueue?.flushNow();
+			} catch (error) {
+				console.error('Failed to flush catch record updates:', error);
+			}
+		}, 250);
+	}
+
 
 	// Derive from pokedex config
 	$: showOrigins = !!pokedex?.isOriginDex;
@@ -94,8 +153,19 @@
 
 		catchWriteQueueUnsubscribe = catchWriteQueue.getStatus.subscribe((s) => {
 			catchWriteStatus = s;
+			if (s.pending > 0 || s.inFlight > 0) {
+				if (exportTimer) {
+					clearTimeout(exportTimer);
+					exportTimer = null;
+				}
+				return;
+			}
+
+			scheduleExportIfIdle();
 		});
 	}
+
+
 
 	function applyOptimisticCatchRecordUpdate(next: CatchRecord) {
 		if (!combinedData) return;
@@ -184,6 +254,11 @@
 			debounceMs,
 			flushSoon: true
 		});
+		exportGeneration++;
+		exportAfterFlush = true;
+		if (source === 'toggle') {
+			scheduleToggleFlush();
+		}
 		if (source === 'notes-blur') {
 			// Force a flush attempt when the user leaves the textarea.
 			await catchWriteQueue?.flushNow();
@@ -239,6 +314,8 @@
 			if (record.haveToEvolve) record.caught = false;
 			applyOptimisticCatchRecordUpdate(record);
 			catchWriteQueue?.enqueue(record, { flushSoon: true });
+			exportGeneration++;
+			exportAfterFlush = true;
 		}
 		// Kick a flush attempt (batching will occur inside the queue).
 		await catchWriteQueue?.flushNow();
@@ -362,6 +439,7 @@
 			window.clearInterval(reconcileInterval);
 		};
 	});
+
 </script>
 
 <svelte:head>
@@ -496,6 +574,7 @@
 						{#if pokedex.description}
 							<p class="text-sm text-base-content/70 mt-3">{pokedex.description}</p>
 						{/if}
+
 					</div>
 
 					<!-- Right side: Actions -->

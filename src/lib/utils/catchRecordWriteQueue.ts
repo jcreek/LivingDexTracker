@@ -14,6 +14,7 @@ type QueueItem = {
 	attempts: number;
 	notBefore: number; // unix ms
 	debounceTimer: ReturnType<typeof setTimeout> | null;
+	version: number;
 };
 
 export type CreateCatchRecordWriteQueueOptions = {
@@ -157,14 +158,25 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 			}
 
 			// Success: drop the flushed keys.
-			for (const [k] of eligible) {
-				items.delete(k);
+			for (const [k, sentItem] of eligible) {
+				const current = items.get(k);
+				if (!current) {
+					items.delete(k);
+					continue;
+				}
+				// Only clear if nothing newer was enqueued after this batch started.
+				if (current.version === sentItem.version) {
+					items.delete(k);
+				}
 			}
 			updateStatus({ lastError: null, lastSuccessfulFlushAt: Date.now() });
 		} catch (e) {
 			const message = e instanceof Error ? e.message : String(e);
 			// Backoff all eligible items and keep them.
 			for (const [k, item] of eligible) {
+				const current = items.get(k);
+				if (!current) continue;
+				if (current.version !== item.version) continue;
 				const nextAttempts = item.attempts + 1;
 				items.set(k, {
 					...item,
@@ -199,6 +211,7 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 		const now = Date.now();
 		const existing = items.get(k);
 		const debounceMs = opts?.debounceMs ?? 0;
+		const nextVersion = (existing?.version ?? 0) + 1;
 
 		// Clear any pending debounce timer: latest state always wins.
 		if (existing?.debounceTimer) {
@@ -222,7 +235,8 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 			record,
 			attempts: existing?.attempts ?? 0,
 			notBefore,
-			debounceTimer
+			debounceTimer,
+			version: nextVersion
 		});
 		updateStatus({});
 		if (opts?.flushSoon !== false) scheduleFlush();
