@@ -35,7 +35,7 @@ export const GET = async (event: RequestEvent) => {
 	if (!clientId) {
 		const missingClientRedirect = pokedexId
 			? `/pokedex/${pokedexId}?export=google-missing-client`
-			: '/pokedex?export=google-missing-client';
+			: '/backup-settings?export=google-missing-client';
 		throw redirect(302, missingClientRedirect);
 	}
 

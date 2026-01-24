@@ -48,9 +48,14 @@ export const PUT = async (event: RequestEvent) => {
 			.is('pokedexId', null)
 			.eq('provider', provider)
 			.select('id, provider, enabled, fileName, folderId, path, metadata, lastExportedAt, lastError')
-			.single();
+			.maybeSingle();
 
-		if (error || !data) {
+		if (error) {
+			console.error(error);
+			return json({ error: 'Internal Server Error' }, { status: 500 });
+		}
+
+		if (data === null) {
 			return json({ error: 'Integration not found' }, { status: 404 });
 		}
 
