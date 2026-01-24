@@ -13,7 +13,9 @@ export const GET = async (event: RequestEvent) => {
 	const path = url.searchParams.get('path');
 	const returnToRaw = url.searchParams.get('returnTo');
 	const returnTo =
-		returnToRaw && returnToRaw.startsWith('/') ? returnToRaw : '/backup-settings';
+		returnToRaw && returnToRaw.startsWith('/') && !returnToRaw.startsWith('//')
+			? returnToRaw
+			: '/backup-settings';
 
 	if (pokedexId) {
 		const { session } = await event.locals.safeGetSession();

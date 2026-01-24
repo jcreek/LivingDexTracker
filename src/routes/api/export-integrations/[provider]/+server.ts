@@ -18,10 +18,21 @@ export const PUT = async (event: RequestEvent) => {
 			await event.locals.supabase.auth.setSession(session);
 		}
 
-		const body = (await event.request.json()) as {
+		let body: {
 			folderId?: string | null;
 			path?: string | null;
 		};
+		try {
+			body = (await event.request.json()) as {
+				folderId?: string | null;
+				path?: string | null;
+			};
+		} catch (err) {
+			if (err instanceof SyntaxError) {
+				return new Response('Malformed JSON', { status: 400 });
+			}
+			throw err;
+		}
 
 		const patch: Record<string, unknown> = {};
 		if (body.folderId !== undefined) patch.folderId = body.folderId;
