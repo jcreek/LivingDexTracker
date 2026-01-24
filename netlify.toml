@@ -1,3 +1,9 @@
 [build]
-	command = "npm run build"
-	publish = "build"
+  command = "npm ci && ./node_modules/.bin/supabase link --project-ref $SUPABASE_PROJECT_REF && ./node_modules/.bin/supabase db push && npm run build"
+  publish = "build"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[context.deploy-preview]
+  command = "npm ci && npm run build"
