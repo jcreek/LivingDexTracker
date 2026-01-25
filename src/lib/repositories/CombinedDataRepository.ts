@@ -25,7 +25,8 @@ class CombinedDataRepository {
 			gamesToCatchIn: entry.gamesToCatchIn || [],
 			regionToEvolveIn: entry.regionToEvolveIn || '',
 			evolutionInformation: entry.evolutionInformation || '',
-			catchInformation: entry.catchInformation || []
+			catchInformation: entry.catchInformation || [],
+			notes: entry.notes || ''
 			// Note: Regional dex numbers are stored in separate regional_dex_numbers table
 		};
 	}

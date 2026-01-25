@@ -53,7 +53,8 @@ class PokedexEntryRepository {
 			gamesToCatchIn: entry.gamesToCatchIn || [],
 			regionToEvolveIn: entry.regionToEvolveIn || '',
 			evolutionInformation: entry.evolutionInformation || '',
-			catchInformation: this.parseCatchInformation(entry.catchInformation)
+			catchInformation: this.parseCatchInformation(entry.catchInformation),
+			notes: entry.notes || ''
 		};
 	}
 
@@ -94,6 +95,7 @@ class PokedexEntryRepository {
 		if (data.catchInformation !== undefined) {
 			dbData.catchInformation = this.serializeCatchInformation(data.catchInformation);
 		}
+		if (data.notes !== undefined) dbData.notes = data.notes;
 		// Box placement is calculated dynamically - not stored in database
 
 		const { data: result, error } = await this.supabase
@@ -122,6 +124,7 @@ class PokedexEntryRepository {
 		if (data.catchInformation !== undefined) {
 			dbData.catchInformation = this.serializeCatchInformation(data.catchInformation);
 		}
+		if (data.notes !== undefined) dbData.notes = data.notes;
 		// Box placement is calculated dynamically - not stored in database
 
 		const { data: result, error } = await this.supabase

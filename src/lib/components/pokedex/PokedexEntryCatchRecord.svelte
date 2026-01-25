@@ -56,6 +56,7 @@
 		}
 		updateCatchRecord('toggle');
 	}
+
 </script>
 
 <div
@@ -88,19 +89,11 @@
 			</div>
 		{/if}
 
-		<div class="bg-base-100 text-base-content rounded-lg p-4">
-			{#if pokedexEntry.evolutionInformation}
+		{#if pokedexEntry.evolutionInformation.trim().length > 0}
+			<div class="bg-base-100 text-base-content rounded-lg p-4">
 				<p><strong>How to evolve: </strong>{pokedexEntry.evolutionInformation}</p>
-			{:else}
-				<p>
-					<strong>How to evolve: </strong>Currently missing - can you
-					<a
-						href="https://github.com/jcreek/LivingDexTracker"
-						class="underline text-primary hover:text-secondary">help contribute</a
-					>?
-				</p>
-			{/if}
-		</div>
+			</div>
+		{/if}
 	</div>
 
 	{#if catchRecord}
@@ -229,6 +222,11 @@
 						class="underline text-primary hover:text-secondary">help contribute</a
 					>?
 				</p>
+			</div>
+		{/if}
+		{#if pokedexEntry.notes}
+			<div class="bg-base-100 text-base-content rounded-lg p-4 mb-2">
+				<p><strong>Dex Notes:</strong> {pokedexEntry.notes}</p>
 			</div>
 		{/if}
 	</div>

@@ -17,6 +17,7 @@ export interface PokedexEntry {
 	regionToEvolveIn: string;
 	evolutionInformation: string;
 	catchInformation: Array<string | CatchInformationItem>;
+	notes: string;
 	// Note: Regional dex numbers stored in separate regional_dex_numbers table
 }
 
@@ -33,6 +34,7 @@ export interface PokedexEntryDB {
 	regionToEvolveIn: string | null;
 	evolutionInformation: string | null;
 	catchInformation: string[] | null;
+	notes: string | null;
 	// Note: Regional dex numbers stored in separate regional_dex_numbers table
 	createdAt: string;
 	updatedAt: string;
