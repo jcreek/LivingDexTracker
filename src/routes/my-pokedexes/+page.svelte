@@ -165,9 +165,9 @@
 </svelte:head>
 
 <div class="container mx-auto p-4">
-	<div class="flex justify-between items-center mb-6">
+	<div class="flex justify-between items-center mb-6 my-pokedexes-header">
 		<h1 class="text-3xl font-bold">My Pokédexes</h1>
-		<div class="flex items-center gap-2">
+		<div class="flex items-center gap-2 my-pokedexes-actions">
 			<a class="btn btn-outline" href="/backup-settings">Backup Settings</a>
 			<button class="btn btn-primary" on:click={openCreateModal}> Create New Pokédex </button>
 		</div>
@@ -212,3 +212,23 @@
 		></button>
 	</div>
 {/if}
+
+<style>
+	@media (max-width: 767px) {
+		.my-pokedexes-header {
+			align-items: stretch;
+			flex-direction: column;
+			gap: 0.75rem;
+		}
+
+		.my-pokedexes-actions {
+			flex-direction: column;
+			gap: 0.5rem;
+			width: 100%;
+		}
+
+		.my-pokedexes-actions :global(.btn) {
+			width: 100%;
+		}
+	}
+</style>
