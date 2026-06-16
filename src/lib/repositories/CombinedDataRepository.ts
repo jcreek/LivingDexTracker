@@ -3,6 +3,17 @@ import { type CatchRecord, type CatchRecordDB } from '$lib/models/CatchRecord';
 import { type CombinedData } from '$lib/models/CombinedData';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
+// Raw row from game_pokedex_entry_details includes extra ordering columns not in PokedexEntryDB.
+type RawDexEntry = PokedexEntryDB & {
+	dexNumber: number;
+	dexSortOrder: number;
+	formSortBucket: number;
+	formSortRegionOrder: number;
+	formSortRegionalSub: number;
+	formSortLabel: string;
+	unownSortOrder: number;
+};
+
 class CombinedDataRepository {
 	private static readonly MAX_ROWS_PER_REQUEST = 1000;
 
@@ -98,14 +109,55 @@ class CombinedDataRepository {
 		return query;
 	}
 
+	// Fetch all non-base form entries for a game from pokedex_entries, excluding already-seen IDs.
+	// game_pokedex_entries is seeded with base forms only, so forms must be supplemented from here.
+	private async fetchFormsForGame(
+		game: string,
+		region: string,
+		excludeIds: Set<number>
+	): Promise<PokedexEntryDB[]> {
+		const allForms: PokedexEntryDB[] = [];
+		let start = 0;
+		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
+
+		while (true) {
+			const end = start + maxRows - 1;
+			let query = this.supabase.from('pokedex_entries').select('*').not('form', 'is', null);
+
+			if (game) {
+				query = query.contains('gamesToCatchIn', [game]);
+			}
+			if (region) {
+				query = query.eq('regionToCatchIn', region);
+			}
+
+			const { data, error } = await query.range(start, end);
+
+			if (error) {
+				console.error('Error fetching forms for game:', error);
+				return [];
+			}
+
+			if (!data || data.length === 0) break;
+
+			allForms.push(...(data as PokedexEntryDB[]).filter((e) => !excludeIds.has(e.id)));
+
+			if (data.length < maxRows) break;
+			start = end + 1;
+		}
+
+		return allForms;
+	}
+
 	private async fetchAllDexEntries(
 		dexScopes: string[],
 		enableForms: boolean,
-		region: string
+		region: string,
+		game: string = ''
 	): Promise<PokedexEntryDB[]> {
 		if (dexScopes.length === 0) return [];
 
-		const entries: PokedexEntryDB[] = [];
+		const entries: RawDexEntry[] = [];
 		let start = 0;
 		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
 
@@ -125,7 +177,7 @@ class CombinedDataRepository {
 				break;
 			}
 
-			entries.push(...data);
+			entries.push(...(data as RawDexEntry[]));
 
 			if (data.length < maxRows) {
 				break;
@@ -134,7 +186,56 @@ class CombinedDataRepository {
 			start = end + 1;
 		}
 
-		return entries;
+		// When forms are enabled, game_pokedex_entries only has base forms, so supplement from pokedex_entries.
+		if (!enableForms || !game) {
+			return entries as PokedexEntryDB[];
+		}
+
+		// Build lookup: pokedexNumber → dex position (from the raw game dex data)
+		const dexInfoByPokedexNumber = new Map<number, { dexNumber: number; dexSortOrder: number }>();
+		for (const entry of entries) {
+			if (!dexInfoByPokedexNumber.has(entry.pokedexNumber)) {
+				dexInfoByPokedexNumber.set(entry.pokedexNumber, {
+					dexNumber: entry.dexNumber ?? 0,
+					dexSortOrder: entry.dexSortOrder ?? 0
+				});
+			}
+		}
+
+		// Fetch forms not already covered by game_pokedex_entries
+		const existingIds = new Set(entries.map((e) => e.id));
+		const formEntries = await this.fetchFormsForGame(game, region, existingIds);
+
+		if (formEntries.length === 0) {
+			return entries as PokedexEntryDB[];
+		}
+
+		// Merge and sort: forms inherit their base form's dex position, then sort by form fields
+		const merged = [...entries, ...(formEntries as RawDexEntry[])];
+
+		merged.sort((a, b) => {
+			const aDex = dexInfoByPokedexNumber.get(a.pokedexNumber) ?? {
+				dexNumber: 9999,
+				dexSortOrder: 9999
+			};
+			const bDex = dexInfoByPokedexNumber.get(b.pokedexNumber) ?? {
+				dexNumber: 9999,
+				dexSortOrder: 9999
+			};
+			if (aDex.dexSortOrder !== bDex.dexSortOrder) return aDex.dexSortOrder - bDex.dexSortOrder;
+			if (aDex.dexNumber !== bDex.dexNumber) return aDex.dexNumber - bDex.dexNumber;
+			if ((a.unownSortOrder ?? 0) !== (b.unownSortOrder ?? 0))
+				return (a.unownSortOrder ?? 0) - (b.unownSortOrder ?? 0);
+			if ((a.formSortBucket ?? 0) !== (b.formSortBucket ?? 0))
+				return (a.formSortBucket ?? 0) - (b.formSortBucket ?? 0);
+			if ((a.formSortRegionOrder ?? 0) !== (b.formSortRegionOrder ?? 0))
+				return (a.formSortRegionOrder ?? 0) - (b.formSortRegionOrder ?? 0);
+			if ((a.formSortRegionalSub ?? 0) !== (b.formSortRegionalSub ?? 0))
+				return (a.formSortRegionalSub ?? 0) - (b.formSortRegionalSub ?? 0);
+			return (a.formSortLabel ?? '').localeCompare(b.formSortLabel ?? '');
+		});
+
+		return merged as PokedexEntryDB[];
 	}
 
 	private dedupeEntries(entries: PokedexEntryDB[]): PokedexEntryDB[] {
@@ -264,7 +365,7 @@ class CombinedDataRepository {
 	): Promise<CombinedData[]> {
 		const entries =
 			dexScopes.length > 0
-				? this.dedupeEntries(await this.fetchAllDexEntries(dexScopes, enableForms, region))
+				? this.dedupeEntries(await this.fetchAllDexEntries(dexScopes, enableForms, region, game))
 				: await this.fetchAllEntries(enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
@@ -310,10 +411,9 @@ class CombinedDataRepository {
 		const to = from + limit - 1;
 		const entries =
 			dexScopes.length > 0
-				? this.dedupeEntries(await this.fetchAllDexEntries(dexScopes, enableForms, region)).slice(
-						from,
-						to + 1
-				  )
+				? this.dedupeEntries(
+						await this.fetchAllDexEntries(dexScopes, enableForms, region, game)
+					).slice(from, to + 1)
 				: await this.fetchEntriesByRange(from, to, enableForms, region, game);
 
 		if (!entries || entries.length === 0) {
@@ -354,7 +454,7 @@ class CombinedDataRepository {
 	): Promise<number> {
 		if (dexScopes.length > 0) {
 			const entries = this.dedupeEntries(
-				await this.fetchAllDexEntries(dexScopes, enableForms, region)
+				await this.fetchAllDexEntries(dexScopes, enableForms, region, game)
 			);
 			return entries.length;
 		}
