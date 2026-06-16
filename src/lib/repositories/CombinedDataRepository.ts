@@ -210,8 +210,13 @@ class CombinedDataRepository {
 			return entries as PokedexEntryDB[];
 		}
 
-		// Merge and sort: forms inherit their base form's dex position, then sort by form fields
-		const merged = [...entries, ...(formEntries as RawDexEntry[])];
+		// Merge and sort: dex entries first (they are the canonical base form for the regional dex),
+		// then supplemented forms. Within each group, sort by form fields.
+		type TaggedEntry = RawDexEntry & { _isDexEntry: boolean };
+		const merged: TaggedEntry[] = [
+			...entries.map((e) => ({ ...e, _isDexEntry: true })),
+			...(formEntries as RawDexEntry[]).map((e) => ({ ...e, _isDexEntry: false }))
+		];
 
 		merged.sort((a, b) => {
 			const aDex = dexInfoByPokedexNumber.get(a.pokedexNumber) ?? {
@@ -226,6 +231,8 @@ class CombinedDataRepository {
 			if (aDex.dexNumber !== bDex.dexNumber) return aDex.dexNumber - bDex.dexNumber;
 			if ((a.unownSortOrder ?? 0) !== (b.unownSortOrder ?? 0))
 				return (a.unownSortOrder ?? 0) - (b.unownSortOrder ?? 0);
+			// Dex entries (canonical regional base form) sort before supplemented forms.
+			if (a._isDexEntry !== b._isDexEntry) return a._isDexEntry ? -1 : 1;
 			if ((a.formSortBucket ?? 0) !== (b.formSortBucket ?? 0))
 				return (a.formSortBucket ?? 0) - (b.formSortBucket ?? 0);
 			if ((a.formSortRegionOrder ?? 0) !== (b.formSortRegionOrder ?? 0))
