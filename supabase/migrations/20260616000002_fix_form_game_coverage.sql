@@ -75,11 +75,11 @@ CROSS JOIN games g
 WHERE p.pokemon = 'Rotom'
   AND p.form IN ('Fan', 'Fridge', 'Lightbulb', 'Mower', 'Oven', 'Washer')
   AND g."displayName" IN (
-    'Heart Gold', 'Soul Silver',
+    'Platinum', 'Heart Gold', 'Soul Silver',
     'Black', 'White', 'Black 2', 'White 2',
     'X', 'Y', 'Omega Ruby', 'Alpha Sapphire',
     'Sun', 'Moon', 'Ultra Sun', 'Ultra Moon',
-    'Sword', 'Shield',
+    'Sword', 'Shield', 'Brilliant Diamond', 'Shining Pearl',
     'Scarlet', 'Violet'
   )
 ON CONFLICT DO NOTHING;
@@ -150,7 +150,7 @@ SELECT p.id, g.id
 FROM pokemon p
 CROSS JOIN games g
 WHERE p.pokemon = 'Shaymin' AND p.form = 'Sky Form'
-  AND g."displayName" IN ('Heart Gold', 'Soul Silver', 'X', 'Y', 'Scarlet', 'Violet')
+  AND g."displayName" IN ('Platinum', 'Heart Gold', 'Soul Silver', 'X', 'Y', 'Scarlet', 'Violet')
 ON CONFLICT DO NOTHING;
 
 -- Hoopa Confined: distributed via Mystery Gift for all Gen 6 games (X/Y + OR/AS).

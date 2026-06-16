@@ -131,7 +131,7 @@ class CombinedDataRepository {
 				query = query.eq('regionToCatchIn', region);
 			}
 
-			const { data, error } = await query.range(start, end);
+			const { data, error } = await query.order('id', { ascending: true }).range(start, end);
 
 			if (error) {
 				console.error('Error fetching forms for game:', error);
