@@ -8,9 +8,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 class PokedexEntryRepository {
 	constructor(private supabase: SupabaseClient) {}
 
-	private parseCatchInformation(
-		values: string[] | null
-	): Array<string | CatchInformationItem> {
+	private parseCatchInformation(values: string[] | null): Array<string | CatchInformationItem> {
 		if (!values) return [];
 		return values.map((value) => {
 			const trimmed = value.trim();

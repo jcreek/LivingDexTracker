@@ -31,9 +31,7 @@ export const GET = async (event: RequestEvent) => {
 
 		const repo = new CatchRecordRepository(event.locals.supabase, userId, pokedexId);
 		const catchData = await repo.findAll();
-		const sortedData = catchData.sort(
-			(a, b) => Number(a.pokemonId) - Number(b.pokemonId)
-		);
+		const sortedData = catchData.sort((a, b) => Number(a.pokemonId) - Number(b.pokemonId));
 		return json(sortedData);
 	} catch (err) {
 		console.error(err);
@@ -159,10 +157,7 @@ export const POST = async (event: RequestEvent) => {
 			try {
 				await exportPokedexIfConfigured(event.locals.supabase, userId, pokedexId);
 			} catch (exportError) {
-				console.error(
-					'Failed to export pokedex after per-record catch updates:',
-					exportError
-				);
+				console.error('Failed to export pokedex after per-record catch updates:', exportError);
 			}
 			return json(insertedRecords);
 		}

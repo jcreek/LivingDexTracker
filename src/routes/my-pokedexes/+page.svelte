@@ -204,11 +204,7 @@
 			</h3>
 			<PokedexForm bind:pokedex={formData} {mode} onSubmit={handleSubmit} onCancel={closeModal} />
 		</div>
-		<button
-			type="button"
-			class="modal-backdrop"
-			aria-label="Close modal"
-			on:click={closeModal}
+		<button type="button" class="modal-backdrop" aria-label="Close modal" on:click={closeModal}
 		></button>
 	</div>
 {/if}

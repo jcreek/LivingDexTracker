@@ -2,3 +2,11 @@
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
+
+# Generated data exports. Nobody hand-edits these, and reformatting them buries real data
+# changes under tens of thousands of lines of churn.
+src/lib/helpers/pokeapi-pokemon.json
+static/sprites/pokemon.json
+
+# Machine-local editor and tool settings.
+**/*.local.json

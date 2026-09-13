@@ -59,10 +59,8 @@
 	// Validation
 	$: hasAtLeastOneType =
 		pokedex.isLivingDex || pokedex.isShinyDex || pokedex.isOriginDex || pokedex.isFormDex;
-	$: hasDexScope =
-		!pokedex.gameScope || (pokedex.dexScopes && pokedex.dexScopes.length > 0);
-	$: canSubmit =
-		pokedex.name && pokedex.name.trim() !== '' && hasAtLeastOneType && hasDexScope;
+	$: hasDexScope = !pokedex.gameScope || (pokedex.dexScopes && pokedex.dexScopes.length > 0);
+	$: canSubmit = pokedex.name && pokedex.name.trim() !== '' && hasAtLeastOneType && hasDexScope;
 
 	$: if (pokedex.gameScope !== lastGameScope) {
 		const shouldResetDexes = mode === 'create' || hasSeenGameScope;
@@ -162,16 +160,14 @@
 		<option value={null}>All Games</option>
 		{#if loadingDexes}
 			<option disabled>Loading games...</option>
+		{:else if gameList.length > 0}
+			{#each gameList as game}
+				<option value={game.displayName}>{game.displayName}</option>
+			{/each}
 		{:else}
-			{#if gameList.length > 0}
-				{#each gameList as game}
-					<option value={game.displayName}>{game.displayName}</option>
-				{/each}
-			{:else}
-				{#each gameOrder.length > 0 ? gameOrder : Object.keys(gameDexes) as game}
-					<option value={game}>{game}</option>
-				{/each}
-			{/if}
+			{#each gameOrder.length > 0 ? gameOrder : Object.keys(gameDexes) as game}
+				<option value={game}>{game}</option>
+			{/each}
 		{/if}
 	</select>
 </div>
@@ -181,7 +177,9 @@
 		<fieldset class="w-full">
 			<legend class="label">
 				<span class="label-text">Dex Scope</span>
-				<span class="label-text-alt text-error">{!hasDexScope ? 'Select at least one dex' : ''}</span>
+				<span class="label-text-alt text-error"
+					>{!hasDexScope ? 'Select at least one dex' : ''}</span
+				>
 			</legend>
 			{#if availableDexes.length === 0}
 				<p class="text-sm text-error">No dexes found for this game.</p>
