@@ -60,8 +60,9 @@ class CombinedDataRepository {
 		let query = this.supabase.from('pokedex_entries').select('*');
 
 		if (!enableForms) {
-			// Filter to base forms: NULL or 'male' (gendered species), plus Unown "A".
-			query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
+			// Filter to base forms only. Gendered species (form='male') and Unown ('A') are
+			// also flagged isDefaultForm in the pokemon table, so this single check covers them.
+			query = query.eq('isDefaultForm', true);
 		}
 
 		if (region) {
@@ -88,8 +89,9 @@ class CombinedDataRepository {
 		let query = this.supabase.from('game_pokedex_entry_details').select('*').in('dexId', dexScopes);
 
 		if (!enableForms) {
-			// Filter to base forms: NULL or 'male' (gendered species), plus Unown "A".
-			query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
+			// Filter to base forms only. Gendered species (form='male') and Unown ('A') are
+			// also flagged isDefaultForm in the pokemon table, so this single check covers them.
+			query = query.eq('isDefaultForm', true);
 		}
 
 		if (region) {
@@ -109,8 +111,12 @@ class CombinedDataRepository {
 		return query;
 	}
 
-	// Fetch all non-base form entries for a game from pokedex_entries, excluding already-seen IDs.
-	// game_pokedex_entries is seeded with base forms only, so forms must be supplemented from here.
+	// Fetch all named-form entries for a game from pokedex_entries, excluding already-seen IDs.
+	// game_pokedex_entries is seeded from form IS NULL rows, so named forms must be supplemented
+	// from here. Deliberately keyed on `form`, NOT isDefaultForm: a default form with a name
+	// (e.g. Rotom "Lightbulb") is usually absent from the game dex tables, so filtering on
+	// isDefaultForm would drop it from game-scoped form dexes entirely. excludeIds already
+	// dedupes anything the dex table does list.
 	private async fetchFormsForGame(
 		game: string,
 		region: string,
@@ -470,8 +476,9 @@ class CombinedDataRepository {
 
 		// Apply same filters as in findCombinedData
 		if (!enableForms) {
-			// Filter to base forms: NULL or 'male' (gendered species), plus Unown "A".
-			query = query.or('form.is.null,form.eq.male,and(pokemon.eq.Unown,form.eq.A)');
+			// Filter to base forms only. Gendered species (form='male') and Unown ('A') are
+			// also flagged isDefaultForm in the pokemon table, so this single check covers them.
+			query = query.eq('isDefaultForm', true);
 		}
 
 		if (region) {
