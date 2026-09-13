@@ -29,6 +29,7 @@ export interface PokedexEntryDB {
 	form: string | null;
 	spriteKey: string | null;
 	canGigantamax: boolean;
+	isDefaultForm: boolean;
 	regionToCatchIn: string | null;
 	gamesToCatchIn: string[] | null;
 	regionToEvolveIn: string | null;
