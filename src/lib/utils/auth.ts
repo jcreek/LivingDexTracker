@@ -7,11 +7,11 @@ import { error } from '@sveltejs/kit';
  */
 export async function requireAuth(event: RequestEvent): Promise<string> {
 	const { session, user } = await event.locals.safeGetSession();
-	
+
 	if (!session || !user) {
 		throw error(401, 'Authentication required');
 	}
-	
+
 	return user.id;
 }
 
@@ -21,7 +21,7 @@ export async function requireAuth(event: RequestEvent): Promise<string> {
  */
 export async function getOptionalUserId(event: RequestEvent): Promise<string | null> {
 	try {
-		const { session, user } = await event.locals.safeGetSession();
+		const { user } = await event.locals.safeGetSession();
 		return user?.id || null;
 	} catch {
 		return null;

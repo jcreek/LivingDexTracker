@@ -10,7 +10,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 			fetch
 		},
 		cookies: {
-			get(key) {
+			get(key: string) {
 				if (!isBrowser()) {
 					return JSON.stringify(data.session);
 				}

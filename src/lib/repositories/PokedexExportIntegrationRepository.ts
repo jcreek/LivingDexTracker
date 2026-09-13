@@ -4,6 +4,10 @@ import type {
 	PokedexExportIntegrationDB
 } from '$lib/models/PokedexExportIntegration';
 
+// `from()` returns a table builder; only `select()` yields the filter builder that `eq`/`is`
+// live on. Typing the scope helper with the table builder made `data` untyped downstream.
+type IntegrationQuery = ReturnType<ReturnType<SupabaseClient['from']>['select']>;
+
 class PokedexExportIntegrationRepository {
 	constructor(
 		private supabase: SupabaseClient,
@@ -34,7 +38,7 @@ class PokedexExportIntegrationRepository {
 		return this.supabase.from('pokedex_export_integrations').select('*').eq('userId', this.userId);
 	}
 
-	private addPokedexScope(query: ReturnType<SupabaseClient['from']>) {
+	private addPokedexScope(query: IntegrationQuery): IntegrationQuery {
 		if (this.pokedexId) {
 			return query.eq('pokedexId', this.pokedexId);
 		}
@@ -49,7 +53,8 @@ class PokedexExportIntegrationRepository {
 			throw new Error(`Failed to load export integrations: ${error.message}`);
 		}
 		if (!data) return [];
-		return data.map((row) => this.transform(row));
+		// PostgREST rows are untyped without generated database types.
+		return (data as PokedexExportIntegrationDB[]).map((row) => this.transform(row));
 	}
 
 	async listAll(): Promise<PokedexExportIntegration[]> {
@@ -60,12 +65,12 @@ class PokedexExportIntegrationRepository {
 			throw new Error(`Failed to load export integrations: ${error.message}`);
 		}
 		if (!data) return [];
-		return data.map((row) => this.transform(row));
+		// PostgREST rows are untyped without generated database types.
+		return (data as PokedexExportIntegrationDB[]).map((row) => this.transform(row));
 	}
 
 	async upsert(
-		data: Partial<PokedexExportIntegrationDB> &
-			Pick<PokedexExportIntegrationDB, 'provider'>
+		data: Partial<PokedexExportIntegrationDB> & Pick<PokedexExportIntegrationDB, 'provider'>
 	): Promise<PokedexExportIntegration> {
 		const payload: Partial<PokedexExportIntegrationDB> = {
 			userId: this.userId,
@@ -105,7 +110,8 @@ class PokedexExportIntegrationRepository {
 			throw new Error(`Failed to load export integrations: ${error.message}`);
 		}
 		if (!data) return [];
-		return data.map((row) => this.transform(row));
+		// PostgREST rows are untyped without generated database types.
+		return (data as PokedexExportIntegrationDB[]).map((row) => this.transform(row));
 	}
 
 	async updateTokens(

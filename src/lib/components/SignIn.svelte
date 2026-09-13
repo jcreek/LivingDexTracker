@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
@@ -12,7 +13,7 @@
 	let errorMessage = '';
 
 	// Access the supabase client from the layout data
-	export let supabase: any;
+	export let supabase: SupabaseClient;
 
 	async function signInWithEmail() {
 		isLoading = true;

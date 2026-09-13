@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-	import { user } from '$lib/stores/user.js';
-	import { type User } from '@supabase/auth-js';
+	import { onMount } from 'svelte';
 	import SignUp from '$lib/components/SignUp.svelte';
 	import { goto } from '$app/navigation';
 
@@ -9,12 +7,7 @@
 	let { supabase, stats } = data;
 	$: ({ supabase, stats } = data);
 
-	let localUser: User | null;
-	const unsubscribe = user.subscribe((value) => {
-		localUser = value;
-	});
-	onDestroy(unsubscribe);
-
+	// Redirection is decided from the live session below, so the user store is not needed here.
 	let isCheckingSession = true;
 
 	onMount(() => {

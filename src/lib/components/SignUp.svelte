@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { createEventDispatcher } from 'svelte';
 	const dispatch = createEventDispatcher();
 
@@ -6,17 +7,16 @@
 	let password = '';
 
 	// Access the supabase client from the layout data
-	export let supabase: any;
+	export let supabase: SupabaseClient;
 
 	async function signUpNewUser() {
 		try {
+			// `redirectTo` is not a signUp option - it was silently ignored, so the confirmation
+			// link has always used Supabase's configured site URL. Sending the user to /welcome
+			// would need `emailRedirectTo` with an absolute, allow-listed URL.
 			const { data, error } = await supabase.auth.signUp({
 				email: email,
-				password: password,
-				options: {
-					// Redirect URL after successful sign-up
-					redirectTo: '/welcome'
-				}
+				password: password
 			});
 
 			if (error) {
