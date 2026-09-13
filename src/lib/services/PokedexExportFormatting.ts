@@ -1,5 +1,4 @@
 import type { CombinedData } from '$lib/models/CombinedData';
-import type { Pokedex } from '$lib/models/Pokedex';
 
 export function csvEscape(value: unknown): string {
 	if (value === null || value === undefined) return '';
@@ -15,8 +14,7 @@ export function sanitizeFileName(name: string, fallback: string): string {
 	return safe.endsWith('.csv') ? safe : `${safe}.csv`;
 }
 
-export function buildCsv(pokedex: Pokedex, combinedData: CombinedData[]): string {
-	void pokedex;
+export function buildCsv(combinedData: CombinedData[]): string {
 	const headers = [
 		'pokemonId',
 		'pokedexNumber',
@@ -35,7 +33,6 @@ export function buildCsv(pokedex: Pokedex, combinedData: CombinedData[]): string
 			caught: false,
 			haveToEvolve: false,
 			inHome: false,
-			hasGigantamaxed: false,
 			personalNotes: ''
 		};
 		lines.push(

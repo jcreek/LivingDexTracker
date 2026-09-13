@@ -4,7 +4,8 @@ import { fileURLToPath } from 'node:url';
 export default defineConfig({
 	resolve: {
 		alias: {
-			$lib: fileURLToPath(new URL('./src/lib', import.meta.url))
+			$lib: fileURLToPath(new URL('./src/lib', import.meta.url)),
+			'$env/dynamic/private': fileURLToPath(new URL('./tests/support/envStub.ts', import.meta.url))
 		}
 	},
 	test: {

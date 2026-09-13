@@ -4,7 +4,7 @@ import {
 	csvEscape,
 	sanitizeFileName,
 	shouldRefreshToken
-} from '../../src/lib/services/PokedexExportFormatting';
+} from '$lib/services/PokedexExportFormatting';
 
 describe('Pokédex export formatting', () => {
 	it.each([
@@ -26,35 +26,32 @@ describe('Pokédex export formatting', () => {
 	});
 
 	it('builds a stable, escaped CSV with defaults for missing catch records', () => {
-		const csv = buildCsv(
-			{ _id: 'dex-1', name: 'Test' } as never,
-			[
-				{
-					pokedexEntry: {
-						_id: '25',
-						pokedexNumber: 25,
-						pokemon: 'Pikachu',
-						form: null
-					},
-					catchRecord: {
-						caught: true,
-						haveToEvolve: false,
-						inHome: true,
-						hasGigantamaxed: false,
-						personalNotes: 'Comma, and "quote"'
-					}
+		const csv = buildCsv([
+			{
+				pokedexEntry: {
+					_id: '25',
+					pokedexNumber: 25,
+					pokemon: 'Pikachu',
+					form: null
 				},
-				{
-					pokedexEntry: {
-						_id: '26',
-						pokedexNumber: 26,
-						pokemon: 'Raichu',
-						form: 'Alolan'
-					},
-					catchRecord: null
+				catchRecord: {
+					caught: true,
+					haveToEvolve: false,
+					inHome: true,
+					hasGigantamaxed: false,
+					personalNotes: 'Comma, and "quote"'
 				}
-			] as never
-		);
+			},
+			{
+				pokedexEntry: {
+					_id: '26',
+					pokedexNumber: 26,
+					pokemon: 'Raichu',
+					form: 'Alolan'
+				},
+				catchRecord: null
+			}
+		] as never);
 		expect(csv.split('\r\n')).toEqual([
 			'pokemonId,pokedexNumber,pokemon,form,caught,haveToEvolve,inHome,personalNotes',
 			'25,25,Pikachu,,true,false,true,"Comma, and ""quote"""',

@@ -398,7 +398,7 @@ export async function exportPokedexIfConfigured(
 		pokedex.gameScope || '',
 		dexScopes
 	);
-	const csv = buildCsv(pokedex, combinedData);
+	const csv = buildCsv(combinedData);
 
 	const failures: ExportFailure[] = [];
 	let successes = 0;
