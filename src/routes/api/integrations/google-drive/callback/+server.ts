@@ -4,6 +4,7 @@ import PokedexExportIntegrationRepository from '$lib/repositories/PokedexExportI
 import { requireAuth } from '$lib/utils/auth';
 import { clearOAuthStateCookie, readOAuthStateCookie } from '$lib/utils/oauthState';
 import { getEnv } from '$lib/utils/env';
+import { getProviderEndpoints } from '$lib/services/providerEndpoints';
 
 export const GET = async (event: RequestEvent) => {
 	try {
@@ -57,7 +58,7 @@ export const GET = async (event: RequestEvent) => {
 			grant_type: 'authorization_code'
 		});
 
-		const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+		const tokenResponse = await fetch(getProviderEndpoints().google.token, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 			body: tokenParams.toString()

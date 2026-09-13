@@ -4,6 +4,7 @@ import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import { createOAuthState, setOAuthStateCookie } from '$lib/utils/oauthState';
 import { getEnv } from '$lib/utils/env';
+import { getProviderEndpoints } from '$lib/services/providerEndpoints';
 
 export const GET = async (event: RequestEvent) => {
 	const userId = await requireAuth(event);
@@ -60,5 +61,5 @@ export const GET = async (event: RequestEvent) => {
 		scope: 'files.content.write'
 	});
 
-	throw redirect(302, `https://www.dropbox.com/oauth2/authorize?${params.toString()}`);
+	throw redirect(302, `${getProviderEndpoints().dropbox.authorize}?${params.toString()}`);
 };

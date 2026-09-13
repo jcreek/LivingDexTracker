@@ -31,6 +31,50 @@ To create a production version:
 npm run build
 ```
 
+## Testing
+
+The test suite is split by responsibility so a failure points to the correct layer:
+
+- `tests/unit` contains fast, isolated tests for utilities, repositories, and services.
+- `tests/data` validates the tracked Pokémon, game, region, dex, and sprite reference files.
+- `tests/integration` checks the migrated Supabase schema, views, constraints, RLS, and repositories.
+- `tests/bdd/features` is the executable Gherkin specification for user-visible behaviour. Step
+  definitions and browser fixtures live beside it under `tests/bdd`.
+- `tests/build` verifies generated service-worker and manifest artifacts after each supported build.
+
+Run the offline suites while developing:
+
+```bash
+npm run test:fast
+npm run test:coverage
+```
+
+Database and BDD tests require Docker and the local Supabase stack. The wrappers read local keys from
+`supabase status`; no credentials are written to disk or committed:
+
+```bash
+npm run supabase:start
+npm run supabase:reset
+npm run test:integration
+npm run test:bdd
+```
+
+`npm test` runs the complete CI-equivalent sequence and fails with setup instructions when Supabase is
+not available. Individual layers are available as `test:unit`, `test:data`, `test:integration`,
+`test:build`, and `test:bdd`.
+
+Gherkin describes outcomes in domain language. Keep selectors, API calls, test-user provisioning, and
+provider mocks in step definitions or support fixtures. `@product-review` marks a rule that should be
+reviewed with product stakeholders, but does not skip it. Missing or ambiguous steps fail generation.
+
+Google Drive and Dropbox scenarios use a local provider server and private endpoint overrides. They do
+not contact real provider accounts. Chromium is the only configured browser project. Playwright traces
+and screenshots are retained on failure under `test-results`.
+
+The current National Dex maximum is deliberately asserted as 1025. When adding a new generation,
+update that expectation together with Pokémon data, the corresponding game/dex files, database seed,
+and sprites. Data tests print the exact conflicting identities or broken references.
+
 You can preview the production build with `npm run preview`.
 
 ## Sprites
