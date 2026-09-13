@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { calculateBoxNumbers, calculateBoxPlacement } from '../../src/lib/utils/boxPlacement';
+import { calculateBoxNumbers, calculateBoxPlacement } from '$lib/utils/boxPlacement';
 
 describe('box placement', () => {
 	it.each([

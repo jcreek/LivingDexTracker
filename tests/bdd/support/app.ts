@@ -33,6 +33,44 @@ export async function createConfirmedUser(state: ScenarioState): Promise<void> {
 	state.userId = body.id;
 }
 
+export async function deleteAllPokedexes(state: ScenarioState): Promise<void> {
+	const key = requireServiceRoleKey();
+	if (!state.userId) throw new Error('A confirmed user is required before clearing Pokédexes');
+	const response = await fetch(
+		`${SUPABASE_URL}/rest/v1/pokedexes?userId=eq.${encodeURIComponent(state.userId)}`,
+		{ method: 'DELETE', headers: { apikey: key, Authorization: `Bearer ${key}` } }
+	);
+	if (!response.ok) throw new Error(`Unable to clear Pokédexes: ${await response.text()}`);
+}
+
+/**
+ * Asks Supabase for a real recovery action link - the same token-bearing URL the emailed link
+ * carries - so the reset scenarios exercise token verification rather than an ordinary session.
+ * `redirectTo` must be listed in `auth.additional_redirect_urls` in supabase/config.toml.
+ */
+export async function createRecoveryLink(
+	state: ScenarioState,
+	redirectTo: string
+): Promise<string> {
+	const key = requireServiceRoleKey();
+	const response = await fetch(`${SUPABASE_URL}/auth/v1/admin/generate_link`, {
+		method: 'POST',
+		headers: {
+			apikey: key,
+			Authorization: `Bearer ${key}`,
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ type: 'recovery', email: state.email, redirect_to: redirectTo })
+	});
+	if (!response.ok)
+		throw new Error(
+			`Unable to generate a recovery link: ${response.status} ${await response.text()}`
+		);
+	const body = (await response.json()) as { action_link?: string };
+	if (!body.action_link) throw new Error('Supabase returned no recovery action link');
+	return body.action_link;
+}
+
 export async function signIn(page: Page, state: ScenarioState, password = state.password) {
 	await page.goto('/signin');
 	await page.getByLabel('Email').fill(state.email);

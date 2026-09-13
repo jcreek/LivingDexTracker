@@ -6,12 +6,17 @@ Feature: Offline-friendly application
   Scenario: Register the service worker
     When I open the built application
     Then a service worker controls the page
-    And the application cache is present
+    And the application shell is precached
 
-  Scenario: Navigate while offline
+  Scenario: Reload the home page while offline
     Given I have opened the built application online
-    When I go offline and revisit the home page with a trailing slash
+    When I go offline and reload the home page
     Then the application remains available
+
+  Scenario: Navigate to another route while offline
+    Given I have opened the built application online
+    When I go offline and navigate to the sign-in page
+    Then the sign-in form is available offline
 
   Scenario: Restore network access
     Given I have opened the built application online

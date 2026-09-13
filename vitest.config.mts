@@ -15,19 +15,17 @@ export default defineConfig({
 			provider: 'v8',
 			reporter: ['text', 'json-summary', 'html'],
 			reportsDirectory: 'coverage',
-			include: [
-				'src/lib/utils/boxPlacement.ts',
-				'src/lib/utils/catchRecordWriteQueue.ts',
-				'src/lib/utils/oauthState.ts',
-				'src/lib/utils/regionalDexMapping.ts',
-				'src/lib/services/PokedexExportFormatting.ts'
-			],
+			// The whole library surface is measured, so anything new and untested drags the
+			// numbers down instead of being invisible to the gate. Excluded here: type-only
+			// models, and the store/action modules that only run in a browser.
+			include: ['src/lib/**/*.ts'],
+			exclude: ['src/lib/models/**', 'src/lib/stores/**', 'src/lib/actions/**'],
+			// Set to the measured baseline. Ratchet these up as coverage grows; never down.
 			thresholds: {
-				perFile: true,
-				statements: 90,
-				functions: 90,
-				lines: 90,
-				branches: 80
+				statements: 33,
+				functions: 73,
+				lines: 33,
+				branches: 79
 			}
 		}
 	}

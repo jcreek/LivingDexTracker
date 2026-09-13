@@ -14,7 +14,12 @@ const server = createServer(async (request, response) => {
 	const url = new URL(request.url ?? '/', `http://127.0.0.1:${port}`);
 	let body = '';
 	for await (const chunk of request) body += chunk;
-	state.requests.push({ method: request.method, path: url.pathname, query: url.search, body });
+
+	// Control-plane calls (including Playwright's webServer readiness polling of /__mock/state)
+	// must not show up as provider traffic the assertions then reason about.
+	if (!url.pathname.startsWith('/__mock/')) {
+		state.requests.push({ method: request.method, path: url.pathname, query: url.search, body });
+	}
 
 	if (url.pathname === '/__mock/state') return send(response, 200, state);
 	if (url.pathname === '/__mock/reset') {

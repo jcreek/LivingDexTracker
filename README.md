@@ -42,15 +42,21 @@ The test suite is split by responsibility so a failure points to the correct lay
   definitions and browser fixtures live beside it under `tests/bdd`.
 - `tests/build` verifies generated service-worker and manifest artifacts after each supported build.
 
-Run the offline suites while developing:
+Run the offline suites while developing. `test:fast` includes the coverage run, so there is no need
+to run both:
 
 ```bash
 npm run test:fast
-npm run test:coverage
 ```
 
-Database and BDD tests require Docker and the local Supabase stack. The wrappers read local keys from
-`supabase status`; no credentials are written to disk or committed:
+Coverage is measured across all of `src/lib` (excluding type-only models and the browser-only
+store/action modules) with global thresholds set to the current baseline, so new untested code lowers
+the number instead of being invisible to the gate. Ratchet the thresholds in `vitest.config.mts` up as
+coverage grows, never down.
+
+Database and BDD tests require Docker and the local Supabase stack. The wrappers read the local keys
+from `supabase status` at run time, so no keys are hard-coded in the test files; the local stack's
+well-known demo keys do appear in `.env.local.example`, and no real credentials are committed:
 
 ```bash
 npm run supabase:start
@@ -67,9 +73,24 @@ Gherkin describes outcomes in domain language. Keep selectors, API calls, test-u
 provider mocks in step definitions or support fixtures. `@product-review` marks a rule that should be
 reviewed with product stakeholders, but does not skip it. Missing or ambiguous steps fail generation.
 
-Google Drive and Dropbox scenarios use a local provider server and private endpoint overrides. They do
-not contact real provider accounts. Chromium is the only configured browser project. Playwright traces
-and screenshots are retained on failure under `test-results`.
+Google Drive and Dropbox scenarios use a local provider server (`scripts/mock-provider-server.mjs`)
+and never contact real provider accounts. The endpoint overrides that point at it are refused unless
+`ALLOW_PROVIDER_ENDPOINT_OVERRIDES=true` **and** the override is a loopback URL - these endpoints
+receive the OAuth client secret and refresh token, so they must not be redirectable in a deployed
+environment. `npm run test:bdd` sets the flag; nothing else should.
+
+The mock's recorded requests, refresh counter and fail-uploads switch are reset before every scenario
+by an auto fixture in `tests/bdd/fixtures.ts`. That reset is also why the suite runs with a single
+worker: the mock is one shared process, so parallel scenarios would reset each other's state. A global
+teardown deletes the users each run creates, so repeated local runs do not need a database reset.
+
+Chromium is the only configured browser project. Playwright traces and screenshots are retained on
+failure under `test-results`.
+
+Known gap: the password-reset scenarios use an ordinary signed-in session rather than a recovery link,
+because following a real recovery link currently bounces to `/signin` - the browser client in
+`src/routes/+layout.ts` has no cookie `set`/`remove` method, so it cannot persist the session it parses
+out of the URL. `createRecoveryLink` in `tests/bdd/support/app.ts` is ready for when that is fixed.
 
 The current National Dex maximum is deliberately asserted as 1025. When adding a new generation,
 update that expectation together with Pokémon data, the corresponding game/dex files, database seed,

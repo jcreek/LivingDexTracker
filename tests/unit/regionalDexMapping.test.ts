@@ -4,7 +4,7 @@ import {
 	getRegionalDexFieldName,
 	getRegionalDexKey,
 	hasRegionalDex
-} from '../../src/lib/utils/regionalDexMapping';
+} from '$lib/utils/regionalDexMapping';
 
 describe('regional dex mapping', () => {
 	it.each([

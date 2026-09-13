@@ -1,6 +1,6 @@
 import { createBdd } from 'playwright-bdd';
 import { test, expect } from '../fixtures';
-import { createDexThroughUi } from '../support/app';
+import { createDexThroughUi, deleteAllPokedexes } from '../support/app';
 
 const { Given, When, Then } = createBdd(test);
 
@@ -11,11 +11,10 @@ async function dexCard(page: Parameters<typeof createDexThroughUi>[0], name: str
 	return card;
 }
 
-Given('I have no Pokédexes', async ({ page }) => {
-	await page.goto('/my-pokedexes');
-	await expect(
-		page.locator('.card').filter({ has: page.getByRole('button', { name: 'View' }) })
-	).toHaveCount(0);
+// Establishes the precondition rather than asserting it - a fresh user happens to be empty,
+// which would make an assertion here pass without testing anything.
+Given('I have no Pokédexes', async ({ state }) => {
+	await deleteAllPokedexes(state);
 });
 
 Given('I have a Living Dex named {string}', async ({ page, state }, name: string) => {

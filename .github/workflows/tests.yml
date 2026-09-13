@@ -9,6 +9,14 @@ concurrency:
   group: tests-${{ github.ref }}
   cancel-in-progress: true
 
+# `$env/static/public` is resolved at build time, so every variable imported from it must be
+# present for `vite build` and `svelte-check` to succeed on a clean checkout. These are the
+# local-stack defaults already published in .env.local.example - never real credentials.
+env:
+  PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER: 'false'
+  PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
+  PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+
 jobs:
   quality:
     runs-on: ubuntu-latest
@@ -22,7 +30,6 @@ jobs:
       - run: npm run check
       - run: npm run lint
       - run: npm run test:fast
-      - run: npm run test:coverage
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -39,8 +46,8 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
+      # `supabase start` applies migrations and seeds; no separate reset is needed.
       - run: npx supabase start
-      - run: npx supabase db reset
       - run: npm run test:integration
       - if: always()
         run: npx supabase stop
@@ -69,9 +76,10 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: playwright-chromium-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-chromium-${{ runner.os }}-
       - run: npx playwright install --with-deps chromium
       - run: npx supabase start
-      - run: npx supabase db reset
       - run: npm run test:bdd
       - uses: actions/upload-artifact@v4
         if: failure()

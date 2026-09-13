@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import CombinedDataRepository from '../../src/lib/repositories/CombinedDataRepository';
+import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
 
 type Call = { method: string; args: unknown[] };
 type TableQuery = { table: string; calls: Call[] };

@@ -28,7 +28,7 @@ Feature: Backup and export
     And I have a Living Dex named "Quoted, Dex"
     When I save a catch note containing a comma and quote
     Then the mocked provider receives a valid escaped CSV
-    And the catch update remains saved
+    And the note survives a reload
 
   Scenario: Refresh an expired provider token
     Given Dropbox is connected with an expired token
@@ -38,6 +38,6 @@ Feature: Backup and export
   Scenario: Record provider failure without losing progress
     Given Google Drive is connected to a failing mocked provider
     When I update collection progress
-    Then the catch update remains saved
+    Then the catch remains marked caught
     And the provider failure is shown in backup settings
 

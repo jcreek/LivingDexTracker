@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { createCatchRecordWriteQueue } from '../../src/lib/utils/catchRecordWriteQueue';
-import type { CatchRecord } from '../../src/lib/models/CatchRecord';
+import { createCatchRecordWriteQueue } from '$lib/utils/catchRecordWriteQueue';
+import type { CatchRecord } from '$lib/models/CatchRecord';
 
 function mkRecord(overrides: Partial<CatchRecord> = {}): CatchRecord {
 	return {

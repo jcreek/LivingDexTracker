@@ -5,7 +5,7 @@ import {
 	readOAuthStateCookie,
 	setOAuthStateCookie,
 	type OAuthStatePayload
-} from '../../src/lib/utils/oauthState';
+} from '$lib/utils/oauthState';
 
 function eventWithCookie(raw?: string) {
 	return {

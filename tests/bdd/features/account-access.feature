@@ -36,12 +36,12 @@ Feature: Account access
 
   @product-review
   Scenario: Reject mismatched replacement passwords
-    Given I am on the password reset page with a recovery session
+    Given I am signed in on the password reset page
     When I enter two different replacement passwords
     Then I am told that the passwords do not match
 
   Scenario: Complete a password reset
-    Given I am on the password reset page with a recovery session
+    Given I am signed in on the password reset page
     When I enter a valid replacement password
     Then I am told that my password was updated
 

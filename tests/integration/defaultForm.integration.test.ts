@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
-import CombinedDataRepository from '../../src/lib/repositories/CombinedDataRepository';
+import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
 import { readRepoCsv } from '../support/csv';
 
 /**
@@ -9,14 +9,22 @@ import { readRepoCsv } from '../support/csv';
  * fix branch makes the same assertions pass without test-only schema knowledge.
  */
 const SUPABASE_URL = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
-const SUPABASE_KEY =
-	process.env.TEST_SUPABASE_ANON_KEY ??
-	'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0';
+const SETUP_HINT =
+	'Run integration tests through "npm run test:integration", which reads the local keys from "supabase status".';
+
+// No baked-in key: a fallback would silently point a misconfigured run at the wrong stack
+// instead of failing with the instruction above.
+function requireAnonKey(): string {
+	const key = process.env.TEST_SUPABASE_ANON_KEY;
+	if (!key) throw new Error(`Integration tests require TEST_SUPABASE_ANON_KEY. ${SETUP_HINT}`);
+	return key;
+}
 
 async function requireSupabase() {
+	const key = requireAnonKey();
 	try {
 		const res = await fetch(`${SUPABASE_URL}/rest/v1/pokedex_entries?select=id&limit=1`, {
-			headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+			headers: { apikey: key, Authorization: `Bearer ${key}` },
 			signal: AbortSignal.timeout(2000)
 		});
 		if (!res.ok) throw new Error(`HTTP ${res.status}: ${await res.text()}`);
@@ -43,7 +51,7 @@ describe('pokedex behavior regressions', () => {
 
 	beforeAll(async () => {
 		await requireSupabase();
-		supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+		supabase = createClient(SUPABASE_URL, requireAnonKey());
 		const all: Row[] = [];
 		for (let from = 0; ; from += 1000) {
 			const { data, error } = await supabase
@@ -118,9 +126,7 @@ describe('pokedex behavior regressions', () => {
 	});
 
 	it('returns every expected entry despite the PostgREST row cap', async () => {
-		const { calculateExpectedEntries } = await import(
-			'../../src/lib/services/PokedexMappingService'
-		);
+		const { calculateExpectedEntries } = await import('$lib/services/PokedexMappingService');
 		const baseDex = {
 			id: 'test',
 			name: 'test',

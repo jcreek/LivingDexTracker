@@ -72,7 +72,6 @@ When('I visit backup settings', async ({ page }) => {
 });
 
 When('I connect the mocked {string} provider', async ({ page }, provider: string) => {
-	await fetch(`${MOCK_URL}/__mock/reset`);
 	await page.goto('/backup-settings');
 	const card = page.locator('.card, .border').filter({ hasText: provider }).last();
 	await card.getByRole('button', { name: 'Connect' }).click();
@@ -125,29 +124,54 @@ Then('the backup connection is rejected', async ({ state }) => {
 	expect(state.lastResponseStatus).toBe(400);
 });
 
-Then('the mocked provider receives a valid escaped CSV', async () => {
+async function mockState() {
 	const response = await fetch(`${MOCK_URL}/__mock/state`);
-	const mock = (await response.json()) as { requests: Array<{ path: string; body: string }> };
-	const upload = mock.requests.find((request) => request.path.includes('upload'));
-	expect(upload?.body).toContain('"A comma, and a ""quote"""');
+	if (!response.ok) throw new Error(`Mock provider is unavailable: ${response.status}`);
+	return (await response.json()) as {
+		refreshes: number;
+		requests: Array<{ method: string; path: string; body: string }>;
+	};
+}
+
+Then('the mocked provider receives a valid escaped CSV', async () => {
+	const { requests } = await mockState();
+	const upload = requests.find((request) => request.path.includes('upload'));
+	expect(upload, 'no upload reached the mock provider').toBeDefined();
+	expect(upload!.body).toContain('"A comma, and a ""quote"""');
 });
 
-Then('the catch update remains saved', async ({ page, state }) => {
+Then('the note survives a reload', async ({ page, state }) => {
 	await page.goto(`/pokedex/${state.pokedexId}`);
 	await expect(firstPokemon(page)).toBeVisible();
 	await openFirstPokemon(page);
-	const dialog = page.getByRole('dialog');
-	const caught = dialog.getByText('Caught:', { exact: true }).locator('..').getByRole('checkbox');
-	const notes = dialog.getByLabel('Notes:');
-	expect((await caught.isChecked()) || (await notes.inputValue()).includes('comma')).toBe(true);
+	await expect(page.getByRole('dialog').getByLabel('Notes:')).toHaveValue('A comma, and a "quote"');
+});
+
+Then('the catch remains marked caught', async ({ page, state }) => {
+	await page.goto(`/pokedex/${state.pokedexId}`);
+	await expect(firstPokemon(page)).toBeVisible();
+	await openFirstPokemon(page);
+	const caught = page
+		.getByRole('dialog')
+		.getByText('Caught:', { exact: true })
+		.locator('..')
+		.getByRole('checkbox');
+	await expect(caught).toBeChecked();
 });
 
 Then('the token is refreshed before the mocked upload', async ({ state }) => {
 	expect(state.lastResponseStatus).toBe(200);
-	const response = await fetch(`${MOCK_URL}/__mock/state`);
-	const mock = (await response.json()) as { refreshes: number; requests: Array<{ path: string }> };
-	expect(mock.refreshes).toBeGreaterThan(0);
-	expect(mock.requests.some((request) => request.path.includes('upload'))).toBe(true);
+	const { refreshes, requests } = await mockState();
+	// Exactly one refresh, and it has to come before the upload it was needed for - a global
+	// ">= 1" would be satisfied by any earlier scenario's traffic.
+	expect(refreshes).toBe(1);
+	const refreshIndex = requests.findIndex(
+		(request) =>
+			request.path.endsWith('/token') && request.body.includes('grant_type=refresh_token')
+	);
+	const uploadIndex = requests.findIndex((request) => request.path.includes('upload'));
+	expect(refreshIndex).toBeGreaterThanOrEqual(0);
+	expect(uploadIndex).toBeGreaterThan(refreshIndex);
 });
 
 Then('the provider failure is shown in backup settings', async ({ page }) => {

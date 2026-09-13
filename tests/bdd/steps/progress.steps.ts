@@ -50,17 +50,27 @@ When('I add the note {string} to the first Pokémon', async ({ page }, note: str
 	await page.getByRole('dialog').getByLabel('Notes:').blur();
 });
 
+function boxContainer(page: Parameters<typeof firstPokemon>[0], box: number) {
+	return page
+		.getByRole('heading', { name: `Box ${box}`, exact: true })
+		.locator('..')
+		.locator('..');
+}
+
 When('I mark box {int} as caught', async ({ page }, box: number) => {
-	const heading = page.getByRole('heading', { name: `Box ${box}`, exact: true });
-	const container = heading.locator('..').locator('..');
+	const container = boxContainer(page, box);
 	await container.getByRole('button', { name: 'Open bulk actions menu' }).click();
 	await container.getByRole('button', { name: 'Mark box as Caught' }).click();
 });
 
-When('I filter to Pokémon that are not caught', async ({ page }) => {
+When('I filter to Pokémon that are not caught', async ({ page, state }) => {
 	if ((await page.getByRole('dialog').count()) > 0) {
 		await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
 	}
+	// Remember which entry was caught, so the assertion can name it rather than trusting
+	// whichever entry happens to be first after filtering.
+	state.caughtEntryLabel = await firstPokemon(page).getAttribute('aria-label');
+	expect(state.caughtEntryLabel).toMatch(/Status: Caught/);
 	await page.getByText('Not caught', { exact: true }).locator('..').getByRole('checkbox').check();
 });
 
@@ -94,18 +104,31 @@ Then('its HOME state and note persist after reloading', async ({ page }) => {
 	);
 });
 
-Then('box {int} contains {int} caught Pokémon', async ({ page }, _box: number, count: number) => {
+Then('box {int} contains {int} caught Pokémon', async ({ page }, box: number, count: number) => {
 	await settleAndReload(page);
-	const firstBoxEntries = page
-		.getByRole('button', { name: /^View details for / })
-		.filter({ hasNot: page.locator('[disabled]') });
-	for (let index = 0; index < count; index++) {
-		await expect(firstBoxEntries.nth(index)).toHaveAttribute('aria-label', /Status: Caught/);
-	}
+	const entries = boxContainer(page, box).getByRole('button', { name: /^View details for / });
+	await expect(entries).toHaveCount(count);
+	const labels = await entries.evaluateAll((elements) =>
+		elements.map((element) => element.getAttribute('aria-label') ?? '')
+	);
+	expect(labels.filter((label) => /Status: Caught/.test(label))).toHaveLength(count);
 });
 
-Then('the caught Pokémon is filtered out', async ({ page }) => {
-	await expect(firstPokemon(page)).toHaveAttribute('aria-disabled', 'true');
+Then('the caught Pokémon is filtered out', async ({ page, state }) => {
+	const label = state.caughtEntryLabel;
+	if (!label) throw new Error('No caught entry was recorded before filtering');
+	// That specific entry is excluded...
+	await expect(page.getByRole('button', { name: label, exact: true })).toHaveAttribute(
+		'aria-disabled',
+		'true'
+	);
+	// ...and the filter did not simply exclude everything.
+	await expect(
+		page
+			.getByRole('button', { name: /^View details for / })
+			.and(page.locator('[aria-disabled="false"]'))
+			.first()
+	).toBeVisible();
 });
 
 Then('the {string} box layout remains selected', async ({ page }, layout: string) => {

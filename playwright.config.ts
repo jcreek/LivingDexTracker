@@ -25,6 +25,7 @@ import { nodeAdapter } from './adapter.mjs';
  */
 export default defineConfig({
 	testDir,
+	globalTeardown: './tests/bdd/globalTeardown.ts',
 	/* Folder for test artifacts such as screenshots, videos, traces, etc. */
 	outputDir: 'test-results/',
 	timeout: 90 * 1000,

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { getOptionalUserId, requireAuth } from '../../src/lib/utils/auth';
+import { getOptionalUserId, requireAuth } from '$lib/utils/auth';
 
 function eventReturning(value: unknown) {
 	return { locals: { safeGetSession: vi.fn(async () => value) } } as never;

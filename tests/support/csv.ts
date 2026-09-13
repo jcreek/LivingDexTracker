@@ -56,6 +56,13 @@ export function readRepoCsv(relativePath: string): CsvRow[] {
 	return parseCsv(readFileSync(resolve(process.cwd(), relativePath), 'utf8'));
 }
 
+/**
+ * Typographic and straight apostrophes are the same identity here (Farfetch'd, Sirfetch'd), so
+ * the comparison absorbs the difference rather than forcing every data file to agree on one
+ * code point.
+ */
 export function normalizedIdentity(...parts: Array<string | null | undefined>): string {
-	return parts.map((part) => (part ?? '').trim().toLocaleLowerCase('en-GB')).join('|');
+	return parts
+		.map((part) => (part ?? '').trim().replace(/[‘’ʼ]/g, "'").toLocaleLowerCase('en-GB'))
+		.join('|');
 }

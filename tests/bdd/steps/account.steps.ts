@@ -28,11 +28,19 @@ Given('I am signed in', async ({ page, state }) => {
 	await expect(page).toHaveURL(/\/my-pokedexes$/);
 });
 
-Given('I am on the password reset page with a recovery session', async ({ page, state }) => {
+/**
+ * Deliberately an ordinary signed-in session, not a recovery one: following a real recovery
+ * action link currently bounces to /signin, because the browser client in src/routes/+layout.ts
+ * has no cookie `set`/`remove` method and so cannot persist the session it parses out of the
+ * URL. Until that is fixed, these scenarios cover the form, not the emailed-link flow - hence
+ * the step name. `createRecoveryLink` in ../support/app.ts is ready for when it is.
+ */
+Given('I am signed in on the password reset page', async ({ page, state }) => {
 	await createConfirmedUser(state);
 	await signIn(page, state);
 	await expect(page).toHaveURL(/\/my-pokedexes$/);
 	await page.goto('/reset-password');
+	await expect(page.getByLabel('New Password')).toBeVisible();
 });
 
 When('I register with valid account details', async ({ page, state }) => {
