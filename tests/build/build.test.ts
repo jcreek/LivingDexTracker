@@ -29,7 +29,9 @@ describe(`test-build: ${nodeAdapter ? 'node' : 'static'} adapter`, () => {
 			match && match.length === 1,
 			'missing manifest.webmanifest in sw precache manifest'
 		).toBeTruthy();
-		match = swContent.match(/"url":\s*"(?:\/|index\.html)"/);
+		// The generateSW manifest is emitted as JSON ("url": "/"), while prompt-sw.ts's own
+		// `precache([{ url: '/' }])` survives minification as an unquoted key (url:"/").
+		match = swContent.match(/"?url"?:\s*"(?:\/|index\.html)"/);
 		expect(
 			match && match.length === 1,
 			'missing offline entry point in sw precache manifest'

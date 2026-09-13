@@ -51,6 +51,11 @@ export default defineConfig({
 			workbox: {
 				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
 				globIgnores: ['**/sprites/**', '**/sprites-small/**'],
+				// No route is prerendered, so globbing finds no HTML document and a generateSW
+				// build would precache nothing navigable - i.e. no offline support at all.
+				// prompt-sw.ts does the equivalent with `precache([{ url: '/' }])`.
+				additionalManifestEntries: [{ url: '/', revision: null }],
+				navigateFallback: '/',
 				runtimeCaching: [
 					{
 						urlPattern: ({ request }) => request.destination === 'image',
