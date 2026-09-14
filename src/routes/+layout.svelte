@@ -123,13 +123,6 @@
 		name="description"
 		content="A free and open source web app to track completion of a living Pokédex, which works offline."
 	/> -->
-	<meta property="og:title" content="Living Dex Tracker - A free Pokédex completion tool" />
-	<meta property="og:url" content="https://pokedex.jcreek.co.uk" />
-	<meta
-		property="og:description"
-		content="A free and open source web app to track completion of a living Pokédex, which works offline."
-	/>
-	<link rel="canonical" href="https://pokedex.jcreek.co.uk" />
 	<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 	<!-- <link rel="apple-touch-icon" href="%sveltekit.assets%/apple-touch-icon.png" /> -->
 </svelte:head>

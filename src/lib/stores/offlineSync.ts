@@ -158,6 +158,8 @@ export function startOfflineSync(getUserId: () => string | null): () => void {
 		}, 1_000);
 	};
 
+	// Best effort: ask the browser not to evict the offline artwork cache under storage pressure.
+	void navigator.storage?.persist?.().catch(() => undefined);
 	window.addEventListener(SYNC_EVENT, schedule);
 	window.addEventListener('online', schedule);
 	schedule();

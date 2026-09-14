@@ -10,6 +10,7 @@ class PokedexRepository {
 	private transform(db: PokedexDB, dexScopes: string[] = []): Pokedex {
 		return {
 			_id: db.id,
+			shareToken: db.shareToken,
 			userId: db.userId,
 			name: db.name,
 			description: db.description || '',

@@ -67,16 +67,19 @@ When('I go offline and reload the sign-in page', async ({ page }) => {
 
 Given('my offline copy is synchronized', async ({ page, state }) => {
 	await waitForServiceWorker(page);
+	// A full Living Dex snapshot plus its artwork can take longer than the default poll window on CI.
 	await expect
-		.poll(() =>
-			page.evaluate(async (userId) => {
-				const meta = await (
-					await caches.open('livingdex-offline-meta-v1')
-				).match('/__offline/current');
-				if (!meta) return false;
-				const value = await meta.json();
-				return value.userId === userId;
-			}, state.userId)
+		.poll(
+			() =>
+				page.evaluate(async (userId) => {
+					const meta = await (
+						await caches.open('livingdex-offline-meta-v1')
+					).match('/__offline/current');
+					if (!meta) return false;
+					const value = await meta.json();
+					return value.userId === userId;
+				}, state.userId),
+			{ timeout: 30_000 }
 		)
 		.toBe(true);
 	const serializedSnapshot = await page.evaluate(async () => {

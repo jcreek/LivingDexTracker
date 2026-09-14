@@ -1,6 +1,7 @@
 const OFFLINE_CACHE_PREFIX = 'livingdex-offline-';
 const OFFLINE_META_CACHE = `${OFFLINE_CACHE_PREFIX}meta-v1`;
 const OFFLINE_META_URL = '/__offline/current';
+const ARTWORK_FETCH_TIMEOUT_MS = 15_000;
 let offlineEpoch = 0;
 let offlineOperation = Promise.resolve();
 let claimedUserId = null;
@@ -15,8 +16,15 @@ function dataCacheName(userId, generation) {
 	return `${OFFLINE_CACHE_PREFIX}data-v1-${userId}-${generation}`;
 }
 
-function artworkCacheName(userId, generation) {
-	return `${OFFLINE_CACHE_PREFIX}art-v1-${userId}-${generation}`;
+// Sprites never change at a given URL, so each user keeps one artwork cache that is topped up
+// incrementally instead of being rebuilt on every sync.
+function artworkCacheName(userId) {
+	return `${OFFLINE_CACHE_PREFIX}art-v2-${userId}`;
+}
+
+// Covers both the local `/sprites-small/...` folder and the GitHub-hosted copy of it.
+function isSpriteUrl(url) {
+	return /\/sprites(-small)?\//.test(url.pathname) && url.pathname.endsWith('.webp');
 }
 
 async function currentOfflineMeta() {
@@ -38,22 +46,39 @@ async function notifyOfflineDataCleared() {
 	for (const client of windows) client.postMessage({ type: 'OFFLINE_DATA_CLEARED' });
 }
 
-async function cacheArtwork(cache, urls) {
+async function cacheArtwork(cache, urls, isCurrent) {
+	const wanted = new Set(urls.map((url) => new URL(url, self.location.origin).href));
+	const cachedRequests = await cache.keys();
+	const cached = new Set(cachedRequests.map((request) => request.url));
+	await Promise.all(
+		cachedRequests
+			.filter((request) => !wanted.has(request.url))
+			.map((request) => cache.delete(request))
+	);
+	const missing = [...wanted].filter((url) => !cached.has(url));
+
 	let next = 0;
 	let failed = 0;
-	const workers = Array.from({ length: Math.min(6, urls.length) }, async () => {
+	const workers = Array.from({ length: Math.min(6, missing.length) }, async () => {
 		for (;;) {
 			const index = next++;
-			if (index >= urls.length) return;
-			const url = urls[index];
+			if (index >= missing.length || !isCurrent()) return;
+			const url = missing[index];
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), ARTWORK_FETCH_TIMEOUT_MS);
 			try {
+				// CORS rather than no-cors: opaque responses are padded to several MB each for storage
+				// quota, which a full Living Dex of artwork would exhaust.
 				const response = await fetch(url, {
-					mode: url.startsWith(self.location.origin) ? 'same-origin' : 'no-cors'
+					mode: url.startsWith(self.location.origin) ? 'same-origin' : 'cors',
+					signal: controller.signal
 				});
-				if (!response.ok && response.type !== 'opaque') throw new Error(`HTTP ${response.status}`);
+				if (!response.ok) throw new Error(`HTTP ${response.status}`);
 				await cache.put(url, response);
 			} catch {
 				failed++;
+			} finally {
+				clearTimeout(timeout);
 			}
 		}
 	});
@@ -98,11 +123,12 @@ self.addEventListener('message', (event) => {
 	if (event.data?.type !== 'SYNC_OFFLINE_SNAPSHOT') return;
 	const syncEpoch = offlineEpoch;
 	const syncUserId = claimedUserId;
+	const isCurrent = () => syncEpoch === offlineEpoch;
 
 	event.waitUntil(
 		queueOfflineOperation(async () => {
 			let nextData;
-			let nextArtwork;
+			let committed = false;
 			try {
 				const snapshot = event.data.snapshot;
 				if (!snapshot || snapshot.version !== 1 || typeof snapshot.userId !== 'string') {
@@ -114,6 +140,13 @@ self.addEventListener('message', (event) => {
 				const previousMeta = await currentOfflineMeta();
 				if (previousMeta?.userId && previousMeta.userId !== snapshot.userId)
 					await clearOfflineData();
+				// Per-sync artwork caches of opaque responses could fill the whole storage quota, so drop
+				// them before writing anything new.
+				await Promise.all(
+					(await caches.keys())
+						.filter((name) => name.startsWith(`${OFFLINE_CACHE_PREFIX}art-v1-`))
+						.map((name) => caches.delete(name))
+				);
 
 				const timestamp = String(snapshot.generatedAt).replace(/[^0-9]/g, '');
 				const generation = `${timestamp}-${crypto.randomUUID()}`;
@@ -125,18 +158,12 @@ self.addEventListener('message', (event) => {
 						headers: { 'Content-Type': 'application/json' }
 					})
 				);
-
-				nextArtwork = artworkCacheName(snapshot.userId, generation);
-				const artworkCache = await caches.open(nextArtwork);
-				const failedArtwork = await cacheArtwork(
-					artworkCache,
-					Array.from(new Set(event.data.artworkUrls ?? []))
-				);
-				if (syncEpoch !== offlineEpoch) {
-					await Promise.all([caches.delete(nextData), caches.delete(nextArtwork)]);
+				if (!isCurrent())
 					throw new Error('Offline synchronization was superseded by an account change');
-				}
 
+				// Commit the collection before any artwork so a slow or failing sprite download can never
+				// prevent the offline copy from being saved.
+				const artworkCache = artworkCacheName(snapshot.userId);
 				const metaCache = await caches.open(OFFLINE_META_CACHE);
 				await metaCache.put(
 					OFFLINE_META_URL,
@@ -145,40 +172,41 @@ self.addEventListener('message', (event) => {
 							userId: snapshot.userId,
 							generatedAt: snapshot.generatedAt,
 							dataCache: nextData,
-							artworkCache: nextArtwork
+							artworkCache
 						}),
 						{
 							headers: { 'Content-Type': 'application/json' }
 						}
 					)
 				);
-				if (syncEpoch !== offlineEpoch) {
+				if (!isCurrent()) {
 					const current = await currentOfflineMeta();
 					if (current?.dataCache === nextData) await metaCache.delete(OFFLINE_META_URL);
-					await Promise.all([caches.delete(nextData), caches.delete(nextArtwork)]);
 					throw new Error('Offline synchronization was superseded by an account change');
 				}
-				if (previousMeta?.artworkCache && previousMeta.artworkCache !== nextArtwork) {
-					await caches.delete(previousMeta.artworkCache);
-				}
-				if (previousMeta?.dataCache && previousMeta.dataCache !== nextData) {
-					await caches.delete(previousMeta.dataCache);
-				}
+				committed = true;
+
 				const currentCaches = await caches.keys();
 				await Promise.all(
 					currentCaches
 						.filter(
 							(name) =>
 								name.startsWith(OFFLINE_CACHE_PREFIX) &&
-								![OFFLINE_META_CACHE, nextData, nextArtwork].includes(name)
+								![OFFLINE_META_CACHE, nextData, artworkCache].includes(name)
 						)
 						.map((name) => caches.delete(name))
 				);
+
+				const failedArtwork = await cacheArtwork(
+					await caches.open(artworkCache),
+					Array.from(new Set(event.data.artworkUrls ?? [])),
+					isCurrent
+				);
+				if (!isCurrent())
+					throw new Error('Offline synchronization was superseded by an account change');
 				reply({ ok: true, failedArtwork });
 			} catch (error) {
-				await Promise.allSettled(
-					[nextData, nextArtwork].filter(Boolean).map((name) => caches.delete(name))
-				);
+				if (!committed && nextData) await caches.delete(nextData).catch(() => undefined);
 				reply({ ok: false, error: error instanceof Error ? error.message : String(error) });
 			}
 		})
@@ -203,15 +231,22 @@ self.addEventListener('fetch', (event) => {
 	event.respondWith(
 		(async () => {
 			const meta = await currentOfflineMeta();
-			if (meta?.artworkCache) {
-				const cached = await (
-					await caches.open(meta.artworkCache)
-				).match(event.request, {
-					ignoreSearch: true
+			if (!meta?.artworkCache) return fetch(event.request);
+			const cache = await caches.open(meta.artworkCache);
+			const cached = await cache.match(event.request, { ignoreSearch: true });
+			if (cached) return cached;
+			if (!isSpriteUrl(url)) return fetch(event.request);
+			// Cache-first with fill-on-miss: a sprite shown online is stored once and served from the
+			// cache from then on, so the bulk sync never has to download it again.
+			try {
+				const response = await fetch(url.href, {
+					mode: url.origin === self.location.origin ? 'same-origin' : 'cors'
 				});
-				if (cached) return cached;
+				if (response.ok) event.waitUntil(cache.put(url.href, response.clone()));
+				return response;
+			} catch {
+				return fetch(event.request);
 			}
-			return fetch(event.request);
 		})()
 	);
 });

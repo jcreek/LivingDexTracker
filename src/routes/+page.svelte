@@ -62,6 +62,14 @@
 		name="description"
 		content="A free, open source tool to track your Living Pokédex progress. Join thousands of trainers worldwide in completing their collection."
 	/>
+	<link rel="canonical" href="https://pokedex.jcreek.co.uk" />
+	<meta property="og:type" content="website" />
+	<meta property="og:title" content="Living Dex Tracker - A free Pokédex completion tool" />
+	<meta property="og:url" content="https://pokedex.jcreek.co.uk" />
+	<meta
+		property="og:description"
+		content="A free and open source web app to track completion of a living Pokédex, which works offline."
+	/>
 </svelte:head>
 
 {#if isCheckingSession}

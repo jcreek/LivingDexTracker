@@ -83,6 +83,10 @@ jobs:
   bdd:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    # Serve the committed sprites so offline sync doesn't download every Living Dex sprite from
+    # GitHub on each run.
+    env:
+      PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER: 'true'
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
