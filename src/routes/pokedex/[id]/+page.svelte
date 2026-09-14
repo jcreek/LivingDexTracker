@@ -502,8 +502,35 @@
 		});
 	}
 
-	// Fetch data whenever pagination controls change (client-side only)
-	$: if (browser && pokedexId) getData({ page: currentPage, perPage: itemsPerPage });
+	// Show data whenever the dex or pagination changes (client-side only). The first page is streamed
+	// from the server load, so it only needs fetching when that failed or the page changes.
+	let shownKey = '';
+	function showPage(
+		id: string,
+		page: number,
+		perPage: number,
+		initial: Promise<CombinedData[] | null> | undefined
+	) {
+		const key = `${id}:${page}:${perPage}`;
+		if (key === shownKey) return;
+		shownKey = key;
+		if (page !== 1 || !initial) {
+			void getData({ page, perPage });
+			return;
+		}
+		combinedData = null;
+		void initial.then((rows) => {
+			if (shownKey !== key) return;
+			if (!rows) {
+				void getData({ page, perPage });
+				return;
+			}
+			combinedData = rows;
+			boxNumbers = calculateBoxNumbers(rows.length);
+		});
+	}
+	$: if (browser && pokedexId)
+		showPage(pokedexId, currentPage, itemsPerPage, data?.initialCombinedData);
 
 	onMount(() => {
 		if (!browser) return;

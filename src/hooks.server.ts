@@ -1,6 +1,7 @@
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { createServerClient } from '@supabase/ssr';
 import type { Handle } from '@sveltejs/kit';
+import { compressResponse } from '$lib/server/compression';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.supabase = createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
@@ -24,24 +25,31 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * doesn't validate the JWT, this function validates the JWT by first calling
 	 * `getUser` and aborts early if the JWT signature is invalid.
 	 */
-	event.locals.safeGetSession = async () => {
-		const {
-			data: { user },
-			error
-		} = await event.locals.supabase.auth.getUser();
-		if (error) {
-			return { session: null, user: null };
-		}
+	// getUser is a network round trip to Supabase Auth. Layout and page loads (and API routes) all
+	// ask for the session, so validate once per request and share the result.
+	let sessionPromise: ReturnType<App.Locals['safeGetSession']> | null = null;
+	event.locals.safeGetSession = () => {
+		sessionPromise ??= (async () => {
+			const {
+				data: { user },
+				error
+			} = await event.locals.supabase.auth.getUser();
+			if (error) {
+				return { session: null, user: null };
+			}
 
-		const {
-			data: { session }
-		} = await event.locals.supabase.auth.getSession();
-		return { session, user };
+			const {
+				data: { session }
+			} = await event.locals.supabase.auth.getSession();
+			return { session, user };
+		})();
+		return sessionPromise;
 	};
 
-	return resolve(event, {
+	const response = await resolve(event, {
 		filterSerializedResponseHeaders(name) {
 			return name === 'content-range';
 		}
 	});
+	return compressResponse(event.request, response);
 };

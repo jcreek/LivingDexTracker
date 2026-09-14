@@ -1,5 +1,7 @@
 <script lang="ts">
-	import 'tailwindcss/tailwind.css';
+	// The only app stylesheet: Vite bundles, minifies and content-hashes it so it is cached for good.
+	// static/output.css is built separately for the credential-free offline.html page only.
+	import '../app.css';
 	import { onDestroy, onMount } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
@@ -180,7 +182,7 @@
 					{#if localUser}
 						<div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
 							<div class="w-10 rounded-full">
-								<img alt="usericon" src="/OIG5.jpg" />
+								<img alt="Account menu" src="/avatar.webp" width="40" height="40" />
 							</div>
 						</div>
 						<ul
@@ -247,8 +249,14 @@
 
 	<footer class="footer items-center p-4 bg-neutral text-neutral-content bottom-0">
 		<aside class="items-center grid-flow-col">
-			<a href="https://github.com/jcreek/LivingDexTracker" target="_blank">
+			<a
+				href="https://github.com/jcreek/LivingDexTracker"
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="Living Dex Tracker on GitHub"
+			>
 				<svg
+					aria-hidden="true"
 					width="36"
 					height="36"
 					fill-rule="evenodd"
@@ -269,8 +277,13 @@
 			</p>
 		</aside>
 		<nav class="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
-			<a href="https://discord.gg/SQcJkaXDye" target="_blank"
+			<a
+				href="https://discord.gg/SQcJkaXDye"
+				target="_blank"
+				rel="noopener noreferrer"
+				aria-label="Living Dex Tracker Discord community"
 				><svg
+					aria-hidden="true"
 					xmlns="http://www.w3.org/2000/svg"
 					width="24"
 					height="24"

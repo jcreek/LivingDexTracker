@@ -15,6 +15,10 @@
 
 <svelte:head>
 	<title>Using Offline - Living Dex Tracker</title>
+	<meta
+		name="description"
+		content="How Living Dex Tracker keeps your Pokédexes and artwork available offline, and how to save everything before you lose signal."
+	/>
 </svelte:head>
 
 <div class="container mx-auto p-4 max-w-screen-lg">

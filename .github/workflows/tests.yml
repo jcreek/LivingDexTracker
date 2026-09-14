@@ -80,6 +80,37 @@ jobs:
       - run: npm ci
       - run: npm run test:build
 
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        form-factor: [mobile, desktop]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # The homepage streams public stats from the database, so audit against a real stack.
+      - run: npx supabase start
+      - run: npm run test:lighthouse
+        # Not LHCI_*: lhci reads any LHCI_ variable as a CLI flag (LHCI_PRESET became `--preset`).
+        env:
+          LIGHTHOUSE_FORM_FACTOR: ${{ matrix.form-factor }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: lighthouse-${{ matrix.form-factor }}
+          path: .lighthouseci/
+          # upload-artifact v4+ skips dot-directories unless told otherwise.
+          include-hidden-files: true
+          if-no-files-found: ignore
+      - if: always()
+        run: npx supabase stop
+
   bdd:
     runs-on: ubuntu-latest
     timeout-minutes: 30
