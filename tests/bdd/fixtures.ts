@@ -12,6 +12,7 @@ export type ScenarioState = {
 	lastMessage: string | null;
 	caughtEntryLabel: string | null;
 	legacyServiceWorkerRequested: boolean;
+	shareUrl: string | null;
 };
 
 type Fixtures = { state: ScenarioState; providerMock: void };
@@ -53,7 +54,8 @@ export const test = base.extend<Fixtures>({
 			lastResponseStatus: null,
 			lastMessage: null,
 			caughtEntryLabel: null,
-			legacyServiceWorkerRequested: false
+			legacyServiceWorkerRequested: false,
+			shareUrl: null
 		});
 	}
 });
