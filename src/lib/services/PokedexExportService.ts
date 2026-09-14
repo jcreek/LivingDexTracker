@@ -435,17 +435,24 @@ export async function exportPokedexIfConfigured(
 			successes++;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			// A revoked grant never succeeds on retry, so pause this integration until the user reconnects.
-			const reconnectRequired = error instanceof ReconnectRequiredError;
+			let reconnectRequired = false;
+			if (error instanceof ReconnectRequiredError) {
+				// A revoked grant never succeeds on retry, so pause this integration until the user
+				// reconnects - but only if its row is unchanged since this export read it. A reconnect
+				// in the meantime saved new credentials, which this stale failure must not disable.
+				reconnectRequired = await scopedRepo.updateExportStatus(
+					integration._id,
+					{ lastError: message, enabled: false },
+					integration.updatedAt ?? undefined
+				);
+			} else {
+				await scopedRepo.updateExportStatus(integration._id, { lastError: message });
+			}
 			failures.push({
 				integrationId: integration._id,
 				provider: integration.provider,
 				error: message,
 				reconnectRequired
-			});
-			await scopedRepo.updateExportStatus(integration._id, {
-				lastError: message,
-				...(reconnectRequired ? { enabled: false } : {})
 			});
 			console.error('Failed to export pokedex:', integration.provider, message);
 		}

@@ -15,6 +15,8 @@ export interface PokedexExportIntegration {
 	metadata: Record<string, unknown> | null;
 	lastExportedAt: string | null;
 	lastError: string | null;
+	/** Set by a database trigger on every write, so it doubles as the row's version. */
+	updatedAt: string | null;
 }
 
 export interface PokedexExportIntegrationDB {
@@ -32,4 +34,5 @@ export interface PokedexExportIntegrationDB {
 	metadata: Record<string, unknown> | null;
 	lastExportedAt: string | null;
 	lastError: string | null;
+	updatedAt: string | null;
 }

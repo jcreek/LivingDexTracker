@@ -30,7 +30,8 @@ class PokedexExportIntegrationRepository {
 			accessTokenExpiresAt: db.accessTokenExpiresAt,
 			metadata: db.metadata,
 			lastExportedAt: db.lastExportedAt,
-			lastError: db.lastError
+			lastError: db.lastError,
+			updatedAt: db.updatedAt ?? null
 		};
 	}
 
@@ -136,6 +137,10 @@ class PokedexExportIntegrationRepository {
 		}
 	}
 
+	/**
+	 * Returns whether a row was updated. With `ifUpdatedAt`, the write only applies if the row is
+	 * unchanged since it was read, so a stale export can't overwrite credentials a reconnect saved.
+	 */
 	async updateExportStatus(
 		id: string,
 		patch: {
@@ -145,20 +150,25 @@ class PokedexExportIntegrationRepository {
 			metadata?: Record<string, unknown> | null;
 			folderId?: string | null;
 			path?: string | null;
-		}
-	): Promise<void> {
-		const query = this.supabase
+		},
+		ifUpdatedAt?: string
+	): Promise<boolean> {
+		let query = this.supabase
 			.from('pokedex_export_integrations')
 			.update(patch)
 			.eq('id', id)
 			.eq('userId', this.userId);
-		const { error } = this.pokedexId
-			? await query.eq('pokedexId', this.pokedexId)
-			: await query.is('pokedexId', null);
+		if (ifUpdatedAt) query = query.eq('updatedAt', ifUpdatedAt);
+		const scoped = this.pokedexId
+			? query.eq('pokedexId', this.pokedexId)
+			: query.is('pokedexId', null);
+		const { data, error } = await scoped.select('id');
 
 		if (error) {
 			console.error('Failed to update export integration status:', error);
+			return false;
 		}
+		return (data?.length ?? 0) > 0;
 	}
 }
 

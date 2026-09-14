@@ -104,6 +104,64 @@ describe('refreshBackupStatus', () => {
 		expect(get(backupsNeedingReconnect)).toEqual(['google_drive']);
 	});
 
+	function deferredResponse() {
+		let resolve!: (response: Response) => void;
+		const promise = new Promise<Response>((r) => (resolve = r));
+		return { promise, resolve };
+	}
+
+	const json = (body: unknown) => new Response(JSON.stringify(body));
+
+	it('ignores a response overtaken by a newer refresh', async () => {
+		const slow = deferredResponse();
+		fetchMock
+			.mockReturnValueOnce(slow.promise)
+			.mockResolvedValueOnce(json([{ provider: 'google_drive', enabled: true }]));
+
+		const first = refreshBackupStatus();
+		await refreshBackupStatus();
+		slow.resolve(json([{ provider: 'google_drive', enabled: false }]));
+		await first;
+
+		expect(get(backupsNeedingReconnect)).toEqual([]);
+	});
+
+	it('ignores a response that arrives after the status was flagged directly', async () => {
+		const slow = deferredResponse();
+		fetchMock.mockReturnValueOnce(slow.promise);
+
+		const pending = refreshBackupStatus();
+		markReconnectNeeded(['dropbox']);
+		slow.resolve(json([{ provider: 'dropbox', enabled: true }]));
+		await pending;
+
+		expect(get(backupsNeedingReconnect)).toEqual(['dropbox']);
+	});
+
+	it('ignores a response that arrives after the status was cleared', async () => {
+		const slow = deferredResponse();
+		fetchMock.mockReturnValueOnce(slow.promise);
+
+		const pending = refreshBackupStatus();
+		clearBackupStatus();
+		slow.resolve(json([{ provider: 'google_drive', enabled: false }]));
+		await pending;
+
+		expect(get(backupsNeedingReconnect)).toEqual([]);
+	});
+
+	it('ignores a response that arrives after the status was set from another source', async () => {
+		const slow = deferredResponse();
+		fetchMock.mockReturnValueOnce(slow.promise);
+
+		const pending = refreshBackupStatus();
+		setBackupStatus([{ provider: 'google_drive', enabled: true }]);
+		slow.resolve(json([{ provider: 'google_drive', enabled: false }]));
+		await pending;
+
+		expect(get(backupsNeedingReconnect)).toEqual([]);
+	});
+
 	it('keeps the last known status when the request fails', async () => {
 		const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
 		markReconnectNeeded(['dropbox']);

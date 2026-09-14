@@ -35,6 +35,8 @@ import { exportPokedexIfConfigured } from '$lib/services/PokedexExportService';
 const supabase = {} as SupabaseClient;
 const EXPIRED = () => new Date(Date.now() - 60_000).toISOString();
 const FRESH = () => new Date(Date.now() + 3_600_000).toISOString();
+/** The row version an export read; a guarded write only applies while it still matches. */
+const VERSION = '2026-09-14T12:00:00.123456+00:00';
 
 function integration(overrides: Partial<PokedexExportIntegration> = {}): PokedexExportIntegration {
 	return {
@@ -53,6 +55,7 @@ function integration(overrides: Partial<PokedexExportIntegration> = {}): Pokedex
 		metadata: null,
 		lastExportedAt: null,
 		lastError: null,
+		updatedAt: VERSION,
 		...overrides
 	};
 }
@@ -105,6 +108,8 @@ beforeEach(() => {
 	mocks.pokedex = DEX;
 	mocks.integrations = [];
 	mocks.updateExportStatus.mockReset();
+	// The repository reports whether a row was written; by default every write applies.
+	mocks.updateExportStatus.mockResolvedValue(true);
 	mocks.updateTokens.mockReset();
 	fetchMock.mockReset();
 	vi.stubGlobal('fetch', fetchMock);
@@ -138,10 +143,11 @@ describe('exportPokedexIfConfigured when a provider revokes access', () => {
 				reconnectRequired: true
 			}
 		]);
-		expect(mocks.updateExportStatus).toHaveBeenCalledWith(id, {
-			lastError: expect.stringMatching(message),
-			enabled: false
-		});
+		expect(mocks.updateExportStatus).toHaveBeenCalledWith(
+			id,
+			{ lastError: expect.stringMatching(message), enabled: false },
+			VERSION
+		);
 		expect(uploadCalls()).toHaveLength(0);
 		expect(mocks.updateTokens).not.toHaveBeenCalled();
 	});
@@ -152,11 +158,30 @@ describe('exportPokedexIfConfigured when a provider revokes access', () => {
 		const result = await exportPokedexIfConfigured(supabase, 'user-1', 'dex-1');
 
 		expect(result.failed[0]).toMatchObject({ reconnectRequired: true });
-		expect(mocks.updateExportStatus).toHaveBeenCalledWith('google-1', {
-			lastError: expect.stringMatching(/Reconnect Google Drive/),
-			enabled: false
-		});
+		expect(mocks.updateExportStatus).toHaveBeenCalledWith(
+			'google-1',
+			{ lastError: expect.stringMatching(/Reconnect Google Drive/), enabled: false },
+			VERSION
+		);
 		expect(fetchMock).not.toHaveBeenCalled();
+	});
+
+	it('leaves a backup reconnected during the export enabled and unflagged', async () => {
+		mocks.integrations = [integration()];
+		stubProvider(REVOKED);
+		// The guarded pause matches no row: a reconnect changed it after this export read it.
+		mocks.updateExportStatus.mockResolvedValue(false);
+
+		const result = await exportPokedexIfConfigured(supabase, 'user-1', 'dex-1');
+
+		expect(mocks.updateExportStatus).toHaveBeenCalledTimes(1);
+		expect(mocks.updateExportStatus).toHaveBeenCalledWith(
+			'google-1',
+			{ lastError: expect.stringMatching(/Reconnect Google Drive/), enabled: false },
+			VERSION
+		);
+		// The client must not tell the user to reconnect a connection that is already fresh.
+		expect(result.failed[0]).toMatchObject({ reconnectRequired: false });
 	});
 
 	it.each([
