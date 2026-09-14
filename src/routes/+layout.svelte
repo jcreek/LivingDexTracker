@@ -7,8 +7,9 @@
 	import SignOut from '$lib/components/SignOut.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
 	import {
+		artworkDownloadStatus,
 		claimOfflineData,
-		clearOfflineData,
+		downloadAllArtwork,
 		offlineSyncStatus,
 		requestOfflineSync,
 		startOfflineSync
@@ -65,14 +66,21 @@
 		const {
 			data: { subscription }
 		} = supabase.auth.onAuthStateChange((event, session) => {
+			const previousUserId = localUser?.id ?? null;
 			if (session) {
 				localUser = session.user;
-				void claimOfflineData(session.user.id)
-					.then(requestOfflineSync)
-					.catch((error) => console.error('Unable to claim offline data', error));
+				// SIGNED_IN also fires when a tab regains focus, so only a change of account fetches a new
+				// offline copy. Page loads and token refreshes reuse the saved one while it is fresh.
+				if (event === 'SIGNED_IN' && session.user.id !== previousUserId) {
+					void claimOfflineData(session.user.id)
+						.then(requestOfflineSync)
+						.catch((error) => console.error('Unable to claim offline data', error));
+				}
 			} else {
+				// Offline data is only cleared by the Sign Out button (or another account claiming it).
+				// An expired or rejected session must not throw away artwork that would then have to be
+				// downloaded again after signing back in.
 				localUser = null;
-				if (event === 'SIGNED_OUT') void clearOfflineData();
 			}
 			user.set(localUser);
 		});
@@ -89,6 +97,11 @@
 			document.documentElement.classList.remove('offline-readonly');
 		};
 	});
+
+	function formatMegabytes(bytes: number) {
+		const megabytes = bytes / 1048576;
+		return megabytes < 1 ? '<1 MB' : `≈${Math.round(megabytes)} MB`;
+	}
 
 	async function getUser() {
 		const {
@@ -214,10 +227,12 @@
 			<span>Offline copy could not be refreshed: {$offlineSyncStatus.message}</span>
 			<button class="btn btn-sm" on:click={requestOfflineSync}>Retry</button>
 		</div>
-	{:else if localUser && $offlineSyncStatus.state === 'partial'}
+	{:else if localUser && $artworkDownloadStatus.state === 'error'}
 		<div class="alert alert-warning rounded-none" role="status">
-			<span>Offline data is saved, but {$offlineSyncStatus.message}.</span>
-			<button class="btn btn-sm" on:click={requestOfflineSync}>Retry</button>
+			<span
+				>Offline data is saved, but artwork could not be saved: {$artworkDownloadStatus.message}.</span
+			>
+			<button class="btn btn-sm" on:click={downloadAllArtwork}>Retry</button>
 		</div>
 	{/if}
 	{#if isOnline && localUser && $offlineSyncStatus.state === 'syncing'}
@@ -225,6 +240,15 @@
 	{:else if isOnline && localUser && $offlineSyncStatus.generatedAt}
 		<p class="bg-base-200 px-4 py-1 text-center text-xs" role="status">
 			Offline copy updated {new Date($offlineSyncStatus.generatedAt).toLocaleString()}.
+			{#if $artworkDownloadStatus.state === 'downloading'}
+				Saving all artwork for offline…
+			{:else if $artworkDownloadStatus.state === 'missing'}
+				<button class="link" on:click={downloadAllArtwork}>
+					Save all artwork for offline{#if $artworkDownloadStatus.missingBytes}{' '}({formatMegabytes(
+							$artworkDownloadStatus.missingBytes
+						)}){/if}
+				</button>
+			{/if}
 		</p>
 	{/if}
 
