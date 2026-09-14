@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { setBackupStatus } from '$lib/stores/backupStatus';
 
 	type ExportIntegrationSummary = {
 		id: string;
@@ -40,6 +41,8 @@
 			exportIntegrations = (await response.json()) as ExportIntegrationSummary[];
 			googleIntegration = exportIntegrations.find((i) => i.provider === 'google_drive');
 			dropboxIntegration = exportIntegrations.find((i) => i.provider === 'dropbox');
+			// Keeps the sitewide banner in step, e.g. clearing it after the OAuth flow returns here.
+			setBackupStatus(exportIntegrations);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			exportError = message || 'Failed to load export settings';
@@ -47,6 +50,16 @@
 			exportLoading = false;
 		}
 	}
+
+	function statusBadge(integration: ExportIntegrationSummary | undefined) {
+		if (!integration) return { label: 'Not Connected', className: 'badge-ghost' };
+		// Exports switch an integration off when the provider revokes its access.
+		if (!integration.enabled) return { label: 'Reconnect needed', className: 'badge-warning' };
+		return { label: 'Connected', className: 'badge-success' };
+	}
+
+	$: googleBadge = statusBadge(googleIntegration);
+	$: dropboxBadge = statusBadge(dropboxIntegration);
 
 	function getGoogleFolderUrl(folderId: string): string {
 		return `https://drive.google.com/drive/folders/${folderId}`;
@@ -106,13 +119,14 @@
 				<div class="border border-base-300 rounded-lg p-4 bg-base-100">
 					<div class="flex items-center justify-between">
 						<h2 class="font-semibold">Google Drive</h2>
-						<span class={`badge ${googleIntegration ? 'badge-success' : 'badge-ghost'}`}>
-							{googleIntegration ? 'Connected' : 'Not Connected'}
-						</span>
+						<span class={`badge ${googleBadge.className}`}>{googleBadge.label}</span>
 					</div>
 					<div class="mt-3 space-y-2">
 						<div class="flex items-center justify-end gap-2">
-							<button class="btn btn-sm btn-outline" on:click={connectGoogleDrive}>
+							<button
+								class={`btn btn-sm ${googleIntegration?.enabled === false ? 'btn-primary' : 'btn-outline'}`}
+								on:click={connectGoogleDrive}
+							>
 								{googleIntegration ? 'Reconnect' : 'Connect'}
 							</button>
 						</div>
@@ -142,13 +156,14 @@
 				<div class="border border-base-300 rounded-lg p-4 bg-base-100">
 					<div class="flex items-center justify-between">
 						<h2 class="font-semibold">Dropbox</h2>
-						<span class={`badge ${dropboxIntegration ? 'badge-success' : 'badge-ghost'}`}>
-							{dropboxIntegration ? 'Connected' : 'Not Connected'}
-						</span>
+						<span class={`badge ${dropboxBadge.className}`}>{dropboxBadge.label}</span>
 					</div>
 					<div class="mt-3 space-y-2">
 						<div class="flex items-center justify-end gap-2">
-							<button class="btn btn-sm btn-outline" on:click={connectDropbox}>
+							<button
+								class={`btn btn-sm ${dropboxIntegration?.enabled === false ? 'btn-primary' : 'btn-outline'}`}
+								on:click={connectDropbox}
+							>
 								{dropboxIntegration ? 'Reconnect' : 'Connect'}
 							</button>
 						</div>

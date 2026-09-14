@@ -3,7 +3,7 @@
 import { createServer } from 'node:http';
 
 const port = Number(process.env.MOCK_PROVIDER_PORT ?? 4199);
-const state = { requests: [], failUploads: false, refreshes: 0 };
+const state = { requests: [], failUploads: false, revokeRefresh: false, refreshes: 0 };
 
 function send(response, status, body, headers = {}) {
 	response.writeHead(status, { 'Content-Type': 'application/json', ...headers });
@@ -25,11 +25,16 @@ const server = createServer(async (request, response) => {
 	if (url.pathname === '/__mock/reset') {
 		state.requests = [];
 		state.failUploads = false;
+		state.revokeRefresh = false;
 		state.refreshes = 0;
 		return send(response, 200, { ok: true });
 	}
 	if (url.pathname === '/__mock/fail-uploads') {
 		state.failUploads = true;
+		return send(response, 200, { ok: true });
+	}
+	if (url.pathname === '/__mock/revoke-refresh') {
+		state.revokeRefresh = true;
 		return send(response, 200, { ok: true });
 	}
 
@@ -45,7 +50,13 @@ const server = createServer(async (request, response) => {
 	}
 
 	if (url.pathname.endsWith('/token')) {
-		if (body.includes('grant_type=refresh_token')) state.refreshes++;
+		if (body.includes('grant_type=refresh_token')) {
+			state.refreshes++;
+			// Mirrors Google and Dropbox answering a revoked or expired refresh token.
+			if (state.revokeRefresh) {
+				return send(response, 400, { error: 'invalid_grant', error_description: 'Bad Request' });
+			}
+		}
 		return send(response, 200, {
 			access_token: 'mock-access-token',
 			refresh_token: 'mock-refresh-token',

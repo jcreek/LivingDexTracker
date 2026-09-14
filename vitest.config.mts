@@ -22,10 +22,10 @@ export default defineConfig({
 			exclude: ['src/lib/models/**', 'src/lib/stores/**', 'src/lib/actions/**'],
 			// Set to the measured baseline. Ratchet these up as coverage grows; never down.
 			thresholds: {
-				statements: 34.58,
-				functions: 73.68,
-				lines: 34.58,
-				branches: 79.79
+				statements: 53.84,
+				functions: 82.89,
+				lines: 53.84,
+				branches: 86.93
 			}
 		}
 	}

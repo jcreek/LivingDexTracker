@@ -98,7 +98,9 @@ export const GET = async (event: RequestEvent) => {
 				accessToken: tokenData.access_token,
 				refreshToken: tokenData.refresh_token ?? null,
 				accessTokenExpiresAt: expiresAt,
-				metadata: tokenData.scope ? { scope: tokenData.scope } : null
+				metadata: tokenData.scope ? { scope: tokenData.scope } : null,
+				// A reconnect replaces the tokens, so any error from the old ones no longer applies.
+				lastError: null
 			});
 		} catch (saveError) {
 			console.error('Dropbox integration save failed:', saveError);

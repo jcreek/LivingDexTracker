@@ -26,6 +26,20 @@ Feature: Offline-friendly application
     When I go offline and reload the current Pokédex
     Then the offline copy contains "Offline Collection"
 
+  Scenario: Explain offline use on the offline guide
+    Given I am signed in
+    When I open the offline guide
+    Then the offline guide shows my offline copy status
+
+  Scenario: Keep offline sync status off everyday pages
+    Given I am signed in
+    And I have a Living Dex named "Quiet Offline"
+    And my offline copy is synchronized
+    When I open the offline guide from the user menu
+    Then the offline guide shows when my offline copy was updated
+    When I return to my Pokédexes from the user menu
+    Then no offline sync status is shown
+
   Scenario: Restore network access
     Given I have opened the built application online
     When I go offline and then return online

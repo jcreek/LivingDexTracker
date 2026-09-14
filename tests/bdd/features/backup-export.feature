@@ -40,3 +40,29 @@ Feature: Backup and export
     When I update collection progress
     Then the catch remains marked caught
     And the provider failure is shown in backup settings
+    And "Google Drive" is not flagged for reconnection
+
+  Scenario Outline: Warn when a provider's access is revoked
+    Given "<provider>" is connected with a revoked refresh token
+    When I update collection progress
+    Then the Pokédex page tells me to reconnect "<provider>"
+    And I can dismiss the reconnect alert
+    And backup settings asks me to reconnect "<provider>"
+    And other pages warn that my "<provider>" backup has stopped
+    And later exports do not retry the revoked token
+
+    Examples:
+      | provider     |
+      | Google Drive |
+      | Dropbox      |
+
+  Scenario Outline: Reconnecting clears a previous backup error
+    Given "<provider>" previously lost access
+    When I connect the mocked "<provider>" provider
+    Then "<provider>" is shown as connected
+    And the previous backup error is cleared
+
+    Examples:
+      | provider     |
+      | Google Drive |
+      | Dropbox      |

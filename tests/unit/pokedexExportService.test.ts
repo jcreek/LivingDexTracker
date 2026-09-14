@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import {
 	buildCsv,
 	csvEscape,
+	isRevokedGrant,
 	sanitizeFileName,
 	shouldRefreshToken
 } from '$lib/services/PokedexExportFormatting';
@@ -57,6 +58,17 @@ describe('Pokédex export formatting', () => {
 			'25,25,Pikachu,,true,false,true,"Comma, and ""quote"""',
 			'26,26,Raichu,Alolan,false,false,false,'
 		]);
+	});
+
+	it('recognises a revoked or expired refresh token', () => {
+		expect(isRevokedGrant(400, '{"error":"invalid_grant","error_description":"Bad Request"}')).toBe(
+			true
+		);
+		expect(isRevokedGrant(401, '{"error":"invalid_grant"}')).toBe(true);
+		expect(isRevokedGrant(400, '{"error":"invalid_client"}')).toBe(false);
+		expect(isRevokedGrant(500, '{"error":"invalid_grant"}')).toBe(false);
+		expect(isRevokedGrant(400, 'Bad Request')).toBe(false);
+		expect(isRevokedGrant(400, 'null')).toBe(false);
 	});
 
 	it('refreshes only finite expiries within the next minute', () => {

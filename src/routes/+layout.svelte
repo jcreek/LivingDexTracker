@@ -6,14 +6,14 @@
 	import SignIn from '$lib/components/SignIn.svelte';
 	import SignOut from '$lib/components/SignOut.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import { page } from '$app/stores';
+	import { claimOfflineData, requestOfflineSync, startOfflineSync } from '$lib/stores/offlineSync';
 	import {
-		artworkDownloadStatus,
-		claimOfflineData,
-		downloadAllArtwork,
-		offlineSyncStatus,
-		requestOfflineSync,
-		startOfflineSync
-	} from '$lib/stores/offlineSync';
+		PROVIDER_LABELS,
+		backupsNeedingReconnect,
+		clearBackupStatus,
+		refreshBackupStatus
+	} from '$lib/stores/backupStatus';
 
 	import { pwaInfo } from 'virtual:pwa-info';
 	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
@@ -57,7 +57,10 @@
 		updateOnlineState();
 		void getUser()
 			.then(async () => {
-				if (localUser) await claimOfflineData(localUser.id);
+				if (localUser) {
+					void refreshBackupStatus();
+					await claimOfflineData(localUser.id);
+				}
 				stopOfflineSync = startOfflineSync(() => localUser?.id ?? null);
 			})
 			.catch((error) => console.error('Unable to claim offline data', error));
@@ -75,12 +78,14 @@
 					void claimOfflineData(session.user.id)
 						.then(requestOfflineSync)
 						.catch((error) => console.error('Unable to claim offline data', error));
+					void refreshBackupStatus();
 				}
 			} else {
 				// Offline data is only cleared by the Sign Out button (or another account claiming it).
 				// An expired or rejected session must not throw away artwork that would then have to be
 				// downloaded again after signing back in.
 				localUser = null;
+				clearBackupStatus();
 			}
 			user.set(localUser);
 		});
@@ -98,10 +103,7 @@
 		};
 	});
 
-	function formatMegabytes(bytes: number) {
-		const megabytes = bytes / 1048576;
-		return megabytes < 1 ? '<1 MB' : `≈${Math.round(megabytes)} MB`;
-	}
+	$: reconnectLabels = $backupsNeedingReconnect.map((provider) => PROVIDER_LABELS[provider]);
 
 	async function getUser() {
 		const {
@@ -193,6 +195,9 @@
 									<a href="/backup-settings"> Backup Settings </a>
 								</li>
 								<li>
+									<a href="/offline-guide"> Using Offline </a>
+								</li>
+								<li>
 									<SignOut
 										{supabase}
 										on:signedOut={() => {
@@ -222,34 +227,18 @@
 		<div class="alert rounded-none" role="status">
 			<span>Offline read-only mode: saved data remains available, but changes are disabled.</span>
 		</div>
-	{:else if localUser && $offlineSyncStatus.state === 'error'}
-		<div class="alert alert-warning rounded-none" role="status">
-			<span>Offline copy could not be refreshed: {$offlineSyncStatus.message}</span>
-			<button class="btn btn-sm" on:click={requestOfflineSync}>Retry</button>
-		</div>
-	{:else if localUser && $artworkDownloadStatus.state === 'error'}
-		<div class="alert alert-warning rounded-none" role="status">
-			<span
-				>Offline data is saved, but artwork could not be saved: {$artworkDownloadStatus.message}.</span
-			>
-			<button class="btn btn-sm" on:click={downloadAllArtwork}>Retry</button>
-		</div>
 	{/if}
-	{#if isOnline && localUser && $offlineSyncStatus.state === 'syncing'}
-		<p class="bg-base-200 px-4 py-1 text-center text-xs" role="status">Updating offline copy…</p>
-	{:else if isOnline && localUser && $offlineSyncStatus.generatedAt}
-		<p class="bg-base-200 px-4 py-1 text-center text-xs" role="status">
-			Offline copy updated {new Date($offlineSyncStatus.generatedAt).toLocaleString()}.
-			{#if $artworkDownloadStatus.state === 'downloading'}
-				Saving all artwork for offline…
-			{:else if $artworkDownloadStatus.state === 'missing'}
-				<button class="link" on:click={downloadAllArtwork}>
-					Save all artwork for offline{#if $artworkDownloadStatus.missingBytes}{' '}({formatMegabytes(
-							$artworkDownloadStatus.missingBytes
-						)}){/if}
-				</button>
-			{/if}
-		</p>
+	{#if localUser && reconnectLabels.length > 0 && $page.url.pathname !== '/backup-settings'}
+		<div
+			class="alert alert-warning rounded-none"
+			role="alert"
+			data-testid="backup-reconnect-banner"
+		>
+			<span>
+				Your {reconnectLabels.join(' and ')} backup has stopped because access expired or was revoked.
+			</span>
+			<a class="btn btn-sm" href="/backup-settings">Reconnect</a>
+		</div>
 	{/if}
 
 	<main class="flex-grow">

@@ -306,6 +306,7 @@
 						</svg>
 						<h4 class="font-semibold">Works Offline</h4>
 						<p class="text-sm opacity-70">Track your catches even without an internet connection</p>
+						<a href="/offline-guide" class="link link-primary text-sm">How to use offline</a>
 					</div>
 				</div>
 			</div>

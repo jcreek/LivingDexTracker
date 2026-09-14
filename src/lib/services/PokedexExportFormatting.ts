@@ -54,6 +54,17 @@ export function buildCsv(combinedData: CombinedData[]): string {
 	return lines.join('\r\n');
 }
 
+/** OAuth providers answer a revoked or expired refresh token with `invalid_grant`. */
+export function isRevokedGrant(status: number, body: string): boolean {
+	if (status !== 400 && status !== 401) return false;
+	try {
+		const parsed = JSON.parse(body) as { error?: unknown } | null;
+		return parsed?.error === 'invalid_grant';
+	} catch {
+		return false;
+	}
+}
+
 export function shouldRefreshToken(expiresAt: string | null): boolean {
 	if (!expiresAt) return false;
 	const expiry = new Date(expiresAt).getTime();

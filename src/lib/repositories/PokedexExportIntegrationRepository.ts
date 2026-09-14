@@ -139,6 +139,7 @@ class PokedexExportIntegrationRepository {
 	async updateExportStatus(
 		id: string,
 		patch: {
+			enabled?: boolean;
 			lastExportedAt?: string | null;
 			lastError?: string | null;
 			metadata?: Record<string, unknown> | null;
