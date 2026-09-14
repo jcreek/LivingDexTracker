@@ -1,8 +1,10 @@
 // Lighthouse CI: `npm run test:lighthouse` builds the Node adapter output, serves it and audits the
 // public pages. Any category below 90 fails the run (and so the PR).
-// Set LHCI_PRESET=desktop to audit with the desktop profile; the default is Lighthouse's mobile
-// profile (slow 4G + CPU throttling), which is the stricter of the two.
-const preset = process.env.LHCI_PRESET === 'desktop' ? 'desktop' : undefined;
+// Set LIGHTHOUSE_FORM_FACTOR=desktop to audit with the desktop profile; the default is Lighthouse's
+// mobile profile (slow 4G + CPU throttling), which is the stricter of the two. The variable must not
+// start with LHCI_: lhci treats those as CLI flags, so LHCI_PRESET was passed to `lhci assert` as
+// an invalid `--preset`.
+const preset = process.env.LIGHTHOUSE_FORM_FACTOR === 'desktop' ? 'desktop' : undefined;
 
 module.exports = {
 	ci: {

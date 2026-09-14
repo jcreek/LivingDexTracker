@@ -45,7 +45,7 @@ The test suite is split by responsibility so a failure points to the correct lay
 - `lighthouserc.cjs` audits the public pages with Lighthouse CI (`npm run test:lighthouse`, which
   builds and serves the Node output). PRs fail if Performance, Accessibility, Best Practices or SEO
   drops below 90, or if LCP, TBT, CLS, script, stylesheet or total transfer size exceeds its budget.
-  CI runs it with both the mobile and desktop profiles (`LHCI_PRESET=desktop`).
+  CI runs it with both the mobile and desktop profiles (`LIGHTHOUSE_FORM_FACTOR=desktop`).
 - `tests/bdd/features/performance.feature` holds time budgets for signed-in pages Lighthouse can't
   reach: opening a Pokédex and switching between it and the Pokédex list.
 
