@@ -104,6 +104,23 @@ When('I go offline and reload the current Pokédex', async ({ page, state }) => 
 	});
 });
 
+When('I open the offline guide', async ({ page }) => {
+	await page.goto('/offline-guide');
+});
+
+When('I open the offline guide from the user menu', async ({ page }) => {
+	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('link', { name: 'Using Offline' }).click();
+	await page.waitForURL(/\/offline-guide$/);
+});
+
+// Client-side navigation keeps the sync status in memory, so the old layout would show it at once.
+When('I return to my Pokédexes from the user menu', async ({ page }) => {
+	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('link', { name: 'My Pokédexes' }).click();
+	await page.waitForURL(/\/my-pokedexes$/);
+});
+
 When('I go offline and then return online', async ({ page }) => {
 	await page.context().setOffline(true);
 	await page.reload({ waitUntil: 'domcontentloaded' });
@@ -165,6 +182,26 @@ Then('the application shell is precached', async ({ page }) => {
 
 Then('the application remains available', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: /Start Your Pokédex Journey/ })).toBeVisible();
+});
+
+Then('the offline guide shows my offline copy status', async ({ page }) => {
+	await expect(
+		page.getByRole('heading', { name: 'Using Living Dex Tracker offline' })
+	).toBeVisible();
+	await expect(page.getByTestId('offline-copy-status')).toBeVisible();
+});
+
+Then('the offline guide shows when my offline copy was updated', async ({ page }) => {
+	await expect(page.getByTestId('offline-copy-status')).toContainText(/Offline copy updated/, {
+		timeout: 30_000
+	});
+});
+
+Then('no offline sync status is shown', async ({ page }) => {
+	await expect(page.getByRole('heading', { name: /My Pok/ }).first()).toBeVisible();
+	await expect(
+		page.getByText(/Offline copy updated|Updating offline copy|Save all artwork for offline/)
+	).toHaveCount(0);
 });
 
 Then('the read-only offline viewer is available', async ({ page }) => {

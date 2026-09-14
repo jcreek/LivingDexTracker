@@ -13,6 +13,7 @@ import { getEnv } from '$lib/utils/env';
 import { getProviderEndpoints } from '$lib/services/providerEndpoints';
 import {
 	buildCsv,
+	isRevokedGrant,
 	sanitizeFileName,
 	shouldRefreshToken
 } from '$lib/services/PokedexExportFormatting';
@@ -21,6 +22,7 @@ type ExportFailure = {
 	integrationId: string;
 	provider: ExportProvider;
 	error: string;
+	reconnectRequired: boolean;
 };
 
 export type PokedexExportResult = {
@@ -29,12 +31,21 @@ export type PokedexExportResult = {
 	failed: ExportFailure[];
 };
 
+const RECONNECT_MESSAGES: Record<ExportProvider, string> = {
+	google_drive:
+		'Google Drive access has expired or was revoked. Reconnect Google Drive to resume backups.',
+	dropbox: 'Dropbox access has expired or was revoked. Reconnect Dropbox to resume backups.'
+};
+
+/** The provider rejected the stored grant, so only a fresh OAuth connection can resume exports. */
+class ReconnectRequiredError extends Error {}
+
 async function refreshGoogleToken(
 	integration: PokedexExportIntegration,
 	repo: PokedexExportIntegrationRepository
 ): Promise<PokedexExportIntegration> {
 	if (!integration.refreshToken) {
-		throw new Error('Missing Google refresh token');
+		throw new ReconnectRequiredError(RECONNECT_MESSAGES.google_drive);
 	}
 
 	const env = getEnv();
@@ -59,6 +70,9 @@ async function refreshGoogleToken(
 
 	if (!response.ok) {
 		const text = await response.text();
+		if (isRevokedGrant(response.status, text)) {
+			throw new ReconnectRequiredError(RECONNECT_MESSAGES.google_drive);
+		}
 		throw new Error(`Google token refresh failed: ${response.status} ${text}`);
 	}
 
@@ -88,7 +102,7 @@ async function refreshDropboxToken(
 	repo: PokedexExportIntegrationRepository
 ): Promise<PokedexExportIntegration> {
 	if (!integration.refreshToken) {
-		throw new Error('Missing Dropbox refresh token');
+		throw new ReconnectRequiredError(RECONNECT_MESSAGES.dropbox);
 	}
 
 	const env = getEnv();
@@ -113,6 +127,9 @@ async function refreshDropboxToken(
 
 	if (!response.ok) {
 		const text = await response.text();
+		if (isRevokedGrant(response.status, text)) {
+			throw new ReconnectRequiredError(RECONNECT_MESSAGES.dropbox);
+		}
 		throw new Error(`Dropbox token refresh failed: ${response.status} ${text}`);
 	}
 
@@ -418,13 +435,24 @@ export async function exportPokedexIfConfigured(
 			successes++;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
+			let reconnectRequired = false;
+			if (error instanceof ReconnectRequiredError) {
+				// A revoked grant never succeeds on retry, so pause this integration until the user
+				// reconnects - but only if its row is unchanged since this export read it. A reconnect
+				// in the meantime saved new credentials, which this stale failure must not disable.
+				reconnectRequired = await scopedRepo.updateExportStatus(
+					integration._id,
+					{ lastError: message, enabled: false },
+					integration.updatedAt ?? undefined
+				);
+			} else {
+				await scopedRepo.updateExportStatus(integration._id, { lastError: message });
+			}
 			failures.push({
 				integrationId: integration._id,
 				provider: integration.provider,
-				error: message
-			});
-			await scopedRepo.updateExportStatus(integration._id, {
-				lastError: message
+				error: message,
+				reconnectRequired
 			});
 			console.error('Failed to export pokedex:', integration.provider, message);
 		}

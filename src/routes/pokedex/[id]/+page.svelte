@@ -17,6 +17,14 @@
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
 	import { requestOfflineSync } from '$lib/stores/offlineSync';
+	import { get } from 'svelte/store';
+	import {
+		PROVIDER_LABELS,
+		backupsNeedingReconnect,
+		markReconnectNeeded,
+		refreshBackupStatus
+	} from '$lib/stores/backupStatus';
+	import type { ExportProvider } from '$lib/models/PokedexExportIntegration';
 	import type { SharedCombinedData } from '$lib/models/SharedPokedex';
 
 	export let data: PageData;
@@ -66,6 +74,8 @@
 		lastSuccessfulFlushAt: null
 	};
 	let lastOfflineSyncFlush: number | null = null;
+	// Backup providers that just refused this page's export because their access was revoked.
+	let reconnectToastLabels: string[] = [];
 	let exportAfterFlush = false;
 	let exportInFlight = false;
 	let exportTimer: ReturnType<typeof setTimeout> | null = null;
@@ -109,6 +119,24 @@
 					const body = await response.text().catch(() => '');
 					console.error('Auto-export failed:', response.status, body);
 					return;
+				}
+				const result = (await response.json().catch(() => null)) as {
+					failed?: Array<{ provider: ExportProvider; reconnectRequired?: boolean }>;
+				} | null;
+				const revoked = (result?.failed ?? []).filter((failure) => failure.reconnectRequired);
+				const alreadyPaused = new Set(get(backupsNeedingReconnect));
+				if (revoked.length > 0) {
+					markReconnectNeeded(revoked.map((failure) => failure.provider));
+				} else {
+					// Saving a catch record also exports on the server, and that export may already have
+					// paused a provider, leaving this export nothing to report. Re-read the status to catch it.
+					await refreshBackupStatus();
+				}
+				const newlyPaused = get(backupsNeedingReconnect).filter(
+					(provider) => !alreadyPaused.has(provider)
+				);
+				if (newlyPaused.length > 0) {
+					reconnectToastLabels = newlyPaused.map((provider) => PROVIDER_LABELS[provider]);
 				}
 				if (exportGeneration === exportInFlightGeneration) {
 					exportAfterFlush = false;
@@ -513,6 +541,24 @@
 		};
 	});
 </script>
+
+{#if reconnectToastLabels.length > 0}
+	<!-- Above DaisyUI's modal (z-index 999) so the alert stays usable over an open Pokémon dialog. -->
+	<div class="toast toast-end z-[1000]">
+		<div class="alert alert-warning" role="alert" data-testid="backup-reconnect-toast">
+			<span>
+				Backups to {reconnectToastLabels.join(' and ')} have stopped because access expired or was revoked.
+			</span>
+			<a class="btn btn-sm" href="/backup-settings">Reconnect</a>
+			<button
+				type="button"
+				class="btn btn-sm btn-ghost"
+				aria-label="Dismiss"
+				on:click={() => (reconnectToastLabels = [])}>✕</button
+			>
+		</div>
+	</div>
+{/if}
 
 <svelte:head>
 	<title>{pokedex ? `${pokedex.name} - Living Dex Tracker` : 'Pokédex - Living Dex Tracker'}</title>

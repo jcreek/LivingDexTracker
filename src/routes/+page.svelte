@@ -115,7 +115,7 @@
 						</svg>
 						Open Source
 					</div>
-					<div class="badge badge-accent badge-lg gap-1">
+					<a href="/offline-guide" class="badge badge-accent badge-lg gap-1 hover:opacity-80">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							class="h-4 w-4"
@@ -130,7 +130,7 @@
 							/>
 						</svg>
 						Offline-friendly
-					</div>
+					</a>
 				</div>
 				<h1 class="text-5xl font-bold mb-6">Start Your Pokédex Journey!</h1>
 				<p class="text-xl mb-6 text-base-content/80">
