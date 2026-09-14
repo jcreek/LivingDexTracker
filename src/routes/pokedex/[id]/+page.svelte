@@ -16,7 +16,7 @@
 	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
-
+	import { requestOfflineSync } from '$lib/stores/offlineSync';
 
 	export let data: PageData;
 
@@ -38,7 +38,10 @@
 	// Box view requires the full dataset for correct box numbering/placement.
 	// If/when a paginated list view is introduced, this can be lowered and paired with UI controls.
 	let itemsPerPage = 9999 as number;
-	let totalPages = 0 as number;
+	type CatchUpdateEvent = CustomEvent<{
+		catchRecord: CatchRecord;
+		source: 'toggle' | 'notes' | 'notes-blur';
+	}>;
 	let creatingRecords = false;
 	let totalRecordsCreated = 0;
 	let failedToLoad = false;
@@ -57,6 +60,7 @@
 		lastFlushAttemptAt: null,
 		lastSuccessfulFlushAt: null
 	};
+	let lastOfflineSyncFlush: number | null = null;
 	let exportAfterFlush = false;
 	let exportInFlight = false;
 	let exportTimer: ReturnType<typeof setTimeout> | null = null;
@@ -128,7 +132,6 @@
 		}, 250);
 	}
 
-
 	// Derive from pokedex config
 	$: showOrigins = !!pokedex?.isOriginDex;
 	$: showShiny = !!pokedex?.isShinyDex;
@@ -178,6 +181,15 @@
 
 		catchWriteQueueUnsubscribe = catchWriteQueue.getStatus.subscribe((s) => {
 			catchWriteStatus = s;
+			if (
+				s.lastSuccessfulFlushAt &&
+				s.lastSuccessfulFlushAt !== lastOfflineSyncFlush &&
+				s.pending === 0 &&
+				s.inFlight === 0
+			) {
+				lastOfflineSyncFlush = s.lastSuccessfulFlushAt;
+				requestOfflineSync();
+			}
 			if (s.pending > 0 || s.inFlight > 0) {
 				if (exportTimer) {
 					clearTimeout(exportTimer);
@@ -189,8 +201,6 @@
 			scheduleExportIfIdle();
 		});
 	}
-
-
 
 	function applyOptimisticCatchRecordUpdate(next: CatchRecord) {
 		if (!combinedData) return;
@@ -212,7 +222,7 @@
 		}
 	}
 
-	async function handleModalCatchUpdate(event: any) {
+	async function handleModalCatchUpdate(event: CatchUpdateEvent) {
 		await updateACatch(event);
 	}
 
@@ -243,20 +253,16 @@
 			return;
 		}
 		combinedData = fetchedData.combinedData;
-		totalPages = fetchedData.totalPages || 0;
 		// Always extract box numbers for box view
 		if (combinedData) {
 			boxNumbers = calculateBoxNumbers(combinedData.length);
 		}
 	}
 
-	async function updateACatch(event: any) {
+	async function updateACatch(event: CatchUpdateEvent) {
 		if (!pokedexId) return;
 		ensureCatchWriteQueue();
-		const { catchRecord, source } = event.detail as {
-			catchRecord: CatchRecord;
-			source: 'toggle' | 'notes' | 'notes-blur';
-		};
+		const { catchRecord, source } = event.detail;
 		// Enforce mutual exclusivity (should be impossible to have both true).
 		const sanitizedCatchRecord: CatchRecord = { ...catchRecord };
 		if (sanitizedCatchRecord.caught) {
@@ -464,7 +470,6 @@
 			window.clearInterval(reconcileInterval);
 		};
 	});
-
 </script>
 
 <svelte:head>
@@ -599,7 +604,6 @@
 						{#if pokedex.description}
 							<p class="text-sm text-base-content/70 mt-3">{pokedex.description}</p>
 						{/if}
-
 					</div>
 
 					<!-- Right side: Actions -->
@@ -637,6 +641,7 @@
 			bind:combinedData
 			bind:boxNumbers
 			bind:creatingRecords
+			{totalRecordsCreated}
 			bind:failedToLoad
 			{markBoxAsNotCaught}
 			{markBoxAsCaught}

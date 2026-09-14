@@ -24,62 +24,62 @@ type RegionalDexKey =
 
 const gameToRegionalDexMap: Record<string, RegionalDexKey> = {
 	// Kanto region
-	'Red': 'kanto',
-	'Blue': 'kanto',
-	'Yellow': 'kanto',
-	'FireRed': 'kanto',
-	'LeafGreen': 'kanto',
+	Red: 'kanto',
+	Blue: 'kanto',
+	Yellow: 'kanto',
+	FireRed: 'kanto',
+	LeafGreen: 'kanto',
 	'LG: Pikachu': 'kanto',
 	'LG: Eevee': 'kanto',
 
 	// Johto region
-	'Gold': 'johto',
-	'Silver': 'johto',
-	'Crystal': 'johto',
-	'HeartGold': 'johto',
-	'SoulSilver': 'johto',
+	Gold: 'johto',
+	Silver: 'johto',
+	Crystal: 'johto',
+	HeartGold: 'johto',
+	SoulSilver: 'johto',
 
 	// Hoenn region
-	'Ruby': 'hoenn',
-	'Sapphire': 'hoenn',
-	'Emerald': 'hoenn',
-	'OmegaRuby': 'hoenn',
-	'AlphaSapphire': 'hoenn',
+	Ruby: 'hoenn',
+	Sapphire: 'hoenn',
+	Emerald: 'hoenn',
+	OmegaRuby: 'hoenn',
+	AlphaSapphire: 'hoenn',
 
 	// Sinnoh region
-	'Diamond': 'sinnoh',
-	'Pearl': 'sinnoh',
-	'Platinum': 'sinnoh',
-	'BrilliantDiamond': 'sinnoh',
-	'ShiningPearl': 'sinnoh',
+	Diamond: 'sinnoh',
+	Pearl: 'sinnoh',
+	Platinum: 'sinnoh',
+	BrilliantDiamond: 'sinnoh',
+	ShiningPearl: 'sinnoh',
 
 	// Unova region
-	'Black': 'unova_bw',
-	'White': 'unova_bw',
-	'Black2': 'unova_b2w2',
-	'White2': 'unova_b2w2',
+	Black: 'unova_bw',
+	White: 'unova_bw',
+	Black2: 'unova_b2w2',
+	White2: 'unova_b2w2',
 
 	// Kalos region - Note: All XY use all three sub-dexes
 	// We default to Central for simplicity
-	'X': 'kalos_central',
-	'Y': 'kalos_central',
+	X: 'kalos_central',
+	Y: 'kalos_central',
 
 	// Alola region
-	'Sun': 'alola_sm',
-	'Moon': 'alola_sm',
-	'UltraSun': 'alola_usum',
-	'UltraMoon': 'alola_usum',
+	Sun: 'alola_sm',
+	Moon: 'alola_sm',
+	UltraSun: 'alola_usum',
+	UltraMoon: 'alola_usum',
 
 	// Galar region
-	'Sword': 'galar',
-	'Shield': 'galar',
+	Sword: 'galar',
+	Shield: 'galar',
 
 	// Hisui region
-	'LegendsArceus': 'hisui',
+	LegendsArceus: 'hisui',
 
 	// Paldea region
-	'Scarlet': 'paldea',
-	'Violet': 'paldea'
+	Scarlet: 'paldea',
+	Violet: 'paldea'
 };
 
 /**
@@ -119,22 +119,22 @@ export function getRegionalDexFieldName(gameName: string): string | undefined {
 
 	// Map regional key to actual PokedexEntry field name (camelCase)
 	const fieldMap: Record<string, string> = {
-		'kanto': 'kantoDexNumber',
-		'johto': 'johtoDexNumber',
-		'hoenn': 'hoennDexNumber',
-		'sinnoh': 'sinnohDexNumber',
-		'unova_bw': 'unovaBwDexNumber',
-		'unova_b2w2': 'unovaB2w2DexNumber',
-		'kalos_central': 'kalosCentralDexNumber',
-		'kalos_coastal': 'kalosCoastalDexNumber',
-		'kalos_mountain': 'kalosMountainDexNumber',
-		'alola_sm': 'alolaSmDexNumber',
-		'alola_usum': 'alolaUsumDexNumber',
-		'galar': 'galarDexNumber',
-		'galar_isle_of_armor': 'galarIsleOfArmorDexNumber',
-		'galar_crown_tundra': 'galarCrownTundraDexNumber',
-		'hisui': 'hisuiDexNumber',
-		'paldea': 'paldeaDexNumber'
+		kanto: 'kantoDexNumber',
+		johto: 'johtoDexNumber',
+		hoenn: 'hoennDexNumber',
+		sinnoh: 'sinnohDexNumber',
+		unova_bw: 'unovaBwDexNumber',
+		unova_b2w2: 'unovaB2w2DexNumber',
+		kalos_central: 'kalosCentralDexNumber',
+		kalos_coastal: 'kalosCoastalDexNumber',
+		kalos_mountain: 'kalosMountainDexNumber',
+		alola_sm: 'alolaSmDexNumber',
+		alola_usum: 'alolaUsumDexNumber',
+		galar: 'galarDexNumber',
+		galar_isle_of_armor: 'galarIsleOfArmorDexNumber',
+		galar_crown_tundra: 'galarCrownTundraDexNumber',
+		hisui: 'hisuiDexNumber',
+		paldea: 'paldeaDexNumber'
 	};
 
 	return fieldMap[regionalKey];

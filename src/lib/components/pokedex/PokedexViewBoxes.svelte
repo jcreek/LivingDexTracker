@@ -12,11 +12,11 @@
 	export let creatingRecords = false;
 	export let totalRecordsCreated = 0;
 	export let failedToLoad = false;
-	export let markBoxAsNotCaught = (boxNumber: number) => {};
-	export let markBoxAsCaught = (boxNumber: number) => {};
-	export let markBoxAsNeedsToEvolve = (boxNumber: number) => {};
-	export let markBoxAsInHome = (boxNumber: number) => {};
-	export let markBoxAsNotInHome = (boxNumber: number) => {};
+	export let markBoxAsNotCaught: (boxNumber: number) => void = () => {};
+	export let markBoxAsCaught: (boxNumber: number) => void = () => {};
+	export let markBoxAsNeedsToEvolve: (boxNumber: number) => void = () => {};
+	export let markBoxAsInHome: (boxNumber: number) => void = () => {};
+	export let markBoxAsNotInHome: (boxNumber: number) => void = () => {};
 	export let createCatchRecords = () => {};
 	export let onPokemonClick: (pokemon: CombinedData) => void = () => {};
 

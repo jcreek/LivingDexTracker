@@ -3,6 +3,7 @@
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import PokedexCard from '$lib/components/pokedex/PokedexCard.svelte';
 	import PokedexForm from '$lib/components/pokedex/PokedexForm.svelte';
+	import { requestOfflineSync } from '$lib/stores/offlineSync';
 
 	export let data;
 	let { pokedexes } = data;
@@ -93,6 +94,7 @@
 
 				closeModal();
 				await loadPokedexes();
+				requestOfflineSync();
 				return;
 			} else {
 				// Create new pokédex
@@ -114,6 +116,7 @@
 				// Refresh local state BEFORE deciding whether this is the user's first pokédex.
 				closeModal();
 				await loadPokedexes();
+				requestOfflineSync();
 
 				// If the user's total pokédex count is now 1, this newly created one is their first.
 				if (pokedexes.length === 1) {
@@ -149,6 +152,7 @@
 			}
 
 			await loadPokedexes();
+			requestOfflineSync();
 		} catch (error) {
 			console.error('Error deleting pokédex:', error);
 			alert('An error occurred');
@@ -204,11 +208,7 @@
 			</h3>
 			<PokedexForm bind:pokedex={formData} {mode} onSubmit={handleSubmit} onCancel={closeModal} />
 		</div>
-		<button
-			type="button"
-			class="modal-backdrop"
-			aria-label="Close modal"
-			on:click={closeModal}
+		<button type="button" class="modal-backdrop" aria-label="Close modal" on:click={closeModal}
 		></button>
 	</div>
 {/if}

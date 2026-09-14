@@ -1,41 +1,73 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
-	import { user } from '$lib/stores/user.js';
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import type { User } from '@supabase/auth-js';
 
 	export let data;
 	let { supabase } = data;
 	$: ({ supabase } = data);
 
-	let localUser: User | null = null;
-	const unsubscribe = user.subscribe((value) => {
-		localUser = value;
-	});
-	onDestroy(unsubscribe);
-
 	let showAnimation = false;
-	let hasCheckedAuth = false;
+	let authReady = false;
+	let authChecking = true;
+	let authError = '';
+	const recoveryMarkerKey = 'livingdex:password-recovery';
 
 	onMount(() => {
-		// Start animation
-		setTimeout(() => {
+		const animationTimer = setTimeout(() => {
 			showAnimation = true;
 		}, 100);
-
-		// Check authentication after a short delay to allow Supabase to process the token
-		setTimeout(() => {
-			hasCheckedAuth = true;
-			if (!localUser) {
-				goto('/signin');
+		let settled = false;
+		const settle = (hasSession: boolean) => {
+			if (settled && !hasSession) return;
+			settled = hasSession;
+			authReady = hasSession;
+			authChecking = false;
+			authError = hasSession
+				? ''
+				: 'This password-reset link is invalid or expired. Request a new link and try again.';
+		};
+		const {
+			data: { subscription }
+		} = supabase.auth.onAuthStateChange((event, session) => {
+			if (event === 'PASSWORD_RECOVERY' && session) {
+				sessionStorage.setItem(
+					recoveryMarkerKey,
+					JSON.stringify({ userId: session.user.id, expiresAt: Date.now() + 30 * 60_000 })
+				);
+				settle(true);
 			}
-		}, 500);
+		});
+		void supabase.auth.getSession().then(({ data: { session }, error }) => {
+			if (error) {
+				authChecking = false;
+				authError = error.message;
+				return;
+			}
+			let marker: { userId?: string; expiresAt?: number } | null = null;
+			try {
+				marker = JSON.parse(sessionStorage.getItem(recoveryMarkerKey) ?? 'null');
+			} catch {
+				sessionStorage.removeItem(recoveryMarkerKey);
+			}
+			const suppliedRecoveryIntent = data.recoveryIntent === true;
+			const isRecoverySession =
+				!!session &&
+				(suppliedRecoveryIntent ||
+					(marker?.userId === session.user.id && Number(marker.expiresAt) > Date.now()));
+			if (session && suppliedRecoveryIntent) {
+				sessionStorage.setItem(
+					recoveryMarkerKey,
+					JSON.stringify({ userId: session.user.id, expiresAt: Date.now() + 30 * 60_000 })
+				);
+			}
+			if (!isRecoverySession) sessionStorage.removeItem(recoveryMarkerKey);
+			settle(isRecoverySession);
+		});
+		return () => {
+			clearTimeout(animationTimer);
+			subscription.unsubscribe();
+		};
 	});
-
-	// Reactive: redirect if user becomes null after initial check
-	$: if (hasCheckedAuth && !localUser) {
-		goto('/signin');
-	}
 
 	let password = '';
 	let confirmPassword = '';
@@ -44,6 +76,7 @@
 	let successMessage = '';
 
 	async function updatePassword() {
+		if (!authReady) return;
 		isLoading = true;
 		errorMessage = '';
 		successMessage = '';
@@ -74,16 +107,27 @@
 			}
 
 			successMessage = 'Password updated successfully! Redirecting to sign in...';
-
-			// Redirect to sign in after a short delay
-			setTimeout(() => {
-				goto('/signin');
-			}, 2000);
+			sessionStorage.removeItem(recoveryMarkerKey);
+			setTimeout(() => void finishPasswordReset(), 1_000);
 		} catch (err) {
 			console.error('Update password error:', err);
 			errorMessage = 'An unexpected error occurred. Please try again.';
 		} finally {
 			isLoading = false;
+		}
+	}
+
+	async function finishPasswordReset() {
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				errorMessage = `Password updated, but sign out failed: ${error.message}`;
+				return;
+			}
+			await goto('/signin');
+		} catch (error) {
+			console.error('Sign out after password reset failed:', error);
+			errorMessage = 'Password updated, but sign out failed. Please try again.';
 		}
 	}
 
@@ -132,6 +176,11 @@
 		<!-- Reset Password Card -->
 		<div class="card bg-base-200 shadow-xl {showAnimation ? 'animate-slide-up' : ''}">
 			<div class="card-body p-6 md:p-8">
+				{#if authChecking}
+					<div class="alert"><span>Validating your password-reset link…</span></div>
+				{:else if authError}
+					<div class="alert alert-error" role="alert"><span>{authError}</span></div>
+				{/if}
 				<!-- Error Message -->
 				{#if errorMessage}
 					<div class="alert alert-error text-sm">
@@ -185,7 +234,7 @@
 							class="input input-bordered w-full pl-10"
 							bind:value={password}
 							on:keypress={handleKeyPress}
-							disabled={isLoading}
+							disabled={isLoading || !authReady}
 						/>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -215,7 +264,7 @@
 							class="input input-bordered w-full pl-10"
 							bind:value={confirmPassword}
 							on:keypress={handleKeyPress}
-							disabled={isLoading}
+							disabled={isLoading || !authReady}
 						/>
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +286,7 @@
 					<button
 						class="btn btn-primary w-full"
 						on:click={updatePassword}
-						disabled={isLoading || !password || !confirmPassword}
+						disabled={isLoading || !authReady || !password || !confirmPassword}
 					>
 						{#if isLoading}
 							<span class="loading loading-spinner loading-sm"></span>

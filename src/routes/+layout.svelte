@@ -6,6 +6,13 @@
 	import SignIn from '$lib/components/SignIn.svelte';
 	import SignOut from '$lib/components/SignOut.svelte';
 	import ThemeToggle from '$lib/components/ThemeToggle.svelte';
+	import {
+		claimOfflineData,
+		clearOfflineData,
+		offlineSyncStatus,
+		requestOfflineSync,
+		startOfflineSync
+	} from '$lib/stores/offlineSync';
 
 	import { pwaInfo } from 'virtual:pwa-info';
 	import { pwaAssetsHead } from 'virtual:pwa-assets/head';
@@ -24,9 +31,35 @@
 	onDestroy(unsubscribe);
 
 	let authSubscription: { unsubscribe: () => void } | null = null;
+	let stopOfflineSync: (() => void) | null = null;
+	let isOnline = true;
+	let signOutError = '';
 
 	onMount(() => {
-		void getUser();
+		isOnline = navigator.onLine;
+		const updateOnlineState = () => {
+			isOnline = navigator.onLine;
+			document.documentElement.classList.toggle('offline-readonly', !isOnline);
+		};
+		const blockOfflineMutation = (event: Event) => {
+			if (navigator.onLine) return;
+			const target = event.target instanceof Element ? event.target : null;
+			if (!target?.closest('button, input, textarea, select, form')) return;
+			event.preventDefault();
+			event.stopImmediatePropagation();
+		};
+		window.addEventListener('online', updateOnlineState);
+		window.addEventListener('offline', updateOnlineState);
+		for (const name of ['click', 'submit', 'input', 'change', 'keydown']) {
+			window.addEventListener(name, blockOfflineMutation, true);
+		}
+		updateOnlineState();
+		void getUser()
+			.then(async () => {
+				if (localUser) await claimOfflineData(localUser.id);
+				stopOfflineSync = startOfflineSync(() => localUser?.id ?? null);
+			})
+			.catch((error) => console.error('Unable to claim offline data', error));
 
 		// Listen for auth state changes to keep the user store in sync
 		const {
@@ -34,35 +67,26 @@
 		} = supabase.auth.onAuthStateChange((event, session) => {
 			if (session) {
 				localUser = session.user;
+				void claimOfflineData(session.user.id)
+					.then(requestOfflineSync)
+					.catch((error) => console.error('Unable to claim offline data', error));
 			} else {
 				localUser = null;
+				if (event === 'SIGNED_OUT') void clearOfflineData();
 			}
 			user.set(localUser);
 		});
 		authSubscription = subscription;
 
-		if (pwaInfo) {
-			void (async () => {
-				const { registerSW } = await import('virtual:pwa-register');
-				registerSW({
-					immediate: true,
-					onRegistered(r) {
-						// uncomment following code if you want check for updates
-						// r && setInterval(() => {
-						//    console.log('Checking for sw update')
-						//    r.update()
-						// }, 20000 /* 20s for testing purposes */)
-						console.log(`SW Registered: ${r}`);
-					},
-					onRegisterError(error) {
-						console.log('SW registration error', error);
-					}
-				});
-			})();
-		}
-
 		return () => {
 			authSubscription?.unsubscribe();
+			stopOfflineSync?.();
+			window.removeEventListener('online', updateOnlineState);
+			window.removeEventListener('offline', updateOnlineState);
+			for (const name of ['click', 'submit', 'input', 'change', 'keydown']) {
+				window.removeEventListener(name, blockOfflineMutation, true);
+			}
+			document.documentElement.classList.remove('offline-readonly');
 		};
 	});
 
@@ -162,7 +186,16 @@
 								<li>
 									<a href="/backup-settings"> Backup Settings </a>
 								</li>
-								<li><SignOut {supabase} on:signedOut={getUser} /></li>
+								<li>
+									<SignOut
+										{supabase}
+										on:signedOut={() => {
+											signOutError = '';
+											void getUser();
+										}}
+										on:signOutFailed={(event) => (signOutError = event.detail.message)}
+									/>
+								</li>
 							{:else}
 								<li><SignIn {supabase} on:signedIn={getUser} /></li>
 							{/if}
@@ -174,6 +207,33 @@
 			</div>
 		</div>
 	</header>
+	{#if signOutError}
+		<div class="alert alert-error rounded-none" role="alert">
+			<span>{signOutError}</span>
+		</div>
+	{/if}
+	{#if !isOnline}
+		<div class="alert rounded-none" role="status">
+			<span>Offline read-only mode: saved data remains available, but changes are disabled.</span>
+		</div>
+	{:else if localUser && $offlineSyncStatus.state === 'error'}
+		<div class="alert alert-warning rounded-none" role="status">
+			<span>Offline copy could not be refreshed: {$offlineSyncStatus.message}</span>
+			<button class="btn btn-sm" on:click={requestOfflineSync}>Retry</button>
+		</div>
+	{:else if localUser && $offlineSyncStatus.state === 'partial'}
+		<div class="alert alert-warning rounded-none" role="status">
+			<span>Offline data is saved, but {$offlineSyncStatus.message}.</span>
+			<button class="btn btn-sm" on:click={requestOfflineSync}>Retry</button>
+		</div>
+	{/if}
+	{#if isOnline && localUser && $offlineSyncStatus.state === 'syncing'}
+		<p class="bg-base-200 px-4 py-1 text-center text-xs" role="status">Updating offline copy…</p>
+	{:else if isOnline && localUser && $offlineSyncStatus.generatedAt}
+		<p class="bg-base-200 px-4 py-1 text-center text-xs" role="status">
+			Offline copy updated {new Date($offlineSyncStatus.generatedAt).toLocaleString()}.
+		</p>
+	{/if}
 
 	<main class="flex-grow">
 		<slot />
@@ -223,3 +283,13 @@
 		<ReloadPrompt />
 	{/await}
 </div>
+
+<style>
+	:global(.offline-readonly button),
+	:global(.offline-readonly input),
+	:global(.offline-readonly textarea),
+	:global(.offline-readonly select) {
+		pointer-events: none;
+		opacity: 0.65;
+	}
+</style>

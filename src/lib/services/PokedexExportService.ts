@@ -1,13 +1,21 @@
 import { randomUUID } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { CombinedData } from '$lib/models/CombinedData';
 import type { Pokedex } from '$lib/models/Pokedex';
-import type { ExportProvider, PokedexExportIntegration } from '$lib/models/PokedexExportIntegration';
+import type {
+	ExportProvider,
+	PokedexExportIntegration
+} from '$lib/models/PokedexExportIntegration';
 import PokedexRepository from '$lib/repositories/PokedexRepository';
 import CombinedDataRepository from '$lib/repositories/CombinedDataRepository';
 import PokedexExportIntegrationRepository from '$lib/repositories/PokedexExportIntegrationRepository';
 import { resolveDexScopes } from '$lib/services/PokedexDexScopeService';
 import { getEnv } from '$lib/utils/env';
+import { getProviderEndpoints } from '$lib/services/providerEndpoints';
+import {
+	buildCsv,
+	sanitizeFileName,
+	shouldRefreshToken
+} from '$lib/services/PokedexExportFormatting';
 
 type ExportFailure = {
 	integrationId: string;
@@ -20,71 +28,6 @@ export type PokedexExportResult = {
 	succeeded: number;
 	failed: ExportFailure[];
 };
-
-function csvEscape(value: unknown): string {
-	if (value === null || value === undefined) return '';
-	const str = String(value);
-	if (/[",\n\r]/.test(str)) {
-		return `"${str.replace(/"/g, '""')}"`;
-	}
-	return str;
-}
-
-function sanitizeFileName(name: string, fallback: string): string {
-	const trimmed = name.trim();
-	const safe = trimmed.replace(/[\\/:*?"<>|]+/g, '-');
-	if (!safe) return fallback;
-	return safe.endsWith('.csv') ? safe : `${safe}.csv`;
-}
-
-function buildCsv(pokedex: Pokedex, combinedData: CombinedData[]): string {
-	const headers = [
-		'pokemonId',
-		'pokedexNumber',
-		'pokemon',
-		'form',
-		'caught',
-		'haveToEvolve',
-		'inHome',
-		'personalNotes'
-	];
-
-	const lines = [headers.map(csvEscape).join(',')];
-
-	for (const row of combinedData) {
-		const entry = row.pokedexEntry;
-		const catchRecord = row.catchRecord ?? {
-			caught: false,
-			haveToEvolve: false,
-			inHome: false,
-			hasGigantamaxed: false,
-			personalNotes: ''
-		};
-
-		const values = [
-			entry._id,
-			entry.pokedexNumber,
-			entry.pokemon,
-			entry.form || '',
-			catchRecord.caught,
-			catchRecord.haveToEvolve,
-			catchRecord.inHome,
-			catchRecord.personalNotes || ''
-		];
-
-		lines.push(values.map(csvEscape).join(','));
-	}
-
-	return lines.join('\r\n');
-}
-
-function shouldRefreshToken(expiresAt: string | null): boolean {
-	if (!expiresAt) return false;
-	const expiry = new Date(expiresAt).getTime();
-	if (!Number.isFinite(expiry)) return false;
-	// Refresh if within 60 seconds of expiry.
-	return expiry - Date.now() < 60_000;
-}
 
 async function refreshGoogleToken(
 	integration: PokedexExportIntegration,
@@ -108,7 +51,7 @@ async function refreshGoogleToken(
 		grant_type: 'refresh_token'
 	});
 
-	const response = await fetch('https://oauth2.googleapis.com/token', {
+	const response = await fetch(getProviderEndpoints().google.token, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: params.toString()
@@ -162,7 +105,7 @@ async function refreshDropboxToken(
 		grant_type: 'refresh_token'
 	});
 
-	const response = await fetch('https://api.dropbox.com/oauth2/token', {
+	const response = await fetch(getProviderEndpoints().dropbox.token, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 		body: params.toString()
@@ -217,7 +160,10 @@ type GoogleDriveMetadata = {
 	files?: Record<string, string>;
 };
 
-function getGoogleFileId(metadata: Record<string, unknown> | null, pokedexId: string): string | null {
+function getGoogleFileId(
+	metadata: Record<string, unknown> | null,
+	pokedexId: string
+): string | null {
 	const data = metadata as GoogleDriveMetadata | null;
 	const fileId = data?.files?.[pokedexId];
 	return typeof fileId === 'string' && fileId ? fileId : null;
@@ -262,7 +208,7 @@ async function uploadToGoogleDrive(
 	if (!folderId) {
 		try {
 			const folderResponse = await fetch(
-				'https://www.googleapis.com/drive/v3/files?' +
+				`${getProviderEndpoints().google.driveApi}/files?` +
 					new URLSearchParams({
 						q: "name='Living Dex Tracker' and mimeType='application/vnd.google-apps.folder' and trashed=false",
 						fields: 'files(id,name)',
@@ -286,7 +232,7 @@ async function uploadToGoogleDrive(
 
 	if (!folderId) {
 		try {
-			const createResponse = await fetch('https://www.googleapis.com/drive/v3/files', {
+			const createResponse = await fetch(`${getProviderEndpoints().google.driveApi}/files`, {
 				method: 'POST',
 				headers: {
 					Authorization: `Bearer ${refreshed.accessToken}`,
@@ -332,12 +278,11 @@ async function uploadToGoogleDrive(
 		].join('\r\n');
 
 		const url = currentFileId
-			? `https://www.googleapis.com/upload/drive/v3/files/${currentFileId}?uploadType=multipart`
-			: 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+			? `${getProviderEndpoints().google.driveUpload}/files/${currentFileId}?uploadType=multipart`
+			: `${getProviderEndpoints().google.driveUpload}/files?uploadType=multipart`;
 		const method = currentFileId ? 'PATCH' : 'POST';
-		const uploadUrl = currentFileId && folderId
-			? `${url}&addParents=${encodeURIComponent(folderId)}`
-			: url;
+		const uploadUrl =
+			currentFileId && folderId ? `${url}&addParents=${encodeURIComponent(folderId)}` : url;
 
 		const response = await fetch(uploadUrl, {
 			method,
@@ -392,7 +337,7 @@ async function uploadToDropbox(
 		targetPath = `${targetPath}/${fileName}`;
 	}
 
-	const response = await fetch('https://content.dropboxapi.com/2/files/upload', {
+	const response = await fetch(getProviderEndpoints().dropbox.upload, {
 		method: 'POST',
 		headers: {
 			Authorization: `Bearer ${refreshed.accessToken}`,
@@ -453,7 +398,7 @@ export async function exportPokedexIfConfigured(
 		pokedex.gameScope || '',
 		dexScopes
 	);
-	const csv = buildCsv(pokedex, combinedData);
+	const csv = buildCsv(combinedData);
 
 	const failures: ExportFailure[] = [];
 	let successes = 0;

@@ -13,7 +13,6 @@ export function calculateBoxPlacement(index: number): {
 } {
 	const POKEMON_PER_BOX = 30;
 	const COLUMNS_PER_BOX = 6;
-	const ROWS_PER_BOX = 5;
 
 	// Calculate which box this Pokémon belongs to (1-indexed)
 	const box = Math.floor(index / POKEMON_PER_BOX) + 1;

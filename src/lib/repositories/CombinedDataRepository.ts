@@ -126,7 +126,7 @@ class CombinedDataRepository {
 		let start = 0;
 		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
 
-		while (true) {
+		for (;;) {
 			const end = start + maxRows - 1;
 			let query = this.supabase.from('pokedex_entries').select('*').not('form', 'is', null);
 
@@ -167,7 +167,7 @@ class CombinedDataRepository {
 		let start = 0;
 		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
 
-		while (true) {
+		for (;;) {
 			const end = start + maxRows - 1;
 			const { data, error } = await this.buildDexEntriesQuery(dexScopes, enableForms, region).range(
 				start,
@@ -312,7 +312,7 @@ class CombinedDataRepository {
 		let start = 0;
 		const maxRows = CombinedDataRepository.MAX_ROWS_PER_REQUEST;
 
-		while (true) {
+		for (;;) {
 			const end = start + maxRows - 1;
 			const { data, error } = await this.buildEntriesQuery(enableForms, region, game).range(
 				start,

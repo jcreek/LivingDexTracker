@@ -56,7 +56,6 @@
 		}
 		updateCatchRecord('toggle');
 	}
-
 </script>
 
 <div

@@ -1,7 +1,7 @@
-import adapter from '@sveltejs/adapter-netlify';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 // you don't need to do this if you're using generateSW strategy in your app
 import { generateSW } from './pwa.mjs';
+import { adapter } from './adapter.mjs';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -10,18 +10,12 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		adapter: adapter({
-			// if true, will create a Netlify Edge Function rather
-			// than using standard Node-based functions
-			edge: false,
-
-			// if true, will split your app into multiple functions
-			// instead of creating a single one for the entire app.
-			// if `edge` is true, this option cannot be used
-			split: false
-		}),
+		// Netlify by default, or the node adapter when NODE_ADAPTER=true. See adapter.mjs.
+		adapter,
 		serviceWorker: {
-			register: true
+			// VitePWA owns registration. Registering here as well requests SvelteKit's default
+			// /service-worker.js even though the inject-manifest output is /prompt-sw.js.
+			register: false
 		},
 		files: {
 			// you don't need to do this if you're using generateSW strategy in your app

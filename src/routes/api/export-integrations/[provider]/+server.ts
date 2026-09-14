@@ -47,7 +47,9 @@ export const PUT = async (event: RequestEvent) => {
 			.eq('userId', userId)
 			.is('pokedexId', null)
 			.eq('provider', provider)
-			.select('id, provider, enabled, fileName, folderId, path, metadata, lastExportedAt, lastError')
+			.select(
+				'id, provider, enabled, fileName, folderId, path, metadata, lastExportedAt, lastError'
+			)
 			.maybeSingle();
 
 		if (error) {

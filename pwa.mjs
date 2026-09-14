@@ -1,3 +1,3 @@
-import process from 'node:process'
+import process from 'node:process';
 
-export const generateSW = process.env.GENERATE_SW === 'true'
+export const generateSW = process.env.GENERATE_SW === 'true';

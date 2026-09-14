@@ -11,8 +11,8 @@
 		currentPage = Math.max(currentPage - 1, 1);
 	}
 
-	function setItemsPerPage(event: any) {
-		itemsPerPage = parseInt(event.target.value, 10);
+	function setItemsPerPage(event: Event) {
+		itemsPerPage = parseInt((event.target as HTMLSelectElement).value, 10);
 	}
 </script>
 

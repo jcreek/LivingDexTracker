@@ -84,9 +84,7 @@ export async function setPokedexDexScopes(
 	}
 }
 
-export async function listGameDexes(
-	supabase: SupabaseClient
-): Promise<{
+export async function listGameDexes(supabase: SupabaseClient): Promise<{
 	gameDexes: Record<string, GameDexRow[]>;
 	gameOrder: string[];
 	games: { displayName: string; releaseYear: number }[];

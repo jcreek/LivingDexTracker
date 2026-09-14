@@ -4,6 +4,7 @@ import PokedexRepository from '$lib/repositories/PokedexRepository';
 import { requireAuth } from '$lib/utils/auth';
 import { createOAuthState, setOAuthStateCookie } from '$lib/utils/oauthState';
 import { getEnv } from '$lib/utils/env';
+import { getProviderEndpoints } from '$lib/services/providerEndpoints';
 
 export const GET = async (event: RequestEvent) => {
 	const userId = await requireAuth(event);
@@ -65,5 +66,5 @@ export const GET = async (event: RequestEvent) => {
 		state
 	});
 
-	throw redirect(302, `https://accounts.google.com/o/oauth2/v2/auth?${params.toString()}`);
+	throw redirect(302, `${getProviderEndpoints().google.authorize}?${params.toString()}`);
 };
