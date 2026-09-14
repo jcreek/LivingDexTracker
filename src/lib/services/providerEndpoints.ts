@@ -23,12 +23,10 @@ const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '[::1]']);
 
 /**
  * These endpoints receive the OAuth client secret and the user's refresh token, so an override
- * is only ever a local test seam - never a deployment knob. Two guards, because the env is
- * read at runtime (`$env/dynamic/private`) and a single injected variable would otherwise be
- * enough to redirect those credentials to an arbitrary host:
- *
- *  1. overrides are ignored unless ALLOW_PROVIDER_ENDPOINT_OVERRIDES is exactly "true", and
- *  2. even then, only loopback URLs are accepted.
+ * is only ever a local test seam - never a deployment knob. The guards require the explicit
+ * override flag, the BDD service-role context, and a loopback test stack. Each override must also
+ * be loopback, so a single injected variable cannot redirect credentials to an arbitrary host.
+ * Values are read at runtime from `$env/dynamic/private`.
  */
 function isLocalOverride(value: string): boolean {
 	try {
@@ -44,7 +42,11 @@ function isLocalOverride(value: string): boolean {
 export function resolveProviderEndpoints(
 	env: Record<string, string | undefined>
 ): ProviderEndpoints {
-	const overridesAllowed = env.ALLOW_PROVIDER_ENDPOINT_OVERRIDES === 'true';
+	const overridesAllowed =
+		env.ALLOW_PROVIDER_ENDPOINT_OVERRIDES === 'true' &&
+		!!env.E2E_SERVICE_ROLE_KEY &&
+		!!env.TEST_SUPABASE_URL &&
+		isLocalOverride(env.TEST_SUPABASE_URL);
 	const pick = (override: string | undefined, fallback: string) =>
 		overridesAllowed && override && isLocalOverride(override) ? override : fallback;
 

@@ -104,7 +104,7 @@ When('I request a password reset', async ({ page, state }) => {
 });
 
 When('I visit the password recovery page directly', async ({ page }) => {
-	await page.goto('/reset-password');
+	await page.goto('/reset-password?code=arbitrary-code');
 });
 
 When('I enter two different replacement passwords', async ({ page, state }) => {

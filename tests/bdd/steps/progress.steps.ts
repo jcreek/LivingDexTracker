@@ -8,6 +8,20 @@ async function ensurePokemonModal(page: Parameters<typeof firstPokemon>[0]) {
 	if ((await page.getByRole('dialog').count()) === 0) await openFirstPokemon(page);
 }
 
+async function persistCatchChange(
+	page: Parameters<typeof firstPokemon>[0],
+	action: () => Promise<void>
+) {
+	const persistence = page.waitForResponse(
+		(response) =>
+			response.request().method() === 'POST' &&
+			new URL(response.url()).pathname.endsWith('/catch-records')
+	);
+	await action();
+	const response = await persistence;
+	expect(response.ok(), `catch-record persistence failed: ${response.status()}`).toBe(true);
+}
+
 async function settleAndReload(page: Parameters<typeof firstPokemon>[0]) {
 	await expect(page.getByText(/Saving…/)).toHaveCount(0, { timeout: 15_000 });
 	await page.reload({ waitUntil: 'networkidle' });
@@ -21,7 +35,7 @@ When('I mark the first Pokémon as caught', async ({ page }) => {
 		.getByText('Caught:', { exact: true })
 		.locator('..')
 		.getByRole('checkbox');
-	await checkbox.check();
+	await persistCatchChange(page, () => checkbox.check());
 });
 
 When('I mark the first Pokémon as needing evolution', async ({ page }) => {
@@ -31,23 +45,25 @@ When('I mark the first Pokémon as needing evolution', async ({ page }) => {
 		.getByText('Needs to evolve:', { exact: true })
 		.locator('..')
 		.getByRole('checkbox');
-	await checkbox.check();
+	await persistCatchChange(page, () => checkbox.check());
 });
 
 When('I mark the first Pokémon as in HOME', async ({ page }) => {
 	await ensurePokemonModal(page);
-	await page
+	const checkbox = page
 		.getByRole('dialog')
 		.getByText('In Home:', { exact: true })
 		.locator('..')
-		.getByRole('checkbox')
-		.check();
+		.getByRole('checkbox');
+	await persistCatchChange(page, () => checkbox.check());
 });
 
 When('I add the note {string} to the first Pokémon', async ({ page }, note: string) => {
 	await ensurePokemonModal(page);
-	await page.getByRole('dialog').getByLabel('Notes:').fill(note);
-	await page.getByRole('dialog').getByLabel('Notes:').blur();
+	await persistCatchChange(page, async () => {
+		await page.getByRole('dialog').getByLabel('Notes:').fill(note);
+		await page.getByRole('dialog').getByLabel('Notes:').blur();
+	});
 });
 
 function boxContainer(page: Parameters<typeof firstPokemon>[0], box: number) {
@@ -60,7 +76,9 @@ function boxContainer(page: Parameters<typeof firstPokemon>[0], box: number) {
 When('I mark box {int} as caught', async ({ page }, box: number) => {
 	const container = boxContainer(page, box);
 	await container.getByRole('button', { name: 'Open bulk actions menu' }).click();
-	await container.getByRole('button', { name: 'Mark box as Caught' }).click();
+	await persistCatchChange(page, () =>
+		container.getByRole('button', { name: 'Mark box as Caught' }).click()
+	);
 });
 
 When('I filter to Pokémon that are not caught', async ({ page, state }) => {

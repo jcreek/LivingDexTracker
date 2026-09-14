@@ -108,15 +108,26 @@
 
 			successMessage = 'Password updated successfully! Redirecting to sign in...';
 			sessionStorage.removeItem(recoveryMarkerKey);
-			setTimeout(async () => {
-				await supabase.auth.signOut();
-				await goto('/signin');
-			}, 1_000);
+			setTimeout(() => void finishPasswordReset(), 1_000);
 		} catch (err) {
 			console.error('Update password error:', err);
 			errorMessage = 'An unexpected error occurred. Please try again.';
 		} finally {
 			isLoading = false;
+		}
+	}
+
+	async function finishPasswordReset() {
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				errorMessage = `Password updated, but sign out failed: ${error.message}`;
+				return;
+			}
+			await goto('/signin');
+		} catch (error) {
+			console.error('Sign out after password reset failed:', error);
+			errorMessage = 'Password updated, but sign out failed. Please try again.';
 		}
 	}
 

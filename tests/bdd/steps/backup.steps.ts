@@ -1,10 +1,14 @@
 import { createBdd } from 'playwright-bdd';
 import { test, expect } from '../fixtures';
 import { createDexThroughUi, firstPokemon, openFirstPokemon } from '../support/app';
+import { requireLoopbackUrl } from '../../support/loopback';
 
 const { Given, When, Then } = createBdd(test);
 const MOCK_URL = process.env.MOCK_PROVIDER_URL ?? 'http://127.0.0.1:4199';
-const SUPABASE_URL = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+const SUPABASE_URL = requireLoopbackUrl(
+	process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+	'TEST_SUPABASE_URL'
+);
 
 type Provider = 'google_drive' | 'dropbox';
 

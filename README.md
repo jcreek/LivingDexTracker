@@ -75,9 +75,10 @@ reviewed with product stakeholders, but does not skip it. Missing or ambiguous s
 
 Google Drive and Dropbox scenarios use a local provider server (`scripts/mock-provider-server.mjs`)
 and never contact real provider accounts. The endpoint overrides that point at it are refused unless
-`ALLOW_PROVIDER_ENDPOINT_OVERRIDES=true` **and** the override is a loopback URL - these endpoints
-receive the OAuth client secret and refresh token, so they must not be redirectable in a deployed
-environment. `npm run test:bdd` sets the flag; nothing else should.
+`ALLOW_PROVIDER_ENDPOINT_OVERRIDES=true`, the local test-stack/service-role variables are present,
+and the override is a loopback URL. These endpoints receive the OAuth client secret and refresh
+token, so they must not be redirectable in a deployed environment. `npm run test:bdd` supplies the
+complete test context.
 
 The mock's recorded requests, refresh counter and fail-uploads switch are reset before every scenario
 by an auto fixture in `tests/bdd/fixtures.ts`. That reset is also why the suite runs with a single

@@ -122,6 +122,7 @@ export function startOfflineSync(getUserId: () => string | null): () => void {
 					)
 				)
 			);
+			if (getUserId() !== userId) throw new Error('Session changed during offline synchronization');
 			const result = await workerMessage({
 				type: 'SYNC_OFFLINE_SNAPSHOT',
 				snapshot,

@@ -1,9 +1,14 @@
+import { requireLoopbackUrl } from '../support/loopback';
+
 /**
  * Deletes the users each BDD run provisions, so repeated local runs do not need a full
  * `supabase db reset` to stay clean. Pokédexes, catch records and integrations follow via the
  * schema's cascades. Only the suite's own synthetic addresses are touched.
  */
-const SUPABASE_URL = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+const SUPABASE_URL = requireLoopbackUrl(
+	process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+	'TEST_SUPABASE_URL'
+);
 const OWNED_EMAIL = /^(bdd|other|integration)-.*@example\.test$/;
 
 type AdminUser = { id: string; email?: string };

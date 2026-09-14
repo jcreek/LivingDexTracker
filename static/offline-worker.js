@@ -3,6 +3,7 @@ const OFFLINE_META_CACHE = `${OFFLINE_CACHE_PREFIX}meta-v1`;
 const OFFLINE_META_URL = '/__offline/current';
 let offlineEpoch = 0;
 let offlineOperation = Promise.resolve();
+let claimedUserId = null;
 
 function queueOfflineOperation(operation) {
 	const result = offlineOperation.then(operation, operation);
@@ -63,6 +64,7 @@ async function cacheArtwork(cache, urls) {
 self.addEventListener('message', (event) => {
 	const reply = (value) => event.ports[0]?.postMessage(value);
 	if (event.data?.type === 'CLEAR_OFFLINE_DATA') {
+		claimedUserId = null;
 		offlineEpoch++;
 		event.waitUntil(
 			queueOfflineOperation(async () => {
@@ -75,10 +77,14 @@ self.addEventListener('message', (event) => {
 		return;
 	}
 	if (event.data?.type === 'CLAIM_OFFLINE_USER') {
+		if (typeof event.data.userId !== 'string') {
+			reply({ ok: false, error: 'Invalid offline cache owner' });
+			return;
+		}
+		claimedUserId = event.data.userId;
 		offlineEpoch++;
 		event.waitUntil(
 			queueOfflineOperation(async () => {
-				if (typeof event.data.userId !== 'string') throw new Error('Invalid offline cache owner');
 				const meta = await currentOfflineMeta();
 				if (meta?.userId && meta.userId !== event.data.userId) {
 					await clearOfflineData();
@@ -91,6 +97,7 @@ self.addEventListener('message', (event) => {
 	}
 	if (event.data?.type !== 'SYNC_OFFLINE_SNAPSHOT') return;
 	const syncEpoch = offlineEpoch;
+	const syncUserId = claimedUserId;
 
 	event.waitUntil(
 		queueOfflineOperation(async () => {
@@ -100,6 +107,9 @@ self.addEventListener('message', (event) => {
 				const snapshot = event.data.snapshot;
 				if (!snapshot || snapshot.version !== 1 || typeof snapshot.userId !== 'string') {
 					throw new Error('Unsupported offline snapshot');
+				}
+				if (!syncUserId || snapshot.userId !== syncUserId) {
+					throw new Error('Offline snapshot owner did not match the claimed account');
 				}
 				const previousMeta = await currentOfflineMeta();
 				if (previousMeta?.userId && previousMeta.userId !== snapshot.userId)

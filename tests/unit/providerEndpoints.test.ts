@@ -5,6 +5,8 @@ import {
 } from '$lib/services/providerEndpoints';
 
 const localOverrides = {
+	TEST_SUPABASE_URL: 'http://127.0.0.1:54321',
+	E2E_SERVICE_ROLE_KEY: 'local-test-service-key',
 	GOOGLE_OAUTH_AUTHORIZE_URL: 'http://127.0.0.1:4199/google/authorize',
 	GOOGLE_OAUTH_TOKEN_URL: 'http://127.0.0.1:4199/google/token',
 	GOOGLE_DRIVE_API_URL: 'http://127.0.0.1:4199/google/drive',
@@ -49,6 +51,19 @@ describe('provider endpoints', () => {
 		});
 	});
 
+	it('refuses HTTP overrides without a verified local test stack', () => {
+		const { TEST_SUPABASE_URL, E2E_SERVICE_ROLE_KEY, ...deployedOverrides } = localOverrides;
+		expect(TEST_SUPABASE_URL).toBeTruthy();
+		expect(E2E_SERVICE_ROLE_KEY).toBeTruthy();
+		expect(
+			resolveProviderEndpoints({
+				...deployedOverrides,
+				NODE_ENV: 'production',
+				ALLOW_PROVIDER_ENDPOINT_OVERRIDES: 'true'
+			})
+		).toEqual(PROVIDER_ENDPOINT_DEFAULTS);
+	});
+
 	it.each([
 		'https://attacker.example/token',
 		'http://127.0.0.1.attacker.example/token',
@@ -58,6 +73,8 @@ describe('provider endpoints', () => {
 		''
 	])('refuses the non-loopback override %j even when overrides are allowed', (value) => {
 		const endpoints = resolveProviderEndpoints({
+			TEST_SUPABASE_URL: localOverrides.TEST_SUPABASE_URL,
+			E2E_SERVICE_ROLE_KEY: localOverrides.E2E_SERVICE_ROLE_KEY,
 			ALLOW_PROVIDER_ENDPOINT_OVERRIDES: 'true',
 			GOOGLE_OAUTH_TOKEN_URL: value,
 			DROPBOX_OAUTH_TOKEN_URL: value
@@ -69,6 +86,8 @@ describe('provider endpoints', () => {
 	it('accepts localhost as well as 127.0.0.1', () => {
 		expect(
 			resolveProviderEndpoints({
+				TEST_SUPABASE_URL: localOverrides.TEST_SUPABASE_URL,
+				E2E_SERVICE_ROLE_KEY: localOverrides.E2E_SERVICE_ROLE_KEY,
 				ALLOW_PROVIDER_ENDPOINT_OVERRIDES: 'true',
 				GOOGLE_OAUTH_TOKEN_URL: 'http://localhost:4199/google/token'
 			}).google.token

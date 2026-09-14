@@ -1,7 +1,11 @@
 import type { Page } from '@playwright/test';
 import type { ScenarioState } from '../fixtures';
+import { requireLoopbackUrl } from '../../support/loopback';
 
-const SUPABASE_URL = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+const SUPABASE_URL = requireLoopbackUrl(
+	process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+	'TEST_SUPABASE_URL'
+);
 const SERVICE_ROLE_KEY = process.env.E2E_SERVICE_ROLE_KEY;
 
 function requireServiceRoleKey(): string {

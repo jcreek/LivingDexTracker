@@ -1,6 +1,7 @@
 import { createBdd } from 'playwright-bdd';
 import { test, expect } from '../fixtures';
 import { createDexThroughUi, deleteAllPokedexes } from '../support/app';
+import { requireLoopbackUrl } from '../../support/loopback';
 
 const { Given, When, Then } = createBdd(test);
 
@@ -37,7 +38,10 @@ Given('I have a Shiny Dex named {string}', async ({ page, state }, name: string)
 });
 
 Given('another trainer has a Pokédex', async ({ state }) => {
-	const url = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+	const url = requireLoopbackUrl(
+		process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+		'TEST_SUPABASE_URL'
+	);
 	const key = process.env.E2E_SERVICE_ROLE_KEY;
 	if (!key) throw new Error('E2E_SERVICE_ROLE_KEY is required');
 	const headers = {

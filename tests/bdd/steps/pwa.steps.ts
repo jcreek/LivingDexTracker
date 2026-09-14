@@ -40,6 +40,10 @@ When('I open the built application', async ({ page, state }) => {
 	recordLegacyWorkerRequest(page, state);
 	await page.goto('/');
 	await waitForServiceWorker(page);
+	if (!(await page.evaluate(() => !!navigator.serviceWorker.controller))) {
+		await page.reload();
+		await waitForServiceWorker(page);
+	}
 });
 
 Given('I have opened the built application online', async ({ page, state }) => {
@@ -79,12 +83,13 @@ Given('my offline copy is synchronized', async ({ page, state }) => {
 		const metaResponse = await (
 			await caches.open('livingdex-offline-meta-v1')
 		).match('/__offline/current');
-		if (!metaResponse) return '';
+		if (!metaResponse) throw new Error('Offline snapshot metadata was not cached');
 		const meta = await metaResponse.json();
 		const snapshotResponse = await (
 			await caches.open(meta.dataCache)
 		).match(`/__offline/snapshot/${encodeURIComponent(meta.userId)}`);
-		return snapshotResponse ? await snapshotResponse.text() : '';
+		if (!snapshotResponse) throw new Error('Offline snapshot payload was not cached');
+		return snapshotResponse.text();
 	});
 	expect(serializedSnapshot).not.toMatch(/access_token|refresh_token/i);
 });
@@ -104,7 +109,9 @@ When('I go offline and then return online', async ({ page }) => {
 });
 
 Then('a service worker controls the page', async ({ page }) => {
-	expect(await waitForServiceWorker(page)).toMatch(/\/(?:sw|prompt-sw)\.js$/);
+	await expect
+		.poll(() => page.evaluate(() => navigator.serviceWorker.controller?.scriptURL ?? null))
+		.toMatch(/\/(?:sw|prompt-sw)\.js$/);
 	expect(
 		await page.evaluate(() =>
 			navigator.serviceWorker.getRegistrations().then((items) => items.length)

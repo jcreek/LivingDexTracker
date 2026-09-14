@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { requireLoopbackUrl } from '../support/loopback';
 
-const url = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
+const url = requireLoopbackUrl(
+	process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321',
+	'TEST_SUPABASE_URL'
+);
 const anonKey = process.env.TEST_SUPABASE_ANON_KEY;
 const serviceKey = process.env.E2E_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 
