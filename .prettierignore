@@ -9,6 +9,7 @@ src/lib/helpers/pokeapi-pokemon.json
 static/sprites/pokemon.json
 src/lib/helpers/pokedex.json
 src/lib/helpers/sprites.json
+static/sprites-small/manifest.json
 
 # Machine-local editor and tool settings.
 **/*.local.json

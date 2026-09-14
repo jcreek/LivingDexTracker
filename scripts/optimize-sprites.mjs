@@ -3,13 +3,16 @@ import path from 'node:path';
 import process from 'node:process';
 import { mkdir, readdir, rename } from 'node:fs/promises';
 import sharp from 'sharp';
+import { writeSpriteManifest } from './sprite-manifest.mjs';
 
 const inputDir = process.env.SPRITE_INPUT_DIR ?? path.join(process.cwd(), 'static', 'sprites');
 const outputDir =
 	process.env.SPRITE_OUTPUT_DIR ?? path.join(process.cwd(), 'static', 'sprites-small');
 const format = (process.env.SPRITE_FORMAT ?? 'webp').toLowerCase();
 const quality = Number(process.env.SPRITE_QUALITY ?? 80);
-const maxSize = Number(process.env.SPRITE_MAX_SIZE ?? 0);
+// Sprites render at 44-64px in the box grid and up to 192px in the detail view, and every byte is
+// downloaded (and cached offline) per sprite, so larger sources only cost users data.
+const maxSize = Number(process.env.SPRITE_MAX_SIZE ?? 192);
 
 if (!['png', 'webp'].includes(format)) {
 	console.error(`Unsupported SPRITE_FORMAT "${format}". Use "png" or "webp".`);
@@ -69,4 +72,5 @@ for (const [index, file] of files.entries()) {
 	}
 }
 
-console.log('Sprite optimization complete.');
+const manifest = await writeSpriteManifest(outputDir);
+console.log(`Sprite optimization complete. Manifest lists ${manifest.files.length} sprites.`);

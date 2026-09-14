@@ -263,4 +263,11 @@
 		width: 100%;
 		aspect-ratio: 1;
 	}
+
+	/* Sprite files are at most 192px, so cap the display size there to keep them crisp. */
+	.sprite-container :global(img) {
+		width: 192px;
+		max-width: 100%;
+		height: auto;
+	}
 </style>
