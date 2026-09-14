@@ -27,6 +27,10 @@ export const GET = async (event: RequestEvent) => {
 		}
 
 		const stats = data[0];
+		// The figures refresh at most daily, so let browsers and the CDN reuse them.
+		event.setHeaders({
+			'cache-control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400'
+		});
 		return json({
 			pokemonCaught: stats.pokemon_caught,
 			users: stats.total_users,

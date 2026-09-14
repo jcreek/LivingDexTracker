@@ -5,9 +5,10 @@ import AdapterNetlify from '@sveltejs/adapter-netlify';
 export const nodeAdapter = process.env.NODE_ADAPTER === 'true';
 
 // Netlify is the deployment target; the node adapter exists so the service worker
-// build tests can check the `build/client` layout a Node server produces.
+// build tests can check the `build/client` layout a Node server produces, and so Lighthouse CI
+// can audit a production build. Netlify's CDN compresses responses, so precompress here to match.
 export const adapter = nodeAdapter
-	? AdapterNode()
+	? AdapterNode({ precompress: true })
 	: AdapterNetlify({
 			// if true, will create a Netlify Edge Function rather
 			// than using standard Node-based functions

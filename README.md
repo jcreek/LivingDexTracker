@@ -40,7 +40,17 @@ The test suite is split by responsibility so a failure points to the correct lay
 - `tests/integration` checks the migrated Supabase schema, views, constraints, RLS, and repositories.
 - `tests/bdd/features` is the executable Gherkin specification for user-visible behaviour. Step
   definitions and browser fixtures live beside it under `tests/bdd`.
-- `tests/build` verifies generated service-worker and manifest artifacts after each supported build.
+- `tests/build` verifies generated service-worker and manifest artifacts after each supported build,
+  and fails if the gzipped JS or CSS every page loads grows past its budget.
+- `lighthouserc.cjs` audits the public pages with Lighthouse CI (`npm run test:lighthouse`, which
+  builds and serves the Node output). PRs fail if Performance, Accessibility, Best Practices or SEO
+  drops below 90, or if LCP, TBT, CLS, script, stylesheet or total transfer size exceeds its budget.
+  CI runs it with both the mobile and desktop profiles (`LHCI_PRESET=desktop`).
+- `tests/bdd/features/performance.feature` holds time budgets for signed-in pages Lighthouse can't
+  reach: opening a Pokédex and switching between it and the Pokédex list.
+
+The budgets sit just above current measurements so regressions fail the PR. If a change genuinely
+needs more, raise the budget in the same PR so the cost is reviewed.
 
 Run the offline suites while developing. `test:fast` includes the coverage run, so there is no need
 to run both:

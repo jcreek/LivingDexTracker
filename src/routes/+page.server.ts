@@ -1,17 +1,28 @@
+import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+
+export type PublicStats = {
+	pokemonCaught: number;
+	users: number;
+	livingDexesCompleted: number;
+};
 
 /**
  * Server-side load function for the homepage
  *
- * Fetches public statistics from the database and passes them to the page component.
- * Stats are cached for 24 hours to improve performance.
+ * Signed-in users go straight to their Pokédexes. For everyone else the page renders at once and
+ * the public statistics stream in afterwards, so a slow stats query never delays the first paint.
  */
-export const load: PageServerLoad = async ({ fetch }) => {
-	// Fetch stats from database
-	const statsResponse = await fetch('/api/stats');
-	const statsData = await statsResponse.json();
+export const load: PageServerLoad = async ({ fetch, locals }) => {
+	const { user } = await locals.safeGetSession();
+	if (user) {
+		throw redirect(303, '/my-pokedexes');
+	}
 
-	return {
-		stats: statsData.error ? null : statsData
-	};
+	const stats: Promise<PublicStats | null> = fetch('/api/stats')
+		.then((response) => response.json())
+		.then((statsData) => (statsData.error ? null : statsData))
+		.catch(() => null);
+
+	return { stats };
 };

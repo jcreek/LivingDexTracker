@@ -22,8 +22,12 @@
 <div class="min-h-[calc(100vh-16rem)] bg-base-100 py-8 md:py-16 px-4 sm:px-6 lg:px-8">
 	<div class="max-w-6xl mx-auto">
 		<!-- Success Badge -->
-		{#if showSuccess}
-			<div class="flex justify-center mb-8 animate-fade-in">
+		<!-- Always rendered (faded in) so the hero doesn't jump down when the badge appears. -->
+		<div
+			class="flex justify-center mb-8 transition-opacity duration-500"
+			class:opacity-0={!showSuccess}
+		>
+			<div class="flex justify-center">
 				<div class="badge badge-success badge-lg gap-2 p-6 shadow-lg">
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -42,7 +46,7 @@
 					<span class="text-lg font-semibold">Account Created Successfully!</span>
 				</div>
 			</div>
-		{/if}
+		</div>
 
 		<!-- Hero Content -->
 		<div class="hero">
@@ -315,21 +319,6 @@
 </div>
 
 <style>
-	@keyframes fade-in {
-		from {
-			opacity: 0;
-			transform: translateY(-10px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	.animate-fade-in {
-		animation: fade-in 0.5s ease-out forwards;
-	}
-
 	@keyframes pulse {
 		0%,
 		100% {
@@ -346,7 +335,6 @@
 
 	/* Respect user's motion preferences */
 	@media (prefers-reduced-motion: reduce) {
-		.animate-fade-in,
 		.animate-pulse {
 			animation: none;
 		}

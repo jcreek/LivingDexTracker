@@ -80,6 +80,34 @@ jobs:
       - run: npm ci
       - run: npm run test:build
 
+  lighthouse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        preset: [mobile, desktop]
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      # The homepage streams public stats from the database, so audit against a real stack.
+      - run: npx supabase start
+      - run: npm run test:lighthouse
+        env:
+          LHCI_PRESET: ${{ matrix.preset }}
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: lighthouse-${{ matrix.preset }}
+          path: .lighthouseci/
+          if-no-files-found: ignore
+      - if: always()
+        run: npx supabase stop
+
   bdd:
     runs-on: ubuntu-latest
     timeout-minutes: 30
