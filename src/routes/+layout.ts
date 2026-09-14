@@ -1,7 +1,6 @@
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import type { LayoutLoad } from './$types';
-import { createBrowserClient, isBrowser, parse, serialize } from '@supabase/ssr';
-import type { CookieSerializeOptions } from 'cookie';
+import { createBrowserClient, createServerClient, isBrowser } from '@supabase/ssr';
 
 export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 	depends('supabase:auth');
@@ -31,29 +30,23 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 		return response;
 	};
 
-	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
-		global: {
-			fetch: authFetch
-		},
-		cookies: {
-			get(key: string) {
-				if (!isBrowser()) {
-					return JSON.stringify(data.session);
+	// The browser client manages document.cookie itself, including removing stale session chunks.
+	const supabase = isBrowser()
+		? createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+				global: {
+					fetch: authFetch
 				}
-
-				const cookie = parse(document.cookie);
-				return cookie[key];
-			},
-			set(key: string, value: string, options: CookieSerializeOptions) {
-				if (isBrowser()) document.cookie = serialize(key, value, { ...options, path: '/' });
-			},
-			remove(key: string, options: CookieSerializeOptions) {
-				if (isBrowser()) {
-					document.cookie = serialize(key, '', { ...options, path: '/', maxAge: 0 });
+			})
+		: createServerClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+				global: {
+					fetch
+				},
+				cookies: {
+					getAll() {
+						return data.cookies;
+					}
 				}
-			}
-		}
-	});
+			});
 
 	/**
 	 * It's fine to use `getSession` here, because on the client, `getSession` is

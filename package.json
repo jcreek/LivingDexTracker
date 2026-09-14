@@ -78,8 +78,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/ssr": "^0.1.0",
-		"@supabase/supabase-js": "^2.42.0",
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.116.0",
 		"nanoid": "^5.0.4",
 		"sharp": "^0.33.4"
 	},
