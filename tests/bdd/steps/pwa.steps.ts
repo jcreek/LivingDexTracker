@@ -109,14 +109,14 @@ When('I open the offline guide', async ({ page }) => {
 });
 
 When('I open the offline guide from the user menu', async ({ page }) => {
-	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('button', { name: 'Account menu' }).click();
 	await page.getByRole('link', { name: 'Using Offline' }).click();
 	await page.waitForURL(/\/offline-guide$/);
 });
 
 // Client-side navigation keeps the sync status in memory, so the old layout would show it at once.
 When('I return to my Pokédexes from the user menu', async ({ page }) => {
-	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('button', { name: 'Account menu' }).click();
 	await page.getByRole('link', { name: 'My Pokédexes' }).click();
 	await page.waitForURL(/\/my-pokedexes$/);
 });

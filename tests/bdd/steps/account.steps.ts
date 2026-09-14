@@ -81,7 +81,7 @@ When('I visit the public home page', async ({ page }) => {
 });
 
 When('I sign out', async ({ page }) => {
-	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('button', { name: 'Account menu' }).click();
 	await page.getByRole('button', { name: 'Sign Out', exact: true }).click();
 });
 
@@ -93,7 +93,7 @@ When('the sign-out request fails', async ({ page }) => {
 			body: '{"message":"unavailable"}'
 		})
 	);
-	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('button', { name: 'Account menu' }).click();
 	await page.getByRole('button', { name: 'Sign Out', exact: true }).click();
 });
 
