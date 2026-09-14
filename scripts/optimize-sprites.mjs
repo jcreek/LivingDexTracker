@@ -3,6 +3,7 @@ import path from 'node:path';
 import process from 'node:process';
 import { mkdir, readdir, rename } from 'node:fs/promises';
 import sharp from 'sharp';
+import { writeSpriteManifest } from './sprite-manifest.mjs';
 
 const inputDir = process.env.SPRITE_INPUT_DIR ?? path.join(process.cwd(), 'static', 'sprites');
 const outputDir =
@@ -69,4 +70,5 @@ for (const [index, file] of files.entries()) {
 	}
 }
 
-console.log('Sprite optimization complete.');
+const manifest = await writeSpriteManifest(outputDir);
+console.log(`Sprite optimization complete. Manifest lists ${manifest.files.length} sprites.`);

@@ -1,3 +1,10 @@
+/** Folder holding every sprite; paths in static/sprites-small/manifest.json are relative to it. */
+export function spriteRoot(useLocalSprites: boolean): string {
+	return useLocalSprites
+		? '/sprites-small/home'
+		: 'https://raw.githubusercontent.com/jcreek/LivingDexTracker/master/static/sprites-small/home';
+}
+
 export function resolveSpriteUrl(
 	entry: { pokedexNumber: number; form?: string; spriteKey?: string },
 	shiny: boolean,
@@ -34,9 +41,7 @@ export function resolveSpriteUrl(
 		}
 	}
 
-	let root = useLocalSprites
-		? '/sprites-small/home'
-		: 'https://raw.githubusercontent.com/jcreek/LivingDexTracker/master/static/sprites-small/home';
+	let root = spriteRoot(useLocalSprites);
 	if (shiny) root += '/shiny';
 	if (/^female\b/i.test(form)) root += '/female';
 	return `${root}/${key}.webp`;

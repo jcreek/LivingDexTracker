@@ -7,6 +7,7 @@
 		"dev-generate": "GENERATE_SW=true npx tailwindcss -i ./static/input.css -o ./static/output.css && vite dev",
 		"dev-generate-suppress-w": "GENERATE_SW=true SUPPRESS_WARNING=true npx tailwindcss -i ./static/input.css -o ./static/output.css && vite dev",
 		"sprites:build": "node scripts/optimize-sprites.mjs",
+		"sprites:manifest": "node scripts/sprite-manifest.mjs",
 		"build-generate-sw": "npm run tailwind && GENERATE_SW=true vite build",
 		"build-generate-sw-node": "npm run tailwind && NODE_ADAPTER=true GENERATE_SW=true vite build",
 		"build": "npm run tailwind && vite build",
@@ -78,8 +79,8 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@supabase/ssr": "^0.1.0",
-		"@supabase/supabase-js": "^2.42.0",
+		"@supabase/ssr": "^0.12.7",
+		"@supabase/supabase-js": "^2.116.0",
 		"nanoid": "^5.0.4",
 		"sharp": "^0.33.4"
 	},
