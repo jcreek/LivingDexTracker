@@ -42,6 +42,22 @@ describe('share preview rendering', () => {
 		expect(svg).toContain('42%');
 	});
 
+	it('lists every enabled dex badge and omits an empty description', () => {
+		const svg = buildSharePreviewSvg({
+			...shared,
+			description: '',
+			isShinyDex: true,
+			isOriginDex: true,
+			isFormDex: true,
+			gameScope: 'Scarlet'
+		});
+		for (const badge of ['Living', 'Shiny', 'Origin', 'Form', 'Scarlet']) {
+			expect(svg).toContain(`class="badge">${badge}</text>`);
+		}
+		expect(svg).not.toContain('All Games');
+		expect(svg).not.toContain('class="description"');
+	});
+
 	it('renders a valid 1200 by 630 PNG', async () => {
 		const png = await renderSharePreview(shared);
 		const metadata = await sharp(png).metadata();
