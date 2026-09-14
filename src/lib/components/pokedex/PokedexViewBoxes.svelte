@@ -2,12 +2,17 @@
 	import { onMount } from 'svelte';
 	import type { CatchRecord } from '$lib/models/CatchRecord';
 	import type { CombinedData } from '$lib/models/CombinedData';
+	import type { SharedCatchStatus, SharedCombinedData } from '$lib/models/SharedPokedex';
 	import { calculateBoxPlacement } from '$lib/utils/boxPlacement';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 	import Tooltip from '$lib/components/Tooltip.svelte';
 
 	export let showShiny = false;
-	export let combinedData: CombinedData[] | null;
+	type DisplayData = CombinedData | SharedCombinedData;
+	type DisplayStatus = CatchRecord | SharedCatchStatus | null;
+
+	export let combinedData: DisplayData[] | null;
+	export let readOnly = false;
 	export let boxNumbers: number[] = [];
 	export let creatingRecords = false;
 	export let totalRecordsCreated = 0;
@@ -18,7 +23,7 @@
 	export let markBoxAsInHome: (boxNumber: number) => void = () => {};
 	export let markBoxAsNotInHome: (boxNumber: number) => void = () => {};
 	export let createCatchRecords = () => {};
-	export let onPokemonClick: (pokemon: CombinedData) => void = () => {};
+	export let onPokemonClick: (pokemon: DisplayData) => void = () => {};
 
 	let filterNotCaught = false;
 	let filterNeedsToEvolve = false;
@@ -36,7 +41,7 @@
 		return () => window.removeEventListener('click', close);
 	});
 
-	let filteredCombinedData: CombinedData[] = [];
+	let filteredCombinedData: DisplayData[] = [];
 	let filteredTotal = 0;
 	let overallTotal = 0;
 	let overallCaughtCount = 0;
@@ -47,7 +52,7 @@
 	let filtersActive = false;
 	let filtersKey = '';
 
-	function normalizedStatus(catchRecord: CatchRecord | null) {
+	function normalizedStatus(catchRecord: DisplayStatus) {
 		return {
 			caught: !!catchRecord?.caught,
 			needsToEvolve: !!catchRecord?.haveToEvolve,
@@ -55,7 +60,7 @@
 		};
 	}
 
-	function matchesFilters(catchRecord: CatchRecord | null) {
+	function matchesFilters(catchRecord: DisplayStatus) {
 		const status = normalizedStatus(catchRecord);
 		if (!filtersActive) return true;
 
@@ -148,7 +153,7 @@
 		boxViewLayout === 'comfortable' ? 1 : boxViewLayout === 'compact' ? 0.6 : 0.45;
 	$: spriteSizePx = boxViewLayout === 'comfortable' ? 64 : boxViewLayout === 'compact' ? 52 : 44;
 
-	function cellStatusClasses(catchRecord: CatchRecord | null) {
+	function cellStatusClasses(catchRecord: DisplayStatus) {
 		// Keep borders/layout unchanged; rely on clearer fills + badges instead.
 		if (catchRecord?.caught) {
 			// Match legend (green-600) while keeping sprites readable.
@@ -161,7 +166,7 @@
 		return '';
 	}
 
-	function statusLabel(catchRecord: CatchRecord | null) {
+	function statusLabel(catchRecord: DisplayStatus) {
 		const parts: string[] = [];
 		if (catchRecord?.caught) parts.push('Caught');
 		if (catchRecord?.haveToEvolve) parts.push('Needs to evolve');
@@ -169,7 +174,7 @@
 		return parts.length ? parts.join(', ') : 'Not caught';
 	}
 
-	function cellBackgroundColourStyle(index: number, catchRecord: CatchRecord | null) {
+	function cellBackgroundColourStyle(index: number, catchRecord: DisplayStatus) {
 		if (catchRecord?.caught || catchRecord?.haveToEvolve) {
 			return '';
 		} else {
@@ -353,88 +358,88 @@
 						<div class="mb-8">
 							<div class="flex flex-wrap items-center justify-between gap-3 mb-4 relative z-20">
 								<h2 class="text-xl font-bold">Box {boxNumber}</h2>
-								<div class="relative">
-									<button
-										type="button"
-										class="btn btn-sm btn-outline relative z-[210]"
-										aria-label="Open bulk actions menu"
-										aria-haspopup="menu"
-										aria-controls={bulkMenuId}
-										aria-expanded={openBulkMenuForBox === boxNumber}
-										on:click={(event) => {
-											event.stopPropagation();
-											openBulkMenuForBox = openBulkMenuForBox === boxNumber ? null : boxNumber;
-										}}
-										on:keydown={(event) => {
-											if (event.key === 'Escape') openBulkMenuForBox = null;
-										}}
-									>
-										⋯
-									</button>
-
-									{#if openBulkMenuForBox === boxNumber}
-										<ul
-											id={bulkMenuId}
-											class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
+								{#if !readOnly}<div class="relative">
+										<button
+											type="button"
+											class="btn btn-sm btn-outline relative z-[210]"
+											aria-label="Open bulk actions menu"
+											aria-haspopup="menu"
+											aria-controls={bulkMenuId}
+											aria-expanded={openBulkMenuForBox === boxNumber}
+											on:click={(event) => {
+												event.stopPropagation();
+												openBulkMenuForBox = openBulkMenuForBox === boxNumber ? null : boxNumber;
+											}}
+											on:keydown={(event) => {
+												if (event.key === 'Escape') openBulkMenuForBox = null;
+											}}
 										>
-											<li>
-												<button
-													type="button"
-													on:click|stopPropagation={() => {
-														markBoxAsNotCaught(boxNumber);
-														openBulkMenuForBox = null;
-													}}
-												>
-													Mark box as Not caught
-												</button>
-											</li>
-											<li>
-												<button
-													type="button"
-													on:click|stopPropagation={() => {
-														markBoxAsCaught(boxNumber);
-														openBulkMenuForBox = null;
-													}}
-												>
-													Mark box as Caught
-												</button>
-											</li>
-											<li>
-												<button
-													type="button"
-													on:click|stopPropagation={() => {
-														markBoxAsNeedsToEvolve(boxNumber);
-														openBulkMenuForBox = null;
-													}}
-												>
-													Mark box as Needs to evolve
-												</button>
-											</li>
-											<li>
-												<button
-													type="button"
-													on:click|stopPropagation={() => {
-														markBoxAsInHome(boxNumber);
-														openBulkMenuForBox = null;
-													}}
-												>
-													Mark box as In HOME
-												</button>
-											</li>
-											<li>
-												<button
-													type="button"
-													on:click|stopPropagation={() => {
-														markBoxAsNotInHome(boxNumber);
-														openBulkMenuForBox = null;
-													}}
-												>
-													Mark box as Not in HOME
-												</button>
-											</li>
-										</ul>
-									{/if}
-								</div>
+											⋯
+										</button>
+
+										{#if openBulkMenuForBox === boxNumber}
+											<ul
+												id={bulkMenuId}
+												class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
+											>
+												<li>
+													<button
+														type="button"
+														on:click|stopPropagation={() => {
+															markBoxAsNotCaught(boxNumber);
+															openBulkMenuForBox = null;
+														}}
+													>
+														Mark box as Not caught
+													</button>
+												</li>
+												<li>
+													<button
+														type="button"
+														on:click|stopPropagation={() => {
+															markBoxAsCaught(boxNumber);
+															openBulkMenuForBox = null;
+														}}
+													>
+														Mark box as Caught
+													</button>
+												</li>
+												<li>
+													<button
+														type="button"
+														on:click|stopPropagation={() => {
+															markBoxAsNeedsToEvolve(boxNumber);
+															openBulkMenuForBox = null;
+														}}
+													>
+														Mark box as Needs to evolve
+													</button>
+												</li>
+												<li>
+													<button
+														type="button"
+														on:click|stopPropagation={() => {
+															markBoxAsInHome(boxNumber);
+															openBulkMenuForBox = null;
+														}}
+													>
+														Mark box as In HOME
+													</button>
+												</li>
+												<li>
+													<button
+														type="button"
+														on:click|stopPropagation={() => {
+															markBoxAsNotInHome(boxNumber);
+															openBulkMenuForBox = null;
+														}}
+													>
+														Mark box as Not in HOME
+													</button>
+												</li>
+											</ul>
+										{/if}
+									</div>{/if}
 							</div>
 							<div class="grid grid-cols-6">
 								{#each BOX_POSITIONS as positionInBox}
@@ -583,7 +588,9 @@
 					If you're seeing this, you probably haven't created your Pokédex data yet. Please do so by
 					clicking this button.
 				</p>
-				<button class="btn" on:click={createCatchRecords}>Create Pokédex data</button>
+				{#if !readOnly}
+					<button class="btn" on:click={createCatchRecords}>Create Pokédex data</button>
+				{/if}
 			{/if}
 		{:else}
 			<div class="min-w-max mx-auto">

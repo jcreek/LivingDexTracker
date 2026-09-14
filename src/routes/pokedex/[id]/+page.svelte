@@ -17,6 +17,7 @@
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
 	import { requestOfflineSync } from '$lib/stores/offlineSync';
+	import type { SharedCombinedData } from '$lib/models/SharedPokedex';
 
 	export let data: PageData;
 
@@ -49,6 +50,10 @@
 	let boxNumbers: number[] = [];
 	let showModal = false;
 	let selectedPokemon: CombinedData | null = null;
+	let showShareModal = false;
+	let shareUrl = '';
+	let shareFeedback = '';
+	let nativeShareSupported = false;
 
 	let catchWriteQueue: ReturnType<typeof createCatchRecordWriteQueue> | null = null;
 	let catchWriteQueueKey: string | null = null;
@@ -148,9 +153,45 @@
 		resetExportState();
 	});
 
-	function openPokemonModal(pokemon: CombinedData) {
-		selectedPokemon = pokemon;
+	function openPokemonModal(pokemon: CombinedData | SharedCombinedData) {
+		selectedPokemon = pokemon as CombinedData;
 		showModal = true;
+	}
+
+	function openShareModal() {
+		if (!pokedex?.shareToken || !browser) return;
+		shareUrl = `${window.location.origin}/shared/${pokedex.shareToken}`;
+		shareFeedback = '';
+		showShareModal = true;
+	}
+
+	function closeShareModal() {
+		showShareModal = false;
+		shareFeedback = '';
+	}
+
+	async function copyShareLink() {
+		try {
+			await navigator.clipboard.writeText(shareUrl);
+			shareFeedback = 'Link copied';
+		} catch {
+			shareFeedback = 'Copy failed — select the link above to copy it manually.';
+		}
+	}
+
+	async function sharePokedex() {
+		if (!nativeShareSupported || !pokedex) return;
+		try {
+			await navigator.share({
+				title: pokedex.name,
+				text: `See my ${pokedex.name} progress on Living Dex Tracker.`,
+				url: shareUrl
+			});
+		} catch (error) {
+			if (!(error instanceof DOMException && error.name === 'AbortError')) {
+				shareFeedback = 'Sharing failed. You can copy the link instead.';
+			}
+		}
 	}
 
 	function closePokemonModal() {
@@ -438,6 +479,7 @@
 
 	onMount(() => {
 		if (!browser) return;
+		nativeShareSupported = typeof navigator.share === 'function';
 
 		const flushKeepalive = () => {
 			if (!catchWriteQueue) return;
@@ -617,6 +659,20 @@
 								Save failed (will retry)
 							</div>
 						{/if}
+						<button type="button" class="btn btn-primary btn-sm" on:click={openShareModal}>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								class="h-4 w-4"
+								viewBox="0 0 20 20"
+								fill="currentColor"
+								aria-hidden="true"
+							>
+								<path
+									d="M15 8a3 3 0 1 0-2.83-4L7.91 6.13a3 3 0 0 0 0 1.74L12.17 10A3 3 0 1 0 13 8.59L8.83 6.5 13 4.41A3 3 0 0 0 15 8Zm0 10a3 3 0 1 0-2.83-4L7.91 11.87a3 3 0 1 0 0 1.74L12.17 15.7A3 3 0 0 0 15 18Z"
+								/>
+							</svg>
+							Share
+						</button>
 						<a href="/my-pokedexes" class="btn btn-outline btn-sm">
 							<svg
 								xmlns="http://www.w3.org/2000/svg"
@@ -666,5 +722,40 @@
 				on:updateCatch={handleModalCatchUpdate}
 			/>
 		</PokedexModal>
+	{/if}
+
+	{#if showShareModal}
+		<div class="modal modal-open" role="dialog" aria-modal="true" aria-labelledby="share-title">
+			<div class="modal-box">
+				<h2 id="share-title" class="font-bold text-xl">Share {pokedex.name}</h2>
+				<p class="py-3 text-sm text-base-content/70">
+					Anyone with this link can view live progress. Personal notes are never shared.
+				</p>
+				<label class="label" for="share-url"><span class="label-text">Read-only link</span></label>
+				<input
+					id="share-url"
+					class="input input-bordered w-full"
+					value={shareUrl}
+					readonly
+					on:focus={(event) => event.currentTarget.select()}
+				/>
+				{#if shareFeedback}
+					<p class="text-sm mt-2" role="status">{shareFeedback}</p>
+				{/if}
+				<div class="modal-action">
+					<button type="button" class="btn btn-ghost" on:click={closeShareModal}>Close</button>
+					<button type="button" class="btn btn-outline" on:click={copyShareLink}>Copy link</button>
+					{#if nativeShareSupported}
+						<button type="button" class="btn btn-primary" on:click={sharePokedex}>Share…</button>
+					{/if}
+				</div>
+			</div>
+			<button
+				class="modal-backdrop"
+				type="button"
+				aria-label="Close share dialog"
+				on:click={closeShareModal}
+			></button>
+		</div>
 	{/if}
 {/if}

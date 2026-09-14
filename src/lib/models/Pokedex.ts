@@ -1,5 +1,6 @@
 export interface Pokedex {
 	_id: string;
+	shareToken: string;
 	userId: string;
 	name: string;
 	description: string;
@@ -13,6 +14,7 @@ export interface Pokedex {
 
 export interface PokedexDB {
 	id: string;
+	shareToken: string;
 	userId: string;
 	name: string;
 	description: string;

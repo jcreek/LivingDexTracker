@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { CatchRecord } from '$lib/models/CatchRecord';
+	import type { SharedCatchStatus } from '$lib/models/SharedPokedex';
 	import type { CatchInformationItem, PokedexEntry } from '$lib/models/PokedexEntry';
 	import PokemonSprite from '../PokemonSprite.svelte';
 	import { createEventDispatcher } from 'svelte';
@@ -11,9 +12,11 @@
 	export let showShiny: boolean;
 	export let userId: string | null = null;
 	export let pokedexId: string;
+	export let readOnly = false;
+	export let sharedCatchStatus: SharedCatchStatus | null = null;
 
 	// Create a default catch record if none exists
-	$: if (!catchRecord) {
+	$: if (!readOnly && !catchRecord) {
 		catchRecord = {
 			_id: '', // Empty string, not temp ID - will be created by server
 			userId: userId || '',
@@ -36,10 +39,12 @@
 	): value is CatchInformationItem => typeof value !== 'string';
 
 	function updateCatchRecord(source: UpdateCatchSource) {
+		if (readOnly) return;
 		dispatch('updateCatch', { pokedexEntry, catchRecord, source });
 	}
 
 	function onCaughtChange() {
+		if (readOnly) return;
 		if (!catchRecord) return;
 		// Mutually exclusive with "needs to evolve"
 		if (catchRecord.caught) {
@@ -49,6 +54,7 @@
 	}
 
 	function onNeedsToEvolveChange() {
+		if (readOnly) return;
 		if (!catchRecord) return;
 		// Mutually exclusive with "caught"
 		if (catchRecord.haveToEvolve) {
@@ -95,78 +101,94 @@
 		{/if}
 	</div>
 
-	{#if catchRecord}
+	{#if readOnly || catchRecord}
 		<div
 			class="dex-column catch-record-container bg-base-100 text-base-content rounded-lg p-4 mb-4 md:mb-0"
 		>
-			<div class="flex items-center">
-				<div class="form-control">
-					<label class="cursor-pointer label">
-						<span class="block font-bold mr-2">Caught:</span>
-						<input
-							type="checkbox"
-							bind:checked={catchRecord.caught}
-							class="checkbox checkbox-primary"
-							on:change={onCaughtChange}
-						/>
-					</label>
-				</div>
-			</div>
-			<div class="flex items-center">
-				<div class="form-control">
-					<label class="cursor-pointer label">
-						<span class="block font-bold mr-2">Needs to evolve:</span>
-						<input
-							type="checkbox"
-							bind:checked={catchRecord.haveToEvolve}
-							class="checkbox checkbox-primary"
-							on:change={onNeedsToEvolveChange}
-						/>
-					</label>
-				</div>
-			</div>
-			<div class="flex items-center">
-				<div class="form-control">
-					<label class="cursor-pointer label">
-						<span class="block font-bold mr-2">In Home:</span>
-						<input
-							type="checkbox"
-							bind:checked={catchRecord.inHome}
-							class="checkbox checkbox-primary"
-							on:change={() => updateCatchRecord('toggle')}
-						/>
-					</label>
-				</div>
-			</div>
-			{#if pokedexEntry.canGigantamax && showForms}
+			{#if readOnly}
+				<h3 class="text-lg font-semibold mb-2">Progress</h3>
+				<dl class="grid grid-cols-2 gap-x-4 gap-y-2">
+					<dt>Caught</dt>
+					<dd class="font-semibold">{sharedCatchStatus?.caught ? 'Yes' : 'No'}</dd>
+					<dt>Needs to evolve</dt>
+					<dd class="font-semibold">{sharedCatchStatus?.haveToEvolve ? 'Yes' : 'No'}</dd>
+					<dt>In HOME</dt>
+					<dd class="font-semibold">{sharedCatchStatus?.inHome ? 'Yes' : 'No'}</dd>
+					{#if pokedexEntry.canGigantamax && showForms}
+						<dt>Has Gigantamaxed</dt>
+						<dd class="font-semibold">{sharedCatchStatus?.hasGigantamaxed ? 'Yes' : 'No'}</dd>
+					{/if}
+				</dl>
+			{:else if catchRecord}
 				<div class="flex items-center">
 					<div class="form-control">
 						<label class="cursor-pointer label">
-							<span class="block font-bold mr-2">Has Gigantamaxed:</span>
+							<span class="block font-bold mr-2">Caught:</span>
 							<input
 								type="checkbox"
-								bind:checked={catchRecord.hasGigantamaxed}
+								bind:checked={catchRecord.caught}
+								class="checkbox checkbox-primary"
+								on:change={onCaughtChange}
+							/>
+						</label>
+					</div>
+				</div>
+				<div class="flex items-center">
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="block font-bold mr-2">Needs to evolve:</span>
+							<input
+								type="checkbox"
+								bind:checked={catchRecord.haveToEvolve}
+								class="checkbox checkbox-primary"
+								on:change={onNeedsToEvolveChange}
+							/>
+						</label>
+					</div>
+				</div>
+				<div class="flex items-center">
+					<div class="form-control">
+						<label class="cursor-pointer label">
+							<span class="block font-bold mr-2">In Home:</span>
+							<input
+								type="checkbox"
+								bind:checked={catchRecord.inHome}
 								class="checkbox checkbox-primary"
 								on:change={() => updateCatchRecord('toggle')}
 							/>
 						</label>
 					</div>
 				</div>
+				{#if pokedexEntry.canGigantamax && showForms}
+					<div class="flex items-center">
+						<div class="form-control">
+							<label class="cursor-pointer label">
+								<span class="block font-bold mr-2">Has Gigantamaxed:</span>
+								<input
+									type="checkbox"
+									bind:checked={catchRecord.hasGigantamaxed}
+									class="checkbox checkbox-primary"
+									on:change={() => updateCatchRecord('toggle')}
+								/>
+							</label>
+						</div>
+					</div>
+				{/if}
+				<p>
+					<label
+						class="block font-bold mb-1"
+						for={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}>Notes:</label
+					>
+					<textarea
+						bind:value={catchRecord.personalNotes}
+						id={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}
+						class="textarea textarea-bordered w-full"
+						style="min-height: 120px;"
+						on:input={() => updateCatchRecord('notes')}
+						on:change={() => updateCatchRecord('notes-blur')}
+					></textarea>
+				</p>
 			{/if}
-			<p>
-				<label
-					class="block font-bold mb-1"
-					for={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}>Notes:</label
-				>
-				<textarea
-					bind:value={catchRecord.personalNotes}
-					id={`personalNotesInput-${catchRecord._id || pokedexEntry._id}`}
-					class="textarea textarea-bordered w-full"
-					style="min-height: 120px;"
-					on:input={() => updateCatchRecord('notes')}
-					on:change={() => updateCatchRecord('notes-blur')}
-				></textarea>
-			</p>
 		</div>
 	{/if}
 
