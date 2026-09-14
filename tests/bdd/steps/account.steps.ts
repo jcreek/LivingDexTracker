@@ -14,6 +14,28 @@ async function mailCountFor(email: string, subject: string): Promise<number> {
 	return body.total ?? body.messages?.length ?? 0;
 }
 
+async function recoveryLinkFromMail(email: string): Promise<string> {
+	for (let attempt = 0; attempt < 50; attempt++) {
+		const search = await fetch(
+			`${MAILPIT_URL}/api/v1/search?query=${encodeURIComponent(`to:${email} subject:Reset`)}`
+		);
+		if (search.ok) {
+			const result = (await search.json()) as { messages?: Array<{ ID?: string; Id?: string }> };
+			const id = result.messages?.[0]?.ID ?? result.messages?.[0]?.Id;
+			if (id) {
+				const response = await fetch(`${MAILPIT_URL}/api/v1/message/${id}`);
+				if (response.ok) {
+					const message = JSON.stringify(await response.json());
+					const match = message.match(/https?:\/\/[^"'<>\s]+\/auth\/v1\/verify[^"'<>\s]+/);
+					if (match) return match[0].replaceAll('&amp;', '&').replaceAll('\\u0026', '&');
+				}
+			}
+		}
+		await new Promise((resolve) => setTimeout(resolve, 200));
+	}
+	throw new Error('No password recovery link arrived in MailPit');
+}
+
 Given('I am a new visitor', async ({ page }) => {
 	await page.goto('/');
 });
@@ -28,19 +50,16 @@ Given('I am signed in', async ({ page, state }) => {
 	await expect(page).toHaveURL(/\/my-pokedexes$/);
 });
 
-/**
- * Deliberately an ordinary signed-in session, not a recovery one: following a real recovery
- * action link currently bounces to /signin, because the browser client in src/routes/+layout.ts
- * has no cookie `set`/`remove` method and so cannot persist the session it parses out of the
- * URL. Until that is fixed, these scenarios cover the form, not the emailed-link flow - hence
- * the step name. `createRecoveryLink` in ../support/app.ts is ready for when it is.
- */
-Given('I am signed in on the password reset page', async ({ page, state }) => {
+Given('I follow a valid password reset link', async ({ page, state }) => {
 	await createConfirmedUser(state);
-	await signIn(page, state);
-	await expect(page).toHaveURL(/\/my-pokedexes$/);
-	await page.goto('/reset-password');
-	await expect(page.getByLabel('New Password')).toBeVisible();
+	await page.goto('/forgot-password');
+	await page.getByLabel('Email').fill(state.email);
+	await page.getByRole('button', { name: 'Send Reset Link' }).click();
+	await expect(page.getByText('Check your email for the password reset link')).toBeVisible();
+	const actionLink = await recoveryLinkFromMail(state.email);
+	await page.goto(actionLink);
+	await expect(page).toHaveURL(/\/reset-password/);
+	await expect(page.getByLabel('New Password')).toBeEnabled();
 });
 
 When('I register with valid account details', async ({ page, state }) => {
@@ -66,10 +85,26 @@ When('I sign out', async ({ page }) => {
 	await page.getByRole('button', { name: 'Sign Out', exact: true }).click();
 });
 
+When('the sign-out request fails', async ({ page }) => {
+	await page.route('**/auth/v1/logout*', (route) =>
+		route.fulfill({
+			status: 503,
+			contentType: 'application/json',
+			body: '{"message":"unavailable"}'
+		})
+	);
+	await page.getByRole('button', { name: 'usericon' }).click();
+	await page.getByRole('button', { name: 'Sign Out', exact: true }).click();
+});
+
 When('I request a password reset', async ({ page, state }) => {
 	await page.goto('/forgot-password');
 	await page.getByLabel('Email').fill(state.email);
 	await page.getByRole('button', { name: 'Send Reset Link' }).click();
+});
+
+When('I visit the password recovery page directly', async ({ page }) => {
+	await page.goto('/reset-password');
 });
 
 When('I enter two different replacement passwords', async ({ page, state }) => {
@@ -105,9 +140,19 @@ Then('I return to the public home page', async ({ page }) => {
 	await expect(page).toHaveURL(/\/$/);
 });
 
+Then('I remain signed in with an error', async ({ page }) => {
+	await expect(page).toHaveURL(/\/my-pokedexes$/);
+	await expect(page.locator('.alert-error.rounded-none')).toContainText('Sign out failed');
+});
+
 Then('a password reset email is captured locally', async ({ page, state }) => {
 	await expect(page.getByText('Check your email for the password reset link')).toBeVisible();
 	await expect.poll(() => mailCountFor(state.email, 'Reset')).toBeGreaterThan(0);
+});
+
+Then('the replacement password form is unavailable', async ({ page }) => {
+	await expect(page.getByLabel('New Password')).toBeDisabled();
+	await expect(page.getByText(/invalid or expired/i)).toBeVisible();
 });
 
 Then('I am told that the passwords do not match', async ({ page }) => {
@@ -116,4 +161,13 @@ Then('I am told that the passwords do not match', async ({ page }) => {
 
 Then('I am told that my password was updated', async ({ page }) => {
 	await expect(page.getByText(/Password updated successfully/)).toBeVisible();
+});
+
+Then('only the replacement password signs me in', async ({ page, state }) => {
+	await expect(page).toHaveURL(/\/signin$/, { timeout: 10_000 });
+	await signIn(page, state, state.password);
+	await expect(page.locator('.alert-error')).toBeVisible();
+	await page.getByLabel('Password').fill(state.replacementPassword);
+	await page.getByRole('button', { name: 'Sign In' }).click();
+	await expect(page).toHaveURL(/\/my-pokedexes$/);
 });

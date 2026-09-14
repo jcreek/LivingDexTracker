@@ -40,4 +40,3 @@ Feature: Backup and export
     When I update collection progress
     Then the catch remains marked caught
     And the provider failure is shown in backup settings
-

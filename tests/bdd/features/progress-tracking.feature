@@ -35,4 +35,3 @@ Feature: Progress tracking
     When I select the "Compact" box layout
     And I reload the Pokédex
     Then the "Compact" box layout remains selected
-

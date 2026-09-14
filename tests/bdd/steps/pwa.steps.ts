@@ -28,12 +28,22 @@ async function cacheContents(page: Page) {
 	});
 }
 
-When('I open the built application', async ({ page }) => {
+function recordLegacyWorkerRequest(page: Page, state: { legacyServiceWorkerRequested: boolean }) {
+	page.on('request', (request) => {
+		if (new URL(request.url()).pathname === '/service-worker.js') {
+			state.legacyServiceWorkerRequested = true;
+		}
+	});
+}
+
+When('I open the built application', async ({ page, state }) => {
+	recordLegacyWorkerRequest(page, state);
 	await page.goto('/');
 	await waitForServiceWorker(page);
 });
 
-Given('I have opened the built application online', async ({ page }) => {
+Given('I have opened the built application online', async ({ page, state }) => {
+	recordLegacyWorkerRequest(page, state);
 	await page.context().setOffline(false);
 	await page.goto('/');
 	await waitForServiceWorker(page);
@@ -45,11 +55,45 @@ When('I go offline and reload the home page', async ({ page }) => {
 	await page.reload({ waitUntil: 'domcontentloaded' });
 });
 
-When('I go offline and navigate to the sign-in page', async ({ page }) => {
+When('I go offline and reload the sign-in page', async ({ page }) => {
+	await page.goto('/signin');
 	await page.context().setOffline(true);
-	// Client-side navigation, which only works if the route's chunks were precached.
-	await page.getByRole('link', { name: 'Sign In' }).click();
-	await expect(page).toHaveURL(/\/signin$/);
+	await page.reload({ waitUntil: 'domcontentloaded' });
+});
+
+Given('my offline copy is synchronized', async ({ page, state }) => {
+	await waitForServiceWorker(page);
+	await expect
+		.poll(() =>
+			page.evaluate(async (userId) => {
+				const meta = await (
+					await caches.open('livingdex-offline-meta-v1')
+				).match('/__offline/current');
+				if (!meta) return false;
+				const value = await meta.json();
+				return value.userId === userId;
+			}, state.userId)
+		)
+		.toBe(true);
+	const serializedSnapshot = await page.evaluate(async () => {
+		const metaResponse = await (
+			await caches.open('livingdex-offline-meta-v1')
+		).match('/__offline/current');
+		if (!metaResponse) return '';
+		const meta = await metaResponse.json();
+		const snapshotResponse = await (
+			await caches.open(meta.dataCache)
+		).match(`/__offline/snapshot/${encodeURIComponent(meta.userId)}`);
+		return snapshotResponse ? await snapshotResponse.text() : '';
+	});
+	expect(serializedSnapshot).not.toMatch(/access_token|refresh_token/i);
+});
+
+When('I go offline and reload the current Pokédex', async ({ page, state }) => {
+	await page.context().setOffline(true);
+	await page.goto(`/pokedex/${state.pokedexId}/offline`, {
+		waitUntil: 'domcontentloaded'
+	});
 });
 
 When('I go offline and then return online', async ({ page }) => {
@@ -61,6 +105,15 @@ When('I go offline and then return online', async ({ page }) => {
 
 Then('a service worker controls the page', async ({ page }) => {
 	expect(await waitForServiceWorker(page)).toMatch(/\/(?:sw|prompt-sw)\.js$/);
+	expect(
+		await page.evaluate(() =>
+			navigator.serviceWorker.getRegistrations().then((items) => items.length)
+		)
+	).toBe(1);
+});
+
+Then('no legacy service worker is requested', async ({ state }) => {
+	expect(state.legacyServiceWorkerRequested).toBe(false);
 });
 
 /**
@@ -77,7 +130,11 @@ Then('the application shell is precached', async ({ page }) => {
 	const origin = new URL(page.url()).origin;
 	const urls = contents[names[0]].map((url) => url.slice(`${origin}/`.length));
 
-	expect(urls, 'app shell is not precached').toContain('');
+	expect(urls, 'personalized SSR root must not be precached').not.toContain('');
+	expect(
+		urls.some((url) => /^offline(?:\.html)?(?:\?__WB_REVISION__=|$)/.test(url)),
+		'offline viewer is not precached'
+	).toBe(true);
 	expect(
 		urls.some((url) => url.startsWith('manifest.webmanifest?__WB_REVISION__=')),
 		'revisioned manifest.webmanifest is not precached'
@@ -100,8 +157,31 @@ Then('the application remains available', async ({ page }) => {
 	await expect(page.getByRole('heading', { name: /Start Your Pokédex Journey/ })).toBeVisible();
 });
 
-Then('the sign-in form is available offline', async ({ page }) => {
-	await expect(page.getByLabel('Email')).toBeVisible();
-	await expect(page.getByLabel('Password')).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
+Then('the read-only offline viewer is available', async ({ page }) => {
+	await expect(page.getByText(/offline.*read-only/i)).toBeVisible();
+});
+
+Then('the offline copy contains {string}', async ({ page }, name: string) => {
+	await expect(page.getByRole('heading', { name })).toBeVisible();
+	await expect(page.getByText(/read-only copy/i)).toBeVisible();
+	await expect(page.locator('button, input, textarea, select')).toHaveCount(0);
+});
+
+Then('my offline copy is removed', async ({ page }) => {
+	await expect
+		.poll(() =>
+			page.evaluate(async () => {
+				const names = await caches.keys();
+				return names.some((name) => name.startsWith('livingdex-offline-'));
+			})
+		)
+		.toBe(false);
+});
+
+Then('my offline copy remains', async ({ page, state }) => {
+	const owner = await page.evaluate(async () => {
+		const meta = await (await caches.open('livingdex-offline-meta-v1')).match('/__offline/current');
+		return meta ? (await meta.json()).userId : null;
+	});
+	expect(owner).toBe(state.userId);
 });

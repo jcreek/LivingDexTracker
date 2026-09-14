@@ -45,32 +45,14 @@ export default defineConfig({
 				background_color: '#f0f0f0'
 			},
 			injectManifest: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
+				globPatterns: ['client/**/*.{html,js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
 				globIgnores: ['**/sprites/**', '**/sprites-small/**']
 			},
 			workbox: {
-				globPatterns: ['client/**/*.{js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
+				globPatterns: ['client/**/*.{html,js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
 				globIgnores: ['**/sprites/**', '**/sprites-small/**'],
-				// No route is prerendered, so globbing finds no HTML document and a generateSW
-				// build would precache nothing navigable - i.e. no offline support at all.
-				// prompt-sw.ts does the equivalent with `precache([{ url: '/' }])`.
-				additionalManifestEntries: [{ url: '/', revision: null }],
-				navigateFallback: '/',
-				runtimeCaching: [
-					{
-						urlPattern: ({ request }) => request.destination === 'image',
-						handler: 'CacheFirst',
-						options: {
-							cacheName: 'image-cache',
-							cacheableResponse: { statuses: [0, 200] },
-							expiration: {
-								maxEntries: 3000,
-								maxAgeSeconds: 60 * 60 * 24 * 30,
-								purgeOnQuotaError: true
-							}
-						}
-					}
-				]
+				// Shared message/fetch handling keeps generateSW and injectManifest behavior equal.
+				importScripts: ['/offline-worker.js']
 			},
 			devOptions: {
 				enabled: false,

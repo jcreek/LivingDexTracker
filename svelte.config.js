@@ -13,7 +13,9 @@ const config = {
 		// Netlify by default, or the node adapter when NODE_ADAPTER=true. See adapter.mjs.
 		adapter,
 		serviceWorker: {
-			register: true
+			// VitePWA owns registration. Registering here as well requests SvelteKit's default
+			// /service-worker.js even though the inject-manifest output is /prompt-sw.js.
+			register: false
 		},
 		files: {
 			// you don't need to do this if you're using generateSW strategy in your app

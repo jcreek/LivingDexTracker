@@ -16,6 +16,7 @@
 	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
+	import { requestOfflineSync } from '$lib/stores/offlineSync';
 
 	export let data: PageData;
 
@@ -59,6 +60,7 @@
 		lastFlushAttemptAt: null,
 		lastSuccessfulFlushAt: null
 	};
+	let lastOfflineSyncFlush: number | null = null;
 	let exportAfterFlush = false;
 	let exportInFlight = false;
 	let exportTimer: ReturnType<typeof setTimeout> | null = null;
@@ -179,6 +181,15 @@
 
 		catchWriteQueueUnsubscribe = catchWriteQueue.getStatus.subscribe((s) => {
 			catchWriteStatus = s;
+			if (
+				s.lastSuccessfulFlushAt &&
+				s.lastSuccessfulFlushAt !== lastOfflineSyncFlush &&
+				s.pending === 0 &&
+				s.inFlight === 0
+			) {
+				lastOfflineSyncFlush = s.lastSuccessfulFlushAt;
+				requestOfflineSync();
+			}
 			if (s.pending > 0 || s.inFlight > 0) {
 				if (exportTimer) {
 					clearTimeout(exportTimer);

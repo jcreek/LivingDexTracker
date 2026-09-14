@@ -7,6 +7,8 @@ yarn.lock
 # changes under tens of thousands of lines of churn.
 src/lib/helpers/pokeapi-pokemon.json
 static/sprites/pokemon.json
+src/lib/helpers/pokedex.json
+src/lib/helpers/sprites.json
 
 # Machine-local editor and tool settings.
 **/*.local.json

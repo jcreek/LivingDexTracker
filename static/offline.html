@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#f00000" />
+		<title>Living Dex Tracker — Offline</title>
+		<link rel="stylesheet" href="/output.css" />
+		<script type="module" src="/offline-viewer.js"></script>
+	</head>
+	<body class="min-h-screen bg-base-200 text-base-content">
+		<header class="navbar bg-primary text-primary-content">
+			<div class="mx-auto w-full max-w-screen-2xl px-4 text-xl font-semibold">
+				Living Dex Tracker
+			</div>
+		</header>
+		<main class="mx-auto max-w-screen-2xl p-4">
+			<div class="alert mb-4" role="status">
+				<span
+					>You are offline. This is a read-only copy; changes, exports, and account actions are
+					disabled.</span
+				>
+			</div>
+			<p id="offline-status" class="mb-4">Loading the saved collection…</p>
+			<div id="offline-content"></div>
+		</main>
+	</body>
+</html>

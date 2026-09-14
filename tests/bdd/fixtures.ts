@@ -11,6 +11,7 @@ export type ScenarioState = {
 	lastResponseStatus: number | null;
 	lastMessage: string | null;
 	caughtEntryLabel: string | null;
+	legacyServiceWorkerRequested: boolean;
 };
 
 type Fixtures = { state: ScenarioState; providerMock: void };
@@ -51,7 +52,8 @@ export const test = base.extend<Fixtures>({
 			entries: [],
 			lastResponseStatus: null,
 			lastMessage: null,
-			caughtEntryLabel: null
+			caughtEntryLabel: null,
+			legacyServiceWorkerRequested: false
 		});
 	}
 });

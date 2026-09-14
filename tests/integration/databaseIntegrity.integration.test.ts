@@ -1,15 +1,22 @@
 import { createClient } from '@supabase/supabase-js';
-import { beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 
 const url = process.env.TEST_SUPABASE_URL ?? 'http://127.0.0.1:54321';
 const anonKey = process.env.TEST_SUPABASE_ANON_KEY;
 const serviceKey = process.env.E2E_SERVICE_ROLE_KEY ?? process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 describe('database integrity and ownership', () => {
+	const createdUserIds: string[] = [];
 	beforeAll(() => {
 		if (!anonKey || !serviceKey) {
 			throw new Error('Integration tests require TEST_SUPABASE_ANON_KEY and E2E_SERVICE_ROLE_KEY');
 		}
+	});
+
+	afterAll(async () => {
+		if (!serviceKey) return;
+		const admin = createClient(url, serviceKey);
+		await Promise.all(createdUserIds.map((id) => admin.auth.admin.deleteUser(id)));
 	});
 
 	it('enforces catch-record uniqueness and cascades records when a Pokédex is deleted', async () => {
@@ -22,6 +29,7 @@ describe('database integrity and ownership', () => {
 		});
 		expect(userError).toBeNull();
 		const userId = created.user!.id;
+		createdUserIds.push(userId);
 		const { data: dex, error: dexError } = await admin
 			.from('pokedexes')
 			.insert({ userId, name: 'Cascade', isLivingDex: true })
@@ -64,6 +72,7 @@ describe('database integrity and ownership', () => {
 		});
 		expect(first.error).toBeNull();
 		expect(second.error).toBeNull();
+		createdUserIds.push(first.data.user!.id, second.data.user!.id);
 		const { data: dex } = await admin
 			.from('pokedexes')
 			.insert({ userId: first.data.user!.id, name: 'Owner only', isLivingDex: true })
@@ -87,6 +96,7 @@ describe('database integrity and ownership', () => {
 			password: 'Integration123!',
 			email_confirm: true
 		});
+		createdUserIds.push(created.data.user!.id);
 		const { data: dex } = await admin
 			.from('pokedexes')
 			.insert({ userId: created.data.user!.id, name: 'Unique mapping', isLivingDex: true })

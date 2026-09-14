@@ -56,6 +56,34 @@ if (!anonKey || !serviceRoleKey) {
 	fail(`Supabase status did not return an anonymous and service-role key.\n${SETUP_HINT}`);
 }
 
+function isLoopbackUrl(value) {
+	try {
+		return ['127.0.0.1', 'localhost', '[::1]'].includes(new URL(value).hostname);
+	} catch {
+		return false;
+	}
+}
+
+if (!isLoopbackUrl(apiUrl)) {
+	fail(`Refusing to run local-stack tests against non-loopback Supabase URL: ${apiUrl}`);
+}
+const providerUrlVariables = [
+	'MOCK_PROVIDER_URL',
+	'GOOGLE_OAUTH_AUTHORIZE_URL',
+	'GOOGLE_OAUTH_TOKEN_URL',
+	'GOOGLE_DRIVE_API_URL',
+	'GOOGLE_DRIVE_UPLOAD_URL',
+	'DROPBOX_OAUTH_AUTHORIZE_URL',
+	'DROPBOX_OAUTH_TOKEN_URL',
+	'DROPBOX_UPLOAD_URL'
+];
+for (const name of providerUrlVariables) {
+	const value = process.env[name];
+	if (value && !isLoopbackUrl(value)) {
+		fail(`Refusing to run provider tests with non-loopback ${name}: ${value}`);
+	}
+}
+
 // A running-but-unseeded database is the most common broken state, and it surfaces downstream as
 // a confusing assertion failure. Check it here instead.
 const probe = await fetch(`${apiUrl}/rest/v1/pokedex_entries?select=id&limit=1`, {
@@ -79,12 +107,13 @@ const child = spawnSync(command, args, {
 	shell: useShell,
 	env: {
 		...process.env,
-		PUBLIC_SUPABASE_URL: process.env.PUBLIC_SUPABASE_URL ?? apiUrl,
-		PUBLIC_SUPABASE_ANON_KEY: process.env.PUBLIC_SUPABASE_ANON_KEY ?? anonKey,
-		SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY ?? serviceRoleKey,
-		TEST_SUPABASE_URL: process.env.TEST_SUPABASE_URL ?? apiUrl,
-		TEST_SUPABASE_ANON_KEY: process.env.TEST_SUPABASE_ANON_KEY ?? anonKey,
-		E2E_SERVICE_ROLE_KEY: process.env.E2E_SERVICE_ROLE_KEY ?? serviceRoleKey
+		// Never allow an exported production value to redirect a local integration run.
+		PUBLIC_SUPABASE_URL: apiUrl,
+		PUBLIC_SUPABASE_ANON_KEY: anonKey,
+		SUPABASE_SERVICE_ROLE_KEY: serviceRoleKey,
+		TEST_SUPABASE_URL: apiUrl,
+		TEST_SUPABASE_ANON_KEY: anonKey,
+		E2E_SERVICE_ROLE_KEY: serviceRoleKey
 	}
 });
 

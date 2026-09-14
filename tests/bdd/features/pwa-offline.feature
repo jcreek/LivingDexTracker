@@ -7,16 +7,24 @@ Feature: Offline-friendly application
     When I open the built application
     Then a service worker controls the page
     And the application shell is precached
+    And no legacy service worker is requested
 
   Scenario: Reload the home page while offline
     Given I have opened the built application online
     When I go offline and reload the home page
-    Then the application remains available
+    Then the read-only offline viewer is available
 
-  Scenario: Navigate to another route while offline
+  Scenario: Reload a nested route while offline
     Given I have opened the built application online
-    When I go offline and navigate to the sign-in page
-    Then the sign-in form is available offline
+    When I go offline and reload the sign-in page
+    Then the read-only offline viewer is available
+
+  Scenario: Read a synchronized collection offline
+    Given I am signed in
+    And I have a Living Dex named "Offline Collection"
+    And my offline copy is synchronized
+    When I go offline and reload the current Pokédex
+    Then the offline copy contains "Offline Collection"
 
   Scenario: Restore network access
     Given I have opened the built application online

@@ -54,4 +54,3 @@ Feature: Pokédex lifecycle
     Given another trainer has a Pokédex
     When I request the other trainer's Pokédex
     Then the Pokédex is not disclosed
-

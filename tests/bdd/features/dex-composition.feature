@@ -29,4 +29,3 @@ Feature: Pokédex composition
     Given I have a Form Dex named "Black Forms" scoped to game "Black" and dex "Unova"
     When I inspect its entries with forms
     Then Rotom includes its named default form without duplicate forms
-

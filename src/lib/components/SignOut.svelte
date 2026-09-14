@@ -2,7 +2,10 @@
 	import type { SupabaseClient } from '@supabase/supabase-js';
 	import { createEventDispatcher } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { clearOfflineData } from '$lib/stores/offlineSync';
 	const dispatch = createEventDispatcher();
+	let errorMessage = '';
+	let isSigningOut = false;
 
 	function emitSignedOutEvent() {
 		dispatch('signedOut', {});
@@ -12,15 +15,32 @@
 	export let supabase: SupabaseClient;
 
 	async function signOut() {
-		// `.then(() => {...})` resolved to undefined, so destructuring `error` off it threw a
-		// TypeError on every sign-out - after the event had already been emitted.
-		const { error } = await supabase.auth.signOut();
-		if (error) console.error('Sign out failed', error);
-		emitSignedOutEvent();
-		// Signing out used to leave the user sitting on the protected page they were on, still
-		// showing its content. Send them to the public home page and re-run the server loads.
-		await goto('/', { invalidateAll: true });
+		errorMessage = '';
+		isSigningOut = true;
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				errorMessage = `Sign out failed: ${error.message || 'Please try again.'}`;
+				dispatch('signOutFailed', { message: errorMessage });
+				return;
+			}
+			try {
+				await clearOfflineData();
+			} catch (cacheError) {
+				console.error('Signed out, but failed to clear offline data', cacheError);
+			}
+			emitSignedOutEvent();
+			await goto('/', { invalidateAll: true });
+		} catch (error) {
+			console.error('Sign out failed', error);
+			errorMessage = 'Sign out failed. Please try again.';
+			dispatch('signOutFailed', { message: errorMessage });
+		} finally {
+			isSigningOut = false;
+		}
 	}
 </script>
 
-<button on:click={signOut}>Sign Out</button>
+<button on:click={signOut} disabled={isSigningOut}>
+	{isSigningOut ? 'Signing Out…' : 'Sign Out'}
+</button>
