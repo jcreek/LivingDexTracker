@@ -1,10 +1,21 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 // you don't need to do this if you're using generateSW strategy in your app
 import { generateSW } from './pwa.mjs';
 
 export default defineConfig({
+	resolve: {
+		alias:
+			process.env.DEPLOY_TARGET === 'cloudflare'
+				? {
+						'$lib/server/compression': fileURLToPath(
+							new URL('./src/lib/server/compression.cloudflare.ts', import.meta.url)
+						)
+					}
+				: {}
+	},
 	plugins: [
 		sveltekit(),
 		SvelteKitPWA({

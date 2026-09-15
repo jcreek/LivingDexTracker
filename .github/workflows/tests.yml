@@ -144,3 +144,20 @@ jobs:
           if-no-files-found: ignore
       - if: always()
         run: npx supabase stop
+
+  cloudflare-preview-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run build:cloudflare
+      - run: npm run check:cloudflare
+      # This is compilation/package coverage, not a production compatibility gate.
+      # Native sharp still blocks the share-preview route in the Worker runtime.

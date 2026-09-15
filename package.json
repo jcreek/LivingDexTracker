@@ -45,12 +45,16 @@
 		"migrate:convert-tsv": "node scripts/convert-tsv-to-sql.js",
 		"dev:local": "./scripts/dev-local.sh && npm run dev",
 		"dev:supabase": "supabase start && npm run dev",
-		"sprites:grid": "node scripts/grid-thumbnails.mjs"
+		"sprites:grid": "node scripts/grid-thumbnails.mjs",
+		"build:cloudflare": "DEPLOY_TARGET=cloudflare npm run build",
+		"preview:cloudflare": "wrangler dev",
+		"check:cloudflare": "wrangler deploy --dry-run"
 	},
 	"devDependencies": {
 		"@lhci/cli": "^0.15.1",
 		"@playwright/test": "1.55.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
+		"@sveltejs/adapter-cloudflare": "7.2.9",
 		"@sveltejs/adapter-netlify": "^4.1.0",
 		"@sveltejs/adapter-node": "^2.0.0",
 		"@sveltejs/adapter-static": "^3.0.0",
@@ -78,7 +82,8 @@
 		"tailwindcss": "^3.4.3",
 		"tslib": "^2.6.2",
 		"typescript": "^5.3.3",
-		"vitest": "^1.0.4"
+		"vitest": "^1.0.4",
+		"wrangler": "4.131.2"
 	},
 	"type": "module",
 	"dependencies": {
