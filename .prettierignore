@@ -13,3 +13,6 @@ static/sprites-small/manifest.json
 
 # Machine-local editor and tool settings.
 **/*.local.json
+
+# Generated grid artwork.
+static/sprites-grid/

@@ -46,11 +46,11 @@ export default defineConfig({
 			},
 			injectManifest: {
 				globPatterns: ['client/**/*.{html,js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
-				globIgnores: ['**/sprites/**', '**/sprites-small/**']
+				globIgnores: ['**/sprites/**', '**/sprites-small/**', '**/sprites-grid/**']
 			},
 			workbox: {
 				globPatterns: ['client/**/*.{html,js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
-				globIgnores: ['**/sprites/**', '**/sprites-small/**'],
+				globIgnores: ['**/sprites/**', '**/sprites-small/**', '**/sprites-grid/**'],
 				// Shared message/fetch handling keeps generateSW and injectManifest behavior equal.
 				importScripts: ['/offline-worker.js']
 			},

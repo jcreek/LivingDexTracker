@@ -15,3 +15,5 @@ vite.config.ts.timestamp-*
 coverage
 playwright-report
 test-results
+
+/static/sprites-grid/
