@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 
 	export let isOpen: boolean;
 	export let onClose: () => void;
@@ -14,24 +14,55 @@
 		}
 	}
 
+	let dialog: HTMLDivElement;
 	onMount(() => {
-		window.addEventListener('keydown', handleKeyDown);
-	});
-
-	onDestroy(() => {
-		window.removeEventListener('keydown', handleKeyDown);
+		const previous = document.activeElement as HTMLElement | null;
+		const close = dialog.querySelector<HTMLButtonElement>('.close-button');
+		close?.focus();
+		const trapFocus = (event: KeyboardEvent) => {
+			handleKeyDown(event);
+			if (event.key !== 'Tab') return;
+			const nodes = Array.from(
+				dialog.querySelectorAll<HTMLElement>(
+					'button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), a[href]'
+				)
+			).filter((node) => node.getClientRects().length);
+			const first = nodes[0],
+				last = nodes.at(-1);
+			if (event.shiftKey && document.activeElement === first) {
+				event.preventDefault();
+				last?.focus();
+			} else if (!event.shiftKey && document.activeElement === last) {
+				event.preventDefault();
+				first?.focus();
+			}
+		};
+		window.addEventListener('keydown', trapFocus);
+		return () => {
+			window.removeEventListener('keydown', trapFocus);
+			if (previous?.isConnected) previous.focus();
+		};
 	});
 </script>
 
 {#if isOpen}
-	<div class="modal modal-open" role="dialog" aria-modal="true">
+	<div
+		bind:this={dialog}
+		class="modal modal-open"
+		role="dialog"
+		aria-label="Pokémon details"
+		aria-modal="true"
+	>
 		<div class="modal-box-custom bg-primary text-primary-content">
-			<button class="close-button" on:click={onClose} aria-label="Close"> ✕ </button>
+			<button data-offline-action class="close-button" on:click={onClose} aria-label="Close">
+				✕
+			</button>
 			<div class="modal-content">
 				<slot />
 			</div>
 		</div>
 		<button
+			data-offline-action
 			type="button"
 			class="modal-backdrop bg-black/50"
 			aria-label="Close modal"
