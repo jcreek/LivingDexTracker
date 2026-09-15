@@ -7,11 +7,6 @@ export const GET = async (event: RequestEvent) => {
 	try {
 		const userId = await requireAuth(event);
 
-		const { session } = await event.locals.safeGetSession();
-		if (session) {
-			await event.locals.supabase.auth.setSession(session);
-		}
-
 		const repo = new PokedexExportIntegrationRepository(event.locals.supabase, userId, null);
 		const integrations = await repo.listAll();
 
