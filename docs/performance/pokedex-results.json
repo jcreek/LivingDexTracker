@@ -1,0 +1,4217 @@
+{
+	"sourceCommit": "31fd959350962c1f1b973a06ecd5cf4eeef86514",
+	"environment": {
+		"dates": "2026-09-14 to 2026-09-15",
+		"node": "24.18.0",
+		"vite": "5.4.21",
+		"netlifyAdapter": "4.4.2",
+		"browser": "Playwright Chromium, headless, no extensions or CPU/network throttling",
+		"viewport": {
+			"width": 1350,
+			"height": 940,
+			"deviceScaleFactor": 1
+		},
+		"server": "Vite dev, local Supabase, local sprites; temporary timing instrumentation",
+		"note": "Development measurements are not production Lighthouse measurements. First runs excluded from warm medians. Main-thread windows include 1.5 seconds after visibility for navigation and 2.5 seconds for background/grid-cap."
+	},
+	"productionHar": {
+		"waitMs": 3506.1,
+		"receiveMs": 260.671,
+		"bodyBytes": 401199,
+		"encoding": "br",
+		"cache": "private,no-store",
+		"bodyContentAvailable": false,
+		"spriteRequests": 36,
+		"spriteBytes": 531086,
+		"spriteCache": "max-age=300"
+	},
+	"navigation": [
+		{
+			"dex": "Performance National",
+			"mode": "direct",
+			"run": "first",
+			"ttfbMs": 226.67,
+			"responseMs": 232.877,
+			"visibleCellsMs": 798,
+			"uncompressedResponseBytes": 686177,
+			"layoutStyleMs": 122.341,
+			"mainThreadTaskMs": 856.258,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0.082,
+			"longTasks": [
+				{
+					"start": 556.4,
+					"ms": 88
+				},
+				{
+					"start": 645.3,
+					"ms": 120
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 645.1,
+					"ms": 114.6,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1796.7,
+					"ms": 135.9,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "direct",
+			"run": 1,
+			"ttfbMs": 77.482,
+			"responseMs": 289.396,
+			"visibleCellsMs": 549,
+			"uncompressedResponseBytes": 686177,
+			"layoutStyleMs": 69.11,
+			"mainThreadTaskMs": 903.426,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 290,
+					"ms": 105
+				},
+				{
+					"start": 395.8,
+					"ms": 61
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 127.8,
+					"ms": 261.1,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1144.1,
+					"ms": 146.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "direct",
+			"run": 2,
+			"ttfbMs": 110.882,
+			"responseMs": 587.148,
+			"visibleCellsMs": 986,
+			"uncompressedResponseBytes": 686174,
+			"layoutStyleMs": 118.353,
+			"mainThreadTaskMs": 1234.091,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 587.7,
+					"ms": 159
+				},
+				{
+					"start": 747,
+					"ms": 110
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 248.1,
+					"ms": 990.2,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1251,
+					"ms": 547.8,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "direct",
+			"run": 3,
+			"ttfbMs": 85.887,
+			"responseMs": 256.492,
+			"visibleCellsMs": 519,
+			"uncompressedResponseBytes": 686174,
+			"layoutStyleMs": 70.024,
+			"mainThreadTaskMs": 862.689,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 259.1,
+					"ms": 91
+				},
+				{
+					"start": 358.2,
+					"ms": 64
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 162.5,
+					"ms": 193.2,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1178.2,
+					"ms": 143.8,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "direct",
+			"run": 4,
+			"ttfbMs": 80.15,
+			"responseMs": 267.606,
+			"visibleCellsMs": 474,
+			"uncompressedResponseBytes": 686174,
+			"layoutStyleMs": 60.781,
+			"mainThreadTaskMs": 820.861,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 269,
+					"ms": 83
+				},
+				{
+					"start": 353.1,
+					"ms": 56
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 118.4,
+					"ms": 117,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1122.1,
+					"ms": 202.4,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "direct",
+			"run": 5,
+			"ttfbMs": 84.277,
+			"responseMs": 212.355,
+			"visibleCellsMs": 432,
+			"uncompressedResponseBytes": 686177,
+			"layoutStyleMs": 64.087,
+			"mainThreadTaskMs": 979.329,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 218.3,
+					"ms": 85
+				},
+				{
+					"start": 305,
+					"ms": 57
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 132.9,
+					"ms": 139.4,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1141.6,
+					"ms": 171,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "client",
+			"run": "first",
+			"ttfbMs": 70.34,
+			"responseMs": 157.198,
+			"visibleCellsMs": 407,
+			"uncompressedResponseBytes": 518649,
+			"layoutStyleMs": 77.253,
+			"mainThreadTaskMs": 830.247,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1445.6,
+					"ms": 82
+				},
+				{
+					"start": 1528.7,
+					"ms": 81
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 134.6,
+					"ms": 77.6,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1150.5,
+					"ms": 162.9,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "client",
+			"run": 1,
+			"ttfbMs": 63.177,
+			"responseMs": 132.672,
+			"visibleCellsMs": 322,
+			"uncompressedResponseBytes": 518649,
+			"layoutStyleMs": 57.212,
+			"mainThreadTaskMs": 737.54,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1357.8,
+					"ms": 78
+				},
+				{
+					"start": 1436.9,
+					"ms": 58
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 124,
+					"ms": 76.4,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1130.3,
+					"ms": 144.6,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "client",
+			"run": 2,
+			"ttfbMs": 53.718,
+			"responseMs": 119.733,
+			"visibleCellsMs": 335,
+			"uncompressedResponseBytes": 518649,
+			"layoutStyleMs": 63.418,
+			"mainThreadTaskMs": 768.13,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1376.5,
+					"ms": 82
+				},
+				{
+					"start": 1459.5,
+					"ms": 64
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 118.9,
+					"ms": 84.9,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1128.4,
+					"ms": 147.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "client",
+			"run": 3,
+			"ttfbMs": 66.95,
+			"responseMs": 165.996,
+			"visibleCellsMs": 369,
+			"uncompressedResponseBytes": 518649,
+			"layoutStyleMs": 59.897,
+			"mainThreadTaskMs": 790.375,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1422.4,
+					"ms": 83
+				},
+				{
+					"start": 1506.5,
+					"ms": 59
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 134.6,
+					"ms": 82.5,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1142.5,
+					"ms": 172.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "client",
+			"run": 4,
+			"ttfbMs": 65.74,
+			"responseMs": 132.81,
+			"visibleCellsMs": 423,
+			"uncompressedResponseBytes": 518649,
+			"layoutStyleMs": 91.193,
+			"mainThreadTaskMs": 827.077,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1382.1,
+					"ms": 89
+				},
+				{
+					"start": 1471.7,
+					"ms": 102
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 123.6,
+					"ms": 87.6,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1129.7,
+					"ms": 157.6,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance National",
+			"mode": "client",
+			"run": 5,
+			"ttfbMs": 56.672,
+			"responseMs": 294.081,
+			"visibleCellsMs": 381,
+			"uncompressedResponseBytes": null,
+			"layoutStyleMs": 72.596,
+			"mainThreadTaskMs": 1002.708,
+			"domElements": 10236,
+			"pokemonCells": 1025,
+			"visiblePokemonCells": 60,
+			"boxes": 35,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1409.3,
+					"ms": 108
+				},
+				{
+					"start": 1518,
+					"ms": 56
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 140.4,
+					"ms": 83.4,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1150.5,
+					"ms": 160.1,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "direct",
+			"run": "first",
+			"ttfbMs": 152.948,
+			"responseMs": 325.738,
+			"visibleCellsMs": 462,
+			"uncompressedResponseBytes": 375482,
+			"layoutStyleMs": 52.128,
+			"mainThreadTaskMs": 672.292,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 227.4,
+					"ms": 226.2,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1229,
+					"ms": 170.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "direct",
+			"run": 1,
+			"ttfbMs": 66.62,
+			"responseMs": 137.175,
+			"visibleCellsMs": 309,
+			"uncompressedResponseBytes": 375482,
+			"layoutStyleMs": 53.208,
+			"mainThreadTaskMs": 708.195,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 137.7,
+					"ms": 50
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 109.9,
+					"ms": 90.8,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1117.3,
+					"ms": 142.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "direct",
+			"run": 2,
+			"ttfbMs": 67.224,
+			"responseMs": 131.213,
+			"visibleCellsMs": 278,
+			"uncompressedResponseBytes": 375485,
+			"layoutStyleMs": 44.663,
+			"mainThreadTaskMs": 706.401,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 131.7,
+					"ms": 51
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 109.5,
+					"ms": 80.5,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1118.7,
+					"ms": 145.4,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "direct",
+			"run": 3,
+			"ttfbMs": 76.525,
+			"responseMs": 154.043,
+			"visibleCellsMs": 299,
+			"uncompressedResponseBytes": 375482,
+			"layoutStyleMs": 48.614,
+			"mainThreadTaskMs": 624.544,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 127.6,
+					"ms": 107.8,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1130.2,
+					"ms": 122.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "direct",
+			"run": 4,
+			"ttfbMs": 79.694,
+			"responseMs": 148.378,
+			"visibleCellsMs": 312,
+			"uncompressedResponseBytes": 375482,
+			"layoutStyleMs": 43.174,
+			"mainThreadTaskMs": 639.762,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [
+				{
+					"start": 149,
+					"ms": 70
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 130.8,
+					"ms": 97.8,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1133.2,
+					"ms": 163,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "direct",
+			"run": 5,
+			"ttfbMs": 67.674,
+			"responseMs": 153.024,
+			"visibleCellsMs": 317,
+			"uncompressedResponseBytes": 375485,
+			"layoutStyleMs": 41.474,
+			"mainThreadTaskMs": 645.276,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0.657,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 119.7,
+					"ms": 97.1,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1124.3,
+					"ms": 144,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "client",
+			"run": "first",
+			"ttfbMs": 47.61,
+			"responseMs": 139.62,
+			"visibleCellsMs": 224,
+			"uncompressedResponseBytes": null,
+			"layoutStyleMs": 41.41,
+			"mainThreadTaskMs": 550.694,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 115,
+					"ms": 83.5,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1120.2,
+					"ms": 135.9,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "client",
+			"run": 1,
+			"ttfbMs": 59.487,
+			"responseMs": 108.408,
+			"visibleCellsMs": 272,
+			"uncompressedResponseBytes": 222892,
+			"layoutStyleMs": 38.016,
+			"mainThreadTaskMs": 587.207,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1344.2,
+					"ms": 76
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 123.7,
+					"ms": 66.5,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1127.8,
+					"ms": 129.7,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "client",
+			"run": 2,
+			"ttfbMs": 52.377,
+			"responseMs": 143.582,
+			"visibleCellsMs": 227,
+			"uncompressedResponseBytes": null,
+			"layoutStyleMs": 38.395,
+			"mainThreadTaskMs": 584.409,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 119.8,
+					"ms": 98.9,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1122.9,
+					"ms": 150.2,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "client",
+			"run": 3,
+			"ttfbMs": 67.535,
+			"responseMs": 110.763,
+			"visibleCellsMs": 233,
+			"uncompressedResponseBytes": 222892,
+			"layoutStyleMs": 34.262,
+			"mainThreadTaskMs": 555.642,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 159.6,
+					"ms": 79.9,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1171.4,
+					"ms": 171.4,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "client",
+			"run": 4,
+			"ttfbMs": 45.561,
+			"responseMs": 89.971,
+			"visibleCellsMs": 363,
+			"uncompressedResponseBytes": 222892,
+			"layoutStyleMs": 61.261,
+			"mainThreadTaskMs": 871.145,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [
+				{
+					"start": 1315.6,
+					"ms": 76
+				},
+				{
+					"start": 1392.4,
+					"ms": 55
+				},
+				{
+					"start": 1447.7,
+					"ms": 83
+				}
+			],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 113,
+					"ms": 68.1,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1116.3,
+					"ms": 145.5,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"mode": "client",
+			"run": 5,
+			"ttfbMs": 83.397,
+			"responseMs": 130.075,
+			"visibleCellsMs": 274,
+			"uncompressedResponseBytes": 222892,
+			"layoutStyleMs": 39.669,
+			"mainThreadTaskMs": 581.058,
+			"domElements": 4476,
+			"pokemonCells": 439,
+			"visiblePokemonCells": 60,
+			"boxes": 15,
+			"imageElements": 73,
+			"cls": 0,
+			"longTasks": [],
+			"backgroundRequests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 174.8,
+					"ms": 89.7,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1181.2,
+					"ms": 183.3,
+					"bytes": 849107
+				}
+			]
+		}
+	],
+	"background": [
+		{
+			"condition": "fresh-enabled",
+			"run": "first",
+			"visibleCellsMs": 462,
+			"ttfbMs": 67.386,
+			"layoutStyleMs": 114.023,
+			"mainThreadTaskMs": 1142.11,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 199,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 218.5,
+					"ms": 92.6,
+					"bytes": 2
+				}
+			]
+		},
+		{
+			"condition": "fresh-enabled",
+			"run": 1,
+			"visibleCellsMs": 439,
+			"ttfbMs": 115.169,
+			"layoutStyleMs": 62.284,
+			"mainThreadTaskMs": 1054.789,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 142,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 254,
+					"ms": 102.6,
+					"bytes": 2
+				}
+			]
+		},
+		{
+			"condition": "fresh-enabled",
+			"run": 2,
+			"visibleCellsMs": 453,
+			"ttfbMs": 86.361,
+			"layoutStyleMs": 66.959,
+			"mainThreadTaskMs": 1070.857,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 164,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 330.3,
+					"ms": 130.6,
+					"bytes": 2
+				}
+			]
+		},
+		{
+			"condition": "fresh-enabled",
+			"run": 3,
+			"visibleCellsMs": 449,
+			"ttfbMs": 107.875,
+			"layoutStyleMs": 56.764,
+			"mainThreadTaskMs": 1086.314,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 147,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 230.4,
+					"ms": 120.4,
+					"bytes": 2
+				}
+			]
+		},
+		{
+			"condition": "fresh-enabled",
+			"run": 4,
+			"visibleCellsMs": 413,
+			"ttfbMs": 80.97,
+			"layoutStyleMs": 59.942,
+			"mainThreadTaskMs": 1187.914,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 147,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 207.2,
+					"ms": 103.2,
+					"bytes": 2
+				}
+			]
+		},
+		{
+			"condition": "fresh-enabled",
+			"run": 5,
+			"visibleCellsMs": 469,
+			"ttfbMs": 118.267,
+			"layoutStyleMs": 63.175,
+			"mainThreadTaskMs": 1072.155,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 128,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 347.6,
+					"ms": 79.6,
+					"bytes": 2
+				}
+			]
+		},
+		{
+			"condition": "stale-enabled",
+			"run": "first",
+			"visibleCellsMs": 460,
+			"ttfbMs": 112.879,
+			"layoutStyleMs": 54.978,
+			"mainThreadTaskMs": 1098.659,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 141,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 243.4,
+					"ms": 102.7,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1255.3,
+					"ms": 131.3,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"condition": "stale-enabled",
+			"run": 1,
+			"visibleCellsMs": 430,
+			"ttfbMs": 92.463,
+			"layoutStyleMs": 66.607,
+			"mainThreadTaskMs": 1151.517,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 157,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 204.9,
+					"ms": 106.2,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1210.3,
+					"ms": 151.1,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"condition": "stale-enabled",
+			"run": 2,
+			"visibleCellsMs": 535,
+			"ttfbMs": 108.279,
+			"layoutStyleMs": 69.139,
+			"mainThreadTaskMs": 1118.931,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 169,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 407.5,
+					"ms": 80.5,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1550.9,
+					"ms": 146.2,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"condition": "stale-enabled",
+			"run": 3,
+			"visibleCellsMs": 431,
+			"ttfbMs": 88.294,
+			"layoutStyleMs": 57.368,
+			"mainThreadTaskMs": 1064.052,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 156,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 212.4,
+					"ms": 113.3,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1218.4,
+					"ms": 146.3,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"condition": "stale-enabled",
+			"run": 4,
+			"visibleCellsMs": 456,
+			"ttfbMs": 103.501,
+			"layoutStyleMs": 61.41,
+			"mainThreadTaskMs": 1265.465,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 145,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 367.2,
+					"ms": 68.1,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1542.7,
+					"ms": 136.9,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"condition": "stale-enabled",
+			"run": 5,
+			"visibleCellsMs": 395,
+			"ttfbMs": 76.44,
+			"layoutStyleMs": 63.175,
+			"mainThreadTaskMs": 1128.552,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 141,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 286.5,
+					"ms": 88.7,
+					"bytes": 2
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1433.1,
+					"ms": 143.2,
+					"bytes": 849107
+				}
+			]
+		},
+		{
+			"condition": "stale-blocked",
+			"run": "first",
+			"visibleCellsMs": 423,
+			"ttfbMs": 75.232,
+			"layoutStyleMs": 62.03,
+			"mainThreadTaskMs": 1069.504,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 158,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 207.6,
+					"ms": 3.1,
+					"bytes": 0
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1225.5,
+					"ms": 1.3,
+					"bytes": 0
+				}
+			]
+		},
+		{
+			"condition": "stale-blocked",
+			"run": 1,
+			"visibleCellsMs": 385,
+			"ttfbMs": 78.7,
+			"layoutStyleMs": 71.602,
+			"mainThreadTaskMs": 1082.324,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 149,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 205.1,
+					"ms": 1.5,
+					"bytes": 0
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1444.2,
+					"ms": 1.5,
+					"bytes": 0
+				}
+			]
+		},
+		{
+			"condition": "stale-blocked",
+			"run": 2,
+			"visibleCellsMs": 490,
+			"ttfbMs": 123.672,
+			"layoutStyleMs": 65.711,
+			"mainThreadTaskMs": 1124.436,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 136,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 258.3,
+					"ms": 1.6,
+					"bytes": 0
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1271.3,
+					"ms": 1.3,
+					"bytes": 0
+				}
+			]
+		},
+		{
+			"condition": "stale-blocked",
+			"run": 3,
+			"visibleCellsMs": 497,
+			"ttfbMs": 135.708,
+			"layoutStyleMs": 60.156,
+			"mainThreadTaskMs": 1108.978,
+			"domElements": 10236,
+			"cls": 0.657,
+			"longTaskMs": 147,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 264.2,
+					"ms": 5,
+					"bytes": 0
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1269.3,
+					"ms": 1.5,
+					"bytes": 0
+				}
+			]
+		},
+		{
+			"condition": "stale-blocked",
+			"run": 4,
+			"visibleCellsMs": 464,
+			"ttfbMs": 103.597,
+			"layoutStyleMs": 63.918,
+			"mainThreadTaskMs": 1275.209,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 157,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 377.5,
+					"ms": 1.5,
+					"bytes": 0
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1578.3,
+					"ms": 1.6,
+					"bytes": 0
+				}
+			]
+		},
+		{
+			"condition": "stale-blocked",
+			"run": 5,
+			"visibleCellsMs": 441,
+			"ttfbMs": 95.703,
+			"layoutStyleMs": 55.91,
+			"mainThreadTaskMs": 1124.445,
+			"domElements": 10236,
+			"cls": 0.082,
+			"longTaskMs": 126,
+			"requests": [
+				{
+					"path": "/api/export-integrations",
+					"start": 342.5,
+					"ms": 1.9,
+					"bytes": 0
+				},
+				{
+					"path": "/api/offline-snapshot",
+					"start": 1482.2,
+					"ms": 1.4,
+					"bytes": 0
+				}
+			]
+		}
+	],
+	"gridCap": [
+		{
+			"run": "first",
+			"visibleCellsMs": 449,
+			"ttfbMs": 151.298,
+			"layoutStyleMs": 33.059,
+			"mainThreadTaskMs": 140.219,
+			"domElements": 728,
+			"cells": 60,
+			"cls": 0.085,
+			"longTaskMs": 0
+		},
+		{
+			"run": 1,
+			"visibleCellsMs": 329,
+			"ttfbMs": 126.399,
+			"layoutStyleMs": 13.337,
+			"mainThreadTaskMs": 80.304,
+			"domElements": 728,
+			"cells": 60,
+			"cls": 0.085,
+			"longTaskMs": 0
+		},
+		{
+			"run": 2,
+			"visibleCellsMs": 318,
+			"ttfbMs": 111.761,
+			"layoutStyleMs": 14.709,
+			"mainThreadTaskMs": 95.411,
+			"domElements": 728,
+			"cells": 60,
+			"cls": 0.216,
+			"longTaskMs": 0
+		},
+		{
+			"run": 3,
+			"visibleCellsMs": 292,
+			"ttfbMs": 98.387,
+			"layoutStyleMs": 13.872,
+			"mainThreadTaskMs": 82.82,
+			"domElements": 728,
+			"cells": 60,
+			"cls": 0.216,
+			"longTaskMs": 0
+		},
+		{
+			"run": 4,
+			"visibleCellsMs": 320,
+			"ttfbMs": 113.51,
+			"layoutStyleMs": 13.372,
+			"mainThreadTaskMs": 92.224,
+			"domElements": 728,
+			"cells": 60,
+			"cls": 0.216,
+			"longTaskMs": 0
+		},
+		{
+			"run": 5,
+			"visibleCellsMs": 307,
+			"ttfbMs": 102.526,
+			"layoutStyleMs": 11.941,
+			"mainThreadTaskMs": 74.698,
+			"domElements": 728,
+			"cells": 60,
+			"cls": 0.085,
+			"longTaskMs": 0
+		}
+	],
+	"payload": {
+		"national": {
+			"entries": 1025,
+			"combinedJsonBytes": 592997,
+			"entryJsonBytes": 297243,
+			"catchJsonBytes": 263980,
+			"displayOnlyJsonBytes": 170636,
+			"first60DisplayOnlyJsonBytes": 9751,
+			"detailFieldsJsonBytes": 214064
+		},
+		"game": {
+			"entries": 439,
+			"combinedJsonBytes": 255319,
+			"entryJsonBytes": 128584,
+			"catchJsonBytes": 113127,
+			"displayOnlyJsonBytes": 74154,
+			"first60DisplayOnlyJsonBytes": 10757,
+			"detailFieldsJsonBytes": 91887
+		}
+	},
+	"server": [
+		{
+			"dex": "Performance National",
+			"run": "first",
+			"status": 200,
+			"headerMs": 121.136,
+			"firstMs": 121.624,
+			"fullMs": 196.825,
+			"bytes": 523684,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 1.549,
+					"headerMs": 41.059,
+					"ms": 41.533,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 43.674,
+					"headerMs": 15.08,
+					"ms": 15.294,
+					"bytes": 381,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 59.44,
+					"headerMs": 15.887,
+					"ms": 16.175,
+					"bytes": 2,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "HEAD",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 78.508,
+					"headerMs": 13.63,
+					"ms": 13.679,
+					"bytes": 0,
+					"status": 206
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 78.394,
+					"headerMs": 22.075,
+					"ms": 26.613,
+					"bytes": 543188,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "1000",
+					"limit": "1000",
+					"form": null,
+					"start": 105.343,
+					"headerMs": 9.378,
+					"ms": 9.812,
+					"bytes": 12789,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 115.755,
+					"headerMs": 17.498,
+					"ms": 20.404,
+					"bytes": 351519,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 136.463,
+					"headerMs": 4.449,
+					"ms": 4.603,
+					"bytes": 8806,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 15.954,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchEntriesByRange",
+					"ms": 39.115,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 25.816,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 69.161,
+					"rows": 1025
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 148.112,
+			"lastQueryEndMs": 141.066,
+			"authMs": 41.533,
+			"ownershipMs": 31.469,
+			"entryStageMs": 39.115,
+			"catchMs": 25.816,
+			"findMs": 69.161,
+			"countMs": 15.954,
+			"bytesFromSupabase": 917728
+		},
+		{
+			"dex": "Performance National",
+			"run": 1,
+			"status": 200,
+			"headerMs": 48.196,
+			"firstMs": 48.267,
+			"fullMs": 103.973,
+			"bytes": 523684,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 1.115,
+					"headerMs": 35.369,
+					"ms": 35.536,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 37.012,
+					"headerMs": 2.554,
+					"ms": 2.692,
+					"bytes": 381,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 39.921,
+					"headerMs": 3.626,
+					"ms": 3.766,
+					"bytes": 2,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "HEAD",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 44.518,
+					"headerMs": 5.701,
+					"ms": 5.724,
+					"bytes": 0,
+					"status": 206
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 44.419,
+					"headerMs": 12.584,
+					"ms": 18.52,
+					"bytes": 543188,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "1000",
+					"limit": "1000",
+					"form": null,
+					"start": 63.216,
+					"headerMs": 7.799,
+					"ms": 8.393,
+					"bytes": 12789,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 72.044,
+					"headerMs": 8.422,
+					"ms": 11.02,
+					"bytes": 351519,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 83.318,
+					"headerMs": 3.51,
+					"ms": 3.635,
+					"bytes": 8806,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 6.392,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchEntriesByRange",
+					"ms": 27.873,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 15.266,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 46.779,
+					"rows": 1025
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 89.286,
+			"lastQueryEndMs": 86.953,
+			"authMs": 35.536,
+			"ownershipMs": 6.458,
+			"entryStageMs": 27.873,
+			"catchMs": 15.266,
+			"findMs": 46.779,
+			"countMs": 6.392,
+			"bytesFromSupabase": 917728
+		},
+		{
+			"dex": "Performance National",
+			"run": 2,
+			"status": 200,
+			"headerMs": 40.879,
+			"firstMs": 40.951,
+			"fullMs": 104.705,
+			"bytes": 523684,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.482,
+					"headerMs": 27.018,
+					"ms": 27.199,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 28.055,
+					"headerMs": 3.913,
+					"ms": 4.049,
+					"bytes": 381,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 32.511,
+					"headerMs": 3.551,
+					"ms": 3.864,
+					"bytes": 2,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "HEAD",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 37.865,
+					"headerMs": 9.293,
+					"ms": 9.318,
+					"bytes": 0,
+					"status": 206
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 37.707,
+					"headerMs": 17.591,
+					"ms": 23.54,
+					"bytes": 543188,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "1000",
+					"limit": "1000",
+					"form": null,
+					"start": 61.656,
+					"headerMs": 7.624,
+					"ms": 7.815,
+					"bytes": 12789,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 70.249,
+					"headerMs": 11.226,
+					"ms": 13.561,
+					"bytes": 351519,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 84.066,
+					"headerMs": 3.363,
+					"ms": 3.53,
+					"bytes": 8806,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 10.822,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchEntriesByRange",
+					"ms": 33.096,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 17.932,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 55.024,
+					"rows": 1025
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 92.876,
+			"lastQueryEndMs": 87.595,
+			"authMs": 27.199,
+			"ownershipMs": 7.913,
+			"entryStageMs": 33.096,
+			"catchMs": 17.932,
+			"findMs": 55.024,
+			"countMs": 10.822,
+			"bytesFromSupabase": 917728
+		},
+		{
+			"dex": "Performance National",
+			"run": 3,
+			"status": 200,
+			"headerMs": 80.943,
+			"firstMs": 80.994,
+			"fullMs": 145.327,
+			"bytes": 523684,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 1.251,
+					"headerMs": 46.908,
+					"ms": 47.156,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 48.813,
+					"headerMs": 4.351,
+					"ms": 4.57,
+					"bytes": 381,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 53.64,
+					"headerMs": 4,
+					"ms": 4.109,
+					"bytes": 2,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "HEAD",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 59.349,
+					"headerMs": 8.502,
+					"ms": 8.561,
+					"bytes": 0,
+					"status": 206
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 59.262,
+					"headerMs": 16.308,
+					"ms": 20.615,
+					"bytes": 543188,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "1000",
+					"limit": "1000",
+					"form": null,
+					"start": 80.382,
+					"headerMs": 10.411,
+					"ms": 10.629,
+					"bytes": 12789,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 91.627,
+					"headerMs": 7.928,
+					"ms": 10.709,
+					"bytes": 351519,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 102.547,
+					"headerMs": 2.927,
+					"ms": 3.084,
+					"bytes": 8806,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 9.23,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchEntriesByRange",
+					"ms": 32.379,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 14.508,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 50.693,
+					"rows": 1025
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 109.433,
+			"lastQueryEndMs": 105.63,
+			"authMs": 47.156,
+			"ownershipMs": 8.68,
+			"entryStageMs": 32.379,
+			"catchMs": 14.508,
+			"findMs": 50.693,
+			"countMs": 9.23,
+			"bytesFromSupabase": 917728
+		},
+		{
+			"dex": "Performance National",
+			"run": 4,
+			"status": 200,
+			"headerMs": 49.557,
+			"firstMs": 49.639,
+			"fullMs": 118.759,
+			"bytes": 523684,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.361,
+					"headerMs": 37.349,
+					"ms": 37.541,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 38.245,
+					"headerMs": 4.278,
+					"ms": 4.443,
+					"bytes": 381,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 42.906,
+					"headerMs": 3.524,
+					"ms": 3.654,
+					"bytes": 2,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "HEAD",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 47.121,
+					"headerMs": 5.948,
+					"ms": 5.971,
+					"bytes": 0,
+					"status": 206
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 47.041,
+					"headerMs": 12.986,
+					"ms": 16.79,
+					"bytes": 543188,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "1000",
+					"limit": "1000",
+					"form": null,
+					"start": 64.085,
+					"headerMs": 8.735,
+					"ms": 9.218,
+					"bytes": 12789,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 74.17,
+					"headerMs": 18.346,
+					"ms": 21.886,
+					"bytes": 351519,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 96.307,
+					"headerMs": 3.291,
+					"ms": 3.431,
+					"bytes": 8806,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 6.511,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchEntriesByRange",
+					"ms": 26.806,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 26.174,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 56.668,
+					"rows": 1025
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 102.934,
+			"lastQueryEndMs": 99.738,
+			"authMs": 37.541,
+			"ownershipMs": 8.097,
+			"entryStageMs": 26.806,
+			"catchMs": 26.174,
+			"findMs": 56.668,
+			"countMs": 6.511,
+			"bytesFromSupabase": 917728
+		},
+		{
+			"dex": "Performance National",
+			"run": 5,
+			"status": 200,
+			"headerMs": 42.795,
+			"firstMs": 42.849,
+			"fullMs": 99.312,
+			"bytes": 523684,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.438,
+					"headerMs": 29.548,
+					"ms": 29.724,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 30.539,
+					"headerMs": 4.24,
+					"ms": 4.398,
+					"bytes": 381,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 35.33,
+					"headerMs": 3.455,
+					"ms": 3.606,
+					"bytes": 2,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "HEAD",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 39.555,
+					"headerMs": 6.001,
+					"ms": 6.021,
+					"bytes": 0,
+					"status": 206
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 39.471,
+					"headerMs": 12.87,
+					"ms": 17.253,
+					"bytes": 543188,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "1000",
+					"limit": "1000",
+					"form": null,
+					"start": 56.963,
+					"headerMs": 8.796,
+					"ms": 8.943,
+					"bytes": 12789,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 66.253,
+					"headerMs": 10.308,
+					"ms": 12.623,
+					"bytes": 351519,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 79.087,
+					"headerMs": 3.177,
+					"ms": 3.28,
+					"bytes": 8806,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 6.586,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchEntriesByRange",
+					"ms": 26.937,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 16.395,
+					"rows": 1025
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 46.893,
+					"rows": 1025
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 85.85,
+			"lastQueryEndMs": 82.367,
+			"authMs": 29.724,
+			"ownershipMs": 8.005,
+			"entryStageMs": 26.937,
+			"catchMs": 16.395,
+			"findMs": 46.893,
+			"countMs": 6.586,
+			"bytesFromSupabase": 917728
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"run": "first",
+			"status": 200,
+			"headerMs": 35.84,
+			"firstMs": 35.894,
+			"fullMs": 70.921,
+			"bytes": 227949,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.361,
+					"headerMs": 25.453,
+					"ms": 25.617,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 26.314,
+					"headerMs": 3.167,
+					"ms": 3.308,
+					"bytes": 390,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 29.805,
+					"headerMs": 3.168,
+					"ms": 3.294,
+					"bytes": 79,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 33.519,
+					"headerMs": 14.556,
+					"ms": 16.149,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 33.581,
+					"headerMs": 14.305,
+					"ms": 17.568,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 49.963,
+					"headerMs": 6.238,
+					"ms": 6.458,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 51.379,
+					"headerMs": 5.729,
+					"ms": 5.867,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 56.865,
+					"headerMs": 6.41,
+					"ms": 7.496,
+					"bytes": 154390,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 6.68,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 23.46,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 6.026,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 24.206,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 24.234,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 7.747,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 31.961,
+					"rows": 439
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 85.757,
+			"lastQueryEndMs": 64.361,
+			"authMs": 25.617,
+			"ownershipMs": 6.602,
+			"entryStageMs": 24.206,
+			"catchMs": 7.747,
+			"findMs": 31.961,
+			"countMs": 24.234,
+			"bytesFromSupabase": 709996
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"run": 1,
+			"status": 200,
+			"headerMs": 34.858,
+			"firstMs": 34.899,
+			"fullMs": 66.019,
+			"bytes": 227949,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.42,
+					"headerMs": 24.649,
+					"ms": 24.823,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 25.548,
+					"headerMs": 3.353,
+					"ms": 3.474,
+					"bytes": 390,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 29.186,
+					"headerMs": 2.714,
+					"ms": 2.807,
+					"bytes": 79,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 32.422,
+					"headerMs": 12.945,
+					"ms": 14.471,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 32.486,
+					"headerMs": 14.999,
+					"ms": 15.989,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 47.158,
+					"headerMs": 4.809,
+					"ms": 5.015,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 48.674,
+					"headerMs": 6.351,
+					"ms": 6.521,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 52.566,
+					"headerMs": 4.718,
+					"ms": 6.184,
+					"bytes": 154390,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 5.21,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 20.304,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 6.663,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 23.284,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 23.317,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 6.395,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 27.546,
+					"rows": 439
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 79.284,
+			"lastQueryEndMs": 58.75,
+			"authMs": 24.823,
+			"ownershipMs": 6.282,
+			"entryStageMs": 23.284,
+			"catchMs": 6.395,
+			"findMs": 27.546,
+			"countMs": 23.317,
+			"bytesFromSupabase": 709996
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"run": 2,
+			"status": 200,
+			"headerMs": 36.735,
+			"firstMs": 36.828,
+			"fullMs": 70.793,
+			"bytes": 227949,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.347,
+					"headerMs": 26.23,
+					"ms": 26.434,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 27.231,
+					"headerMs": 3.259,
+					"ms": 3.369,
+					"bytes": 390,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 30.772,
+					"headerMs": 2.647,
+					"ms": 2.747,
+					"bytes": 79,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 33.961,
+					"headerMs": 12.614,
+					"ms": 15.353,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 34.037,
+					"headerMs": 16.098,
+					"ms": 17.476,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 49.847,
+					"headerMs": 6.802,
+					"ms": 7.056,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 51.792,
+					"headerMs": 7.026,
+					"ms": 7.194,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 57.335,
+					"headerMs": 5.163,
+					"ms": 6.243,
+					"bytes": 154390,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 7.316,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 23.521,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 7.37,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 25.58,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 25.613,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 6.477,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 30.773,
+					"rows": 439
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 85.871,
+			"lastQueryEndMs": 63.578,
+			"authMs": 26.434,
+			"ownershipMs": 6.116,
+			"entryStageMs": 25.58,
+			"catchMs": 6.477,
+			"findMs": 30.773,
+			"countMs": 25.613,
+			"bytesFromSupabase": 709996
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"run": 3,
+			"status": 200,
+			"headerMs": 35.14,
+			"firstMs": 35.208,
+			"fullMs": 72.503,
+			"bytes": 227949,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.38,
+					"headerMs": 23.453,
+					"ms": 23.622,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 24.301,
+					"headerMs": 3.101,
+					"ms": 3.215,
+					"bytes": 390,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 27.689,
+					"headerMs": 4.104,
+					"ms": 4.222,
+					"bytes": 79,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 32.39,
+					"headerMs": 12.794,
+					"ms": 14.47,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 32.473,
+					"headerMs": 15.247,
+					"ms": 16.898,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 47.212,
+					"headerMs": 8.441,
+					"ms": 8.632,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 49.632,
+					"headerMs": 6.893,
+					"ms": 7.056,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 56.176,
+					"headerMs": 6.251,
+					"ms": 7.906,
+					"bytes": 154390,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 8.865,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 23.996,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 7.222,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 24.802,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 24.836,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 8.143,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 33.263,
+					"rows": 439
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 86.02,
+			"lastQueryEndMs": 64.082,
+			"authMs": 23.622,
+			"ownershipMs": 7.436,
+			"entryStageMs": 24.802,
+			"catchMs": 8.143,
+			"findMs": 33.263,
+			"countMs": 24.836,
+			"bytesFromSupabase": 709996
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"run": 4,
+			"status": 200,
+			"headerMs": 37.107,
+			"firstMs": 37.145,
+			"fullMs": 91.415,
+			"bytes": 227949,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.344,
+					"headerMs": 25.111,
+					"ms": 25.305,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 26.051,
+					"headerMs": 4.477,
+					"ms": 4.592,
+					"bytes": 390,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 30.814,
+					"headerMs": 3.087,
+					"ms": 3.188,
+					"bytes": 79,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 34.522,
+					"headerMs": 18.23,
+					"ms": 19.832,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 34.6,
+					"headerMs": 21.132,
+					"ms": 23.418,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 55.334,
+					"headerMs": 6.388,
+					"ms": 6.763,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 58.691,
+					"headerMs": 5.503,
+					"ms": 5.771,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 62.691,
+					"headerMs": 7.181,
+					"ms": 9.457,
+					"bytes": 154390,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 7.412,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 28.265,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 6.221,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 30.588,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 30.664,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 9.829,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 39.463,
+					"rows": 439
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 98.327,
+			"lastQueryEndMs": 72.148,
+			"authMs": 25.305,
+			"ownershipMs": 7.78,
+			"entryStageMs": 30.588,
+			"catchMs": 9.829,
+			"findMs": 39.463,
+			"countMs": 30.664,
+			"bytesFromSupabase": 709996
+		},
+		{
+			"dex": "Performance Scarlet Forms",
+			"run": 5,
+			"status": 200,
+			"headerMs": 38.323,
+			"firstMs": 38.463,
+			"fullMs": 80.223,
+			"bytes": 227949,
+			"queries": [
+				{
+					"kind": "query",
+					"table": "user",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 0.76,
+					"headerMs": 25.549,
+					"ms": 25.763,
+					"bytes": 1043,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedexes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 26.95,
+					"headerMs": 3.678,
+					"ms": 3.797,
+					"bytes": 390,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_dex_scopes",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 30.943,
+					"headerMs": 3.325,
+					"ms": 3.423,
+					"bytes": 79,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 34.855,
+					"headerMs": 15.893,
+					"ms": 18.137,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "game_pokedex_entry_details",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": null,
+					"start": 34.929,
+					"headerMs": 18.707,
+					"ms": 19.907,
+					"bytes": 250770,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 55.09,
+					"headerMs": 8.815,
+					"ms": 9.037,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "pokedex_entries",
+					"method": "GET",
+					"offset": "0",
+					"limit": "1000",
+					"form": "not.is.null",
+					"start": 53.349,
+					"headerMs": 11.092,
+					"ms": 11.236,
+					"bytes": 26277,
+					"status": 200
+				},
+				{
+					"kind": "query",
+					"table": "catch_records",
+					"method": "GET",
+					"offset": null,
+					"limit": null,
+					"form": null,
+					"start": 64.95,
+					"headerMs": 4.991,
+					"ms": 6.124,
+					"bytes": 154390,
+					"status": 200
+				}
+			],
+			"stages": [
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 9.228,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 29.813,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "countCombinedData",
+					"ms": 29.866,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchFormsForGame",
+					"ms": 11.447,
+					"rows": 39
+				},
+				{
+					"kind": "stage",
+					"name": "fetchAllDexEntries",
+					"ms": 30.277,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "fetchCatchRecords",
+					"ms": 6.395,
+					"rows": 439
+				},
+				{
+					"kind": "stage",
+					"name": "findCombinedData",
+					"ms": 37.661,
+					"rows": 439
+				}
+			],
+			"queryCount": 8,
+			"sumQueryMs": 97.425,
+			"lastQueryEndMs": 71.075,
+			"authMs": 25.763,
+			"ownershipMs": 7.22,
+			"entryStageMs": 30.277,
+			"catchMs": 6.395,
+			"findMs": 37.661,
+			"countMs": 29.866,
+			"bytesFromSupabase": 709996
+		}
+	],
+	"queryPlans": {
+		"national": {
+			"firstExecutionMs": 6.18,
+			"warmExecutionMs": [5.476, 5.557, 5.468, 5.866, 8.126],
+			"representativePlan": {
+				"Node Type": "Limit",
+				"Actual Total Time": 5.349,
+				"Actual Rows": 1000,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 80,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Sort",
+						"Actual Total Time": 5.299,
+						"Actual Rows": 1000,
+						"Actual Loops": 1,
+						"Shared Hit Blocks": 80,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Aggregate",
+								"Actual Total Time": 5.008,
+								"Actual Rows": 1025,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 74,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Sort",
+										"Actual Total Time": 4.075,
+										"Actual Rows": 3784,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 74,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Hash Join",
+												"Actual Total Time": 2.242,
+												"Actual Rows": 3784,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 71,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Hash Join",
+														"Actual Total Time": 1.718,
+														"Actual Rows": 3784,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 70,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Hash Join",
+																"Actual Total Time": 1.283,
+																"Actual Rows": 3784,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 69,
+																"Shared Read Blocks": 0,
+																"Plans": [
+																	{
+																		"Node Type": "Seq Scan",
+																		"Relation Name": "pokemon_origin_games",
+																		"Actual Total Time": 0.226,
+																		"Actual Rows": 5217,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 31,
+																		"Shared Read Blocks": 0
+																	},
+																	{
+																		"Node Type": "Hash",
+																		"Actual Total Time": 0.316,
+																		"Actual Rows": 1025,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 38,
+																		"Shared Read Blocks": 0,
+																		"Plans": [
+																			{
+																				"Node Type": "Seq Scan",
+																				"Relation Name": "pokemon",
+																				"Actual Total Time": 0.16,
+																				"Actual Rows": 1025,
+																				"Actual Loops": 1,
+																				"Rows Removed by Filter": 365,
+																				"Shared Hit Blocks": 38,
+																				"Shared Read Blocks": 0
+																			}
+																		]
+																	}
+																]
+															},
+															{
+																"Node Type": "Hash",
+																"Actual Total Time": 0.009,
+																"Actual Rows": 14,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 1,
+																"Shared Read Blocks": 0,
+																"Plans": [
+																	{
+																		"Node Type": "Seq Scan",
+																		"Relation Name": "regions",
+																		"Actual Total Time": 0.006,
+																		"Actual Rows": 14,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 1,
+																		"Shared Read Blocks": 0
+																	}
+																]
+															}
+														]
+													},
+													{
+														"Node Type": "Hash",
+														"Actual Total Time": 0.011,
+														"Actual Rows": 45,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 1,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Seq Scan",
+																"Relation Name": "games",
+																"Actual Total Time": 0.005,
+																"Actual Rows": 45,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 1,
+																"Shared Read Blocks": 0
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"nationalSecond": {
+			"firstExecutionMs": 5.141,
+			"warmExecutionMs": [5.638, 5.866, 5.182, 7.396, 27.338],
+			"representativePlan": {
+				"Node Type": "Limit",
+				"Actual Total Time": 5.543,
+				"Actual Rows": 25,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 80,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Sort",
+						"Actual Total Time": 5.516,
+						"Actual Rows": 1025,
+						"Actual Loops": 1,
+						"Shared Hit Blocks": 80,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Aggregate",
+								"Actual Total Time": 5.153,
+								"Actual Rows": 1025,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 74,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Sort",
+										"Actual Total Time": 4.23,
+										"Actual Rows": 3784,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 74,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Hash Join",
+												"Actual Total Time": 2.4,
+												"Actual Rows": 3784,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 71,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Hash Join",
+														"Actual Total Time": 1.845,
+														"Actual Rows": 3784,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 70,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Hash Join",
+																"Actual Total Time": 1.418,
+																"Actual Rows": 3784,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 69,
+																"Shared Read Blocks": 0,
+																"Plans": [
+																	{
+																		"Node Type": "Seq Scan",
+																		"Relation Name": "pokemon_origin_games",
+																		"Actual Total Time": 0.255,
+																		"Actual Rows": 5217,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 31,
+																		"Shared Read Blocks": 0
+																	},
+																	{
+																		"Node Type": "Hash",
+																		"Actual Total Time": 0.326,
+																		"Actual Rows": 1025,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 38,
+																		"Shared Read Blocks": 0,
+																		"Plans": [
+																			{
+																				"Node Type": "Seq Scan",
+																				"Relation Name": "pokemon",
+																				"Actual Total Time": 0.168,
+																				"Actual Rows": 1025,
+																				"Actual Loops": 1,
+																				"Rows Removed by Filter": 365,
+																				"Shared Hit Blocks": 38,
+																				"Shared Read Blocks": 0
+																			}
+																		]
+																	}
+																]
+															},
+															{
+																"Node Type": "Hash",
+																"Actual Total Time": 0.007,
+																"Actual Rows": 14,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 1,
+																"Shared Read Blocks": 0,
+																"Plans": [
+																	{
+																		"Node Type": "Seq Scan",
+																		"Relation Name": "regions",
+																		"Actual Total Time": 0.005,
+																		"Actual Rows": 14,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 1,
+																		"Shared Read Blocks": 0
+																	}
+																]
+															}
+														]
+													},
+													{
+														"Node Type": "Hash",
+														"Actual Total Time": 0.011,
+														"Actual Rows": 45,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 1,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Seq Scan",
+																"Relation Name": "games",
+																"Actual Total Time": 0.005,
+																"Actual Rows": 45,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 1,
+																"Shared Read Blocks": 0
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"count": {
+			"firstExecutionMs": 3.707,
+			"warmExecutionMs": [2.801, 3.64, 2.484, 2.29, 2.472],
+			"representativePlan": {
+				"Node Type": "Aggregate",
+				"Actual Total Time": 2.645,
+				"Actual Rows": 1,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 70,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Aggregate",
+						"Actual Total Time": 2.594,
+						"Actual Rows": 1025,
+						"Actual Loops": 1,
+						"Shared Hit Blocks": 70,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Hash Join",
+								"Actual Total Time": 1.666,
+								"Actual Rows": 3784,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 70,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Hash Join",
+										"Actual Total Time": 1.231,
+										"Actual Rows": 3784,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 69,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Seq Scan",
+												"Relation Name": "pokemon_origin_games",
+												"Actual Total Time": 0.339,
+												"Actual Rows": 5217,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 31,
+												"Shared Read Blocks": 0
+											},
+											{
+												"Node Type": "Hash",
+												"Actual Total Time": 0.232,
+												"Actual Rows": 1025,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 38,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Seq Scan",
+														"Relation Name": "pokemon",
+														"Actual Total Time": 0.156,
+														"Actual Rows": 1025,
+														"Actual Loops": 1,
+														"Rows Removed by Filter": 365,
+														"Shared Hit Blocks": 38,
+														"Shared Read Blocks": 0
+													}
+												]
+											}
+										]
+									},
+									{
+										"Node Type": "Hash",
+										"Actual Total Time": 0.011,
+										"Actual Rows": 14,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 1,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Seq Scan",
+												"Relation Name": "regions",
+												"Actual Total Time": 0.007,
+												"Actual Rows": 14,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 1,
+												"Shared Read Blocks": 0
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"scoped": {
+			"firstExecutionMs": 12.941,
+			"warmExecutionMs": [9.151, 9.144, 11.632, 10.706, 12.521],
+			"representativePlan": {
+				"Node Type": "Limit",
+				"Actual Total Time": 8.949,
+				"Actual Rows": 400,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 100,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Incremental Sort",
+						"Actual Total Time": 8.928,
+						"Actual Rows": 400,
+						"Actual Loops": 1,
+						"Shared Hit Blocks": 100,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Nested Loop",
+								"Actual Total Time": 8.699,
+								"Actual Rows": 400,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 94,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Index Scan",
+										"Index Name": "idx_game_dexes_sort_order",
+										"Relation Name": "game_dexes",
+										"Actual Total Time": 0.017,
+										"Actual Rows": 1,
+										"Actual Loops": 1,
+										"Rows Removed by Filter": 50,
+										"Shared Hit Blocks": 2,
+										"Shared Read Blocks": 0
+									},
+									{
+										"Node Type": "Hash Join",
+										"Actual Total Time": 8.644,
+										"Actual Rows": 400,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 92,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Aggregate",
+												"Actual Total Time": 8.362,
+												"Actual Rows": 1390,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 74,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Sort",
+														"Actual Total Time": 6.248,
+														"Actual Rows": 5217,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 74,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Hash Join",
+																"Actual Total Time": 3.316,
+																"Actual Rows": 5217,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 71,
+																"Shared Read Blocks": 0,
+																"Plans": [
+																	{
+																		"Node Type": "Hash Join",
+																		"Actual Total Time": 2.438,
+																		"Actual Rows": 5217,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 70,
+																		"Shared Read Blocks": 0,
+																		"Plans": [
+																			{
+																				"Node Type": "Hash Join",
+																				"Actual Total Time": 1.802,
+																				"Actual Rows": 5217,
+																				"Actual Loops": 1,
+																				"Shared Hit Blocks": 69,
+																				"Shared Read Blocks": 0,
+																				"Plans": [
+																					{
+																						"Node Type": "Seq Scan",
+																						"Relation Name": "pokemon_origin_games",
+																						"Actual Total Time": 0.246,
+																						"Actual Rows": 5217,
+																						"Actual Loops": 1,
+																						"Shared Hit Blocks": 31,
+																						"Shared Read Blocks": 0
+																					},
+																					{
+																						"Node Type": "Hash",
+																						"Actual Total Time": 0.483,
+																						"Actual Rows": 1390,
+																						"Actual Loops": 1,
+																						"Shared Hit Blocks": 38,
+																						"Shared Read Blocks": 0,
+																						"Plans": [
+																							{
+																								"Node Type": "Seq Scan",
+																								"Relation Name": "pokemon",
+																								"Actual Total Time": 0.206,
+																								"Actual Rows": 1390,
+																								"Actual Loops": 1,
+																								"Shared Hit Blocks": 38,
+																								"Shared Read Blocks": 0
+																							}
+																						]
+																					}
+																				]
+																			},
+																			{
+																				"Node Type": "Hash",
+																				"Actual Total Time": 0.009,
+																				"Actual Rows": 14,
+																				"Actual Loops": 1,
+																				"Shared Hit Blocks": 1,
+																				"Shared Read Blocks": 0,
+																				"Plans": [
+																					{
+																						"Node Type": "Seq Scan",
+																						"Relation Name": "regions",
+																						"Actual Total Time": 0.006,
+																						"Actual Rows": 14,
+																						"Actual Loops": 1,
+																						"Shared Hit Blocks": 1,
+																						"Shared Read Blocks": 0
+																					}
+																				]
+																			}
+																		]
+																	},
+																	{
+																		"Node Type": "Hash",
+																		"Actual Total Time": 0.022,
+																		"Actual Rows": 45,
+																		"Actual Loops": 1,
+																		"Shared Hit Blocks": 1,
+																		"Shared Read Blocks": 0,
+																		"Plans": [
+																			{
+																				"Node Type": "Seq Scan",
+																				"Relation Name": "games",
+																				"Actual Total Time": 0.008,
+																				"Actual Rows": 45,
+																				"Actual Loops": 1,
+																				"Shared Hit Blocks": 1,
+																				"Shared Read Blocks": 0
+																			}
+																		]
+																	}
+																]
+															}
+														]
+													}
+												]
+											},
+											{
+												"Node Type": "Hash",
+												"Actual Total Time": 0.149,
+												"Actual Rows": 400,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 18,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Bitmap Heap Scan",
+														"Relation Name": "game_pokedex_entries",
+														"Actual Total Time": 0.1,
+														"Actual Rows": 400,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 18,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Bitmap Index Scan",
+																"Index Name": "idx_game_pokedex_entries_dex_id",
+																"Actual Total Time": 0.021,
+																"Actual Rows": 400,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 2,
+																"Shared Read Blocks": 0
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"forms": {
+			"firstExecutionMs": 2.623,
+			"warmExecutionMs": [2.645, 2.798, 3.218, 6.435, 2.934],
+			"representativePlan": {
+				"Node Type": "Limit",
+				"Actual Total Time": 2.485,
+				"Actual Rows": 45,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 103,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Aggregate",
+						"Actual Total Time": 2.482,
+						"Actual Rows": 45,
+						"Actual Loops": 1,
+						"Rows Removed by Filter": 360,
+						"Shared Hit Blocks": 103,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Sort",
+								"Actual Total Time": 1.992,
+								"Actual Rows": 1599,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 103,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Hash Join",
+										"Actual Total Time": 1.208,
+										"Actual Rows": 1599,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 94,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Hash Join",
+												"Actual Total Time": 0.981,
+												"Actual Rows": 1599,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 93,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Seq Scan",
+														"Relation Name": "pokemon_origin_games",
+														"Actual Total Time": 0.206,
+														"Actual Rows": 5217,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 31,
+														"Shared Read Blocks": 0
+													},
+													{
+														"Node Type": "Hash",
+														"Actual Total Time": 0.297,
+														"Actual Rows": 405,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 62,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Nested Loop",
+																"Actual Total Time": 0.222,
+																"Actual Rows": 405,
+																"Actual Loops": 1,
+																"Shared Hit Blocks": 62,
+																"Shared Read Blocks": 0,
+																"Plans": [
+																	{
+																		"Node Type": "Seq Scan",
+																		"Relation Name": "pokemon",
+																		"Actual Total Time": 0.117,
+																		"Actual Rows": 405,
+																		"Actual Loops": 1,
+																		"Rows Removed by Filter": 985,
+																		"Shared Hit Blocks": 38,
+																		"Shared Read Blocks": 0
+																	},
+																	{
+																		"Node Type": "Memoize",
+																		"Actual Total Time": 0,
+																		"Actual Rows": 1,
+																		"Actual Loops": 405,
+																		"Shared Hit Blocks": 24,
+																		"Shared Read Blocks": 0,
+																		"Plans": [
+																			{
+																				"Node Type": "Index Scan",
+																				"Index Name": "regions_pkey",
+																				"Relation Name": "regions",
+																				"Actual Total Time": 0.001,
+																				"Actual Rows": 1,
+																				"Actual Loops": 12,
+																				"Shared Hit Blocks": 24,
+																				"Shared Read Blocks": 0
+																			}
+																		]
+																	}
+																]
+															}
+														]
+													}
+												]
+											},
+											{
+												"Node Type": "Hash",
+												"Actual Total Time": 0.012,
+												"Actual Rows": 45,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 1,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Seq Scan",
+														"Relation Name": "games",
+														"Actual Total Time": 0.006,
+														"Actual Rows": 45,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 1,
+														"Shared Read Blocks": 0
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"catches": {
+			"firstExecutionMs": 1.162,
+			"warmExecutionMs": [1.901, 1.989, 1.518, 2.723, 1.132],
+			"representativePlan": {
+				"Node Type": "Result",
+				"Actual Total Time": 1.785,
+				"Actual Rows": 1000,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 59,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Hash Join",
+						"Actual Total Time": 1.712,
+						"Actual Rows": 1000,
+						"Actual Loops": 1,
+						"Shared Hit Blocks": 59,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Index Scan",
+								"Index Name": "idx_catch_records_pokedex_id",
+								"Relation Name": "catch_records",
+								"Actual Total Time": 0.89,
+								"Actual Rows": 1025,
+								"Actual Loops": 1,
+								"Rows Removed by Filter": 0,
+								"Shared Hit Blocks": 18,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Seq Scan",
+										"Relation Name": "pokedexes",
+										"Actual Total Time": 0.095,
+										"Actual Rows": 2,
+										"Actual Loops": 1,
+										"Rows Removed by Filter": 7,
+										"Shared Hit Blocks": 1,
+										"Shared Read Blocks": 0
+									}
+								]
+							},
+							{
+								"Node Type": "Hash",
+								"Actual Total Time": 0.678,
+								"Actual Rows": 1000,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 41,
+								"Shared Read Blocks": 0,
+								"Plans": [
+									{
+										"Node Type": "Subquery Scan",
+										"Actual Total Time": 0.565,
+										"Actual Rows": 1000,
+										"Actual Loops": 1,
+										"Shared Hit Blocks": 41,
+										"Shared Read Blocks": 0,
+										"Plans": [
+											{
+												"Node Type": "Limit",
+												"Actual Total Time": 0.464,
+												"Actual Rows": 1000,
+												"Actual Loops": 1,
+												"Shared Hit Blocks": 41,
+												"Shared Read Blocks": 0,
+												"Plans": [
+													{
+														"Node Type": "Sort",
+														"Actual Total Time": 0.389,
+														"Actual Rows": 1000,
+														"Actual Loops": 1,
+														"Shared Hit Blocks": 41,
+														"Shared Read Blocks": 0,
+														"Plans": [
+															{
+																"Node Type": "Seq Scan",
+																"Relation Name": "pokemon",
+																"Actual Total Time": 0.188,
+																"Actual Rows": 1025,
+																"Actual Loops": 1,
+																"Rows Removed by Filter": 365,
+																"Shared Hit Blocks": 38,
+																"Shared Read Blocks": 0
+															}
+														]
+													}
+												]
+											}
+										]
+									}
+								]
+							}
+						]
+					}
+				]
+			}
+		},
+		"catchesLiteral": {
+			"firstExecutionMs": 0.99,
+			"warmExecutionMs": [0.493, 0.476, 0.508, 0.46, 0.448],
+			"representativePlan": {
+				"Node Type": "Result",
+				"Actual Total Time": 0.419,
+				"Actual Rows": 1000,
+				"Actual Loops": 1,
+				"Shared Hit Blocks": 42,
+				"Shared Read Blocks": 0,
+				"Plans": [
+					{
+						"Node Type": "Bitmap Heap Scan",
+						"Relation Name": "catch_records",
+						"Actual Total Time": 0.327,
+						"Actual Rows": 1000,
+						"Actual Loops": 1,
+						"Rows Removed by Filter": 0,
+						"Shared Hit Blocks": 42,
+						"Shared Read Blocks": 0,
+						"Plans": [
+							{
+								"Node Type": "Bitmap Index Scan",
+								"Index Name": "catch_records_userId_pokemonId_pokedexId_key",
+								"Actual Total Time": 0.179,
+								"Actual Rows": 1000,
+								"Actual Loops": 1,
+								"Shared Hit Blocks": 27,
+								"Shared Read Blocks": 0
+							},
+							{
+								"Node Type": "Seq Scan",
+								"Relation Name": "pokedexes",
+								"Actual Total Time": 0.012,
+								"Actual Rows": 2,
+								"Actual Loops": 1,
+								"Rows Removed by Filter": 7,
+								"Shared Hit Blocks": 1,
+								"Shared Read Blocks": 0
+							}
+						]
+					}
+				]
+			}
+		}
+	}
+}
