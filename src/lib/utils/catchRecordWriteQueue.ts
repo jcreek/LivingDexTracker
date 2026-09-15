@@ -1,5 +1,5 @@
 import { writable, type Readable } from 'svelte/store';
-import type { CatchRecord } from '$lib/models/CatchRecord';
+import type { CatchRecordPatch } from '$lib/models/PokedexGridRow';
 
 export type CatchRecordWriteQueueStatus = {
 	pending: number;
@@ -10,7 +10,7 @@ export type CatchRecordWriteQueueStatus = {
 };
 
 type QueueItem = {
-	record: CatchRecord;
+	record: CatchRecordPatch;
 	attempts: number;
 	notBefore: number; // unix ms
 	debounceTimer: ReturnType<typeof setTimeout> | null;
@@ -31,6 +31,8 @@ export type CreateCatchRecordWriteQueueOptions = {
 	batchSize?: number;
 	/** Max number of concurrent in-flight requests. */
 	concurrency?: number;
+	/** Prevent queued work from crossing an account change. */
+	isCurrentUser?: () => boolean;
 };
 
 export type EnqueueCatchRecordWriteOptions = {
@@ -53,7 +55,7 @@ export type FlushOptions = {
 	limit?: number;
 };
 
-function keyFor(record: CatchRecord): string {
+function keyFor(record: CatchRecordPatch): string {
 	return `${record.userId}:${record.pokedexId}:${record.pokemonId}`;
 }
 
@@ -66,11 +68,12 @@ function backoffMs(attempts: number): number {
 }
 
 export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueueOptions): {
-	enqueue: (record: CatchRecord, opts?: EnqueueCatchRecordWriteOptions) => void;
+	enqueue: (record: CatchRecordPatch, opts?: EnqueueCatchRecordWriteOptions) => void;
 	flushNow: (opts?: FlushOptions) => Promise<void>;
 	getStatus: Readable<CatchRecordWriteQueueStatus>;
 	getPendingCount: () => number;
 	clearError: () => void;
+	getPendingPatch: (pokemonId: string) => CatchRecordPatch | undefined;
 } {
 	const { endpointUrl, fetchFn, batchSize = 100, concurrency = 1 } = options;
 
@@ -109,7 +112,7 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 	}
 
 	function scheduleFlush() {
-		if (scheduled) return;
+		if (scheduled || (typeof navigator !== 'undefined' && navigator.onLine === false)) return;
 		const next = computeNextWakeup();
 		if (next === null) return;
 		const delay = Math.max(0, next - Date.now());
@@ -120,6 +123,12 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 	}
 
 	async function flushBatch(opts?: FlushOptions): Promise<void> {
+		if (options.isCurrentUser && !options.isCurrentUser()) {
+			for (const item of items.values()) if (item.debounceTimer) clearTimeout(item.debounceTimer);
+			items.clear();
+			updateStatus({ lastError: null });
+			return;
+		}
 		if (typeof navigator !== 'undefined' && navigator.onLine === false) {
 			// Stay queued; caller can retry when online.
 			return;
@@ -206,7 +215,7 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 		scheduleFlush();
 	}
 
-	function enqueue(record: CatchRecord, opts?: EnqueueCatchRecordWriteOptions) {
+	function enqueue(record: CatchRecordPatch, opts?: EnqueueCatchRecordWriteOptions) {
 		const k = keyFor(record);
 		const now = Date.now();
 		const existing = items.get(k);
@@ -232,7 +241,7 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 		}
 
 		items.set(k, {
-			record,
+			record: { ...existing?.record, ...record },
 			attempts: existing?.attempts ?? 0,
 			notBefore,
 			debounceTimer,
@@ -255,6 +264,8 @@ export function createCatchRecordWriteQueue(options: CreateCatchRecordWriteQueue
 		flushNow,
 		getStatus: { subscribe: statusStore.subscribe },
 		getPendingCount,
-		clearError
+		clearError,
+		getPendingPatch: (pokemonId: string) =>
+			[...items.values()].find((item) => item.record.pokemonId === pokemonId)?.record
 	};
 }
