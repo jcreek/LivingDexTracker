@@ -36,7 +36,7 @@
 		"test:build:inject-static": "npm run build-inject-manifest && vitest run --config vitest.build.config.mts",
 		"test:build:inject-node": "npm run build-inject-manifest-node && NODE_ADAPTER=true vitest run --config vitest.build.config.mts",
 		"test:build": "npm run test:build:generate-static && npm run test:build:generate-node && npm run test:build:inject-static && npm run test:build:inject-node",
-		"test:ci": "npm run test:fast && npm run test:integration && npm run test:build && npm run test:bdd",
+		"test:ci": "npm run test:fast && npm run test:integration && npm run test:build && npm run test:bdd && npm run test:performance",
 		"test": "npm run test:ci",
 		"supabase:start": "supabase start",
 		"supabase:stop": "supabase stop",
@@ -48,7 +48,8 @@
 		"sprites:grid": "node scripts/grid-thumbnails.mjs",
 		"build:cloudflare": "DEPLOY_TARGET=cloudflare npm run build",
 		"preview:cloudflare": "wrangler dev",
-		"check:cloudflare": "wrangler deploy --dry-run"
+		"check:cloudflare": "wrangler deploy --dry-run",
+		"test:performance": "node scripts/run-with-local-supabase.mjs node scripts/performance/run-local.mjs"
 	},
 	"devDependencies": {
 		"@lhci/cli": "^0.15.1",

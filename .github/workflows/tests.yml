@@ -145,6 +145,30 @@ jobs:
       - if: always()
         run: npx supabase stop
 
+  pokedex-performance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER: 'true'
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: npx supabase start
+      - run: npm run test:performance
+      - uses: actions/upload-artifact@v6
+        if: always()
+        with:
+          name: pokedex-performance
+          path: test-results/performance/
+          if-no-files-found: ignore
+      - if: always()
+        run: npx supabase stop
+
   cloudflare-preview-build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
