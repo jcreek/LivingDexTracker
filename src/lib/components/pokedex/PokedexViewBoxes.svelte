@@ -1,15 +1,109 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import type { CatchRecord } from '$lib/models/CatchRecord';
-	import type { CombinedData } from '$lib/models/CombinedData';
-	import type { SharedCatchStatus, SharedCombinedData } from '$lib/models/SharedPokedex';
+	import { onMount, tick } from 'svelte';
 	import { calculateBoxPlacement } from '$lib/utils/boxPlacement';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
-	import Tooltip from '$lib/components/Tooltip.svelte';
+	import type { SharedCombinedData } from '$lib/models/SharedPokedex';
+	import type { PokedexGridRow } from '$lib/models/PokedexGridRow';
+	import { markGridInteractive } from '$lib/utils/criticalPageWork';
+
+	export let virtualize = false;
+	export let retryLoad: (() => void) | null = null;
+	let renderAll = false;
+	let visibleBoxes = new Set([1, 2, 3, 4]);
+	let focusedBox: number | null = null;
+	let grid: HTMLDivElement;
+	const shells = new Map<number, HTMLElement>();
+	let viewportFrame = 0;
+	let mounted = false;
+	export let gridKey = '';
+	let markedKey: string | null = null;
+	let scrollAnchor: { number: number; top: number } | null = null;
+
+	function measureViewport() {
+		viewportFrame = 0;
+		const next = new Set<number>();
+		scrollAnchor = null;
+		for (const [number, node] of shells) {
+			const rect = node.getBoundingClientRect();
+			if (!scrollAnchor && rect.bottom > 0) scrollAnchor = { number, top: rect.top };
+			const overscan = rect.height + 16;
+			if (rect.bottom >= -overscan && rect.top <= window.innerHeight + overscan) next.add(number);
+		}
+		visibleBoxes = next;
+	}
+	function resizeViewport() {
+		if (scrollAnchor && window.scrollY > 0) {
+			const node = shells.get(scrollAnchor.number);
+			if (node) window.scrollBy(0, node.getBoundingClientRect().top - scrollAnchor.top);
+		}
+		scheduleViewport();
+	}
+	function trackFocus(event: FocusEvent) {
+		const target = event.target instanceof Element ? event.target : null;
+		if (!target?.closest('[data-box-number], [role="dialog"]')) focusedBox = null;
+	}
+	function scheduleViewport() {
+		if (!viewportFrame) viewportFrame = requestAnimationFrame(measureViewport);
+	}
+	function boxShell(node: HTMLElement, number: number) {
+		shells.set(number, node);
+		scheduleViewport();
+		return {
+			destroy() {
+				shells.delete(number);
+			}
+		};
+	}
+	async function focusEntry(index: number) {
+		if (!combinedData || index < 0 || index >= combinedData.length) return;
+		focusedBox = Math.floor(index / 30) + 1;
+		await tick();
+		grid.querySelector<HTMLElement>(`[data-entry-index="${index}"]`)?.focus();
+	}
+	function navigateEntry(event: KeyboardEvent, index: number) {
+		const offset = { ArrowLeft: -1, ArrowRight: 1, ArrowUp: -6, ArrowDown: 6 }[event.key];
+		if (offset !== undefined) {
+			event.preventDefault();
+			void focusEntry(index + offset);
+		} else if (event.key === 'Tab') {
+			const next = index + (event.shiftKey ? -1 : 1);
+			if (
+				next >= 0 &&
+				next < (combinedData?.length ?? 0) &&
+				!grid.querySelector(`[data-entry-index="${next}"]`)
+			) {
+				event.preventDefault();
+				void focusEntry(next);
+			}
+		}
+	}
+	$: if (mounted && combinedData && gridKey !== markedKey) {
+		markedKey = gridKey;
+		grid?.removeAttribute('data-grid-interactive');
+		void tick().then(() => {
+			if (virtualize) markGridInteractive();
+		});
+	}
+	onMount(() => {
+		mounted = true;
+		const observer = new ResizeObserver(resizeViewport);
+		if (grid) observer.observe(grid);
+		window.addEventListener('scroll', scheduleViewport, { passive: true });
+		window.addEventListener('resize', resizeViewport);
+		window.addEventListener('focusin', trackFocus);
+		measureViewport();
+		return () => {
+			observer.disconnect();
+			cancelAnimationFrame(viewportFrame);
+			window.removeEventListener('scroll', scheduleViewport);
+			window.removeEventListener('resize', resizeViewport);
+			window.removeEventListener('focusin', trackFocus);
+		};
+	});
 
 	export let showShiny = false;
-	type DisplayData = CombinedData | SharedCombinedData;
-	type DisplayStatus = CatchRecord | SharedCatchStatus | null;
+	type DisplayData = PokedexGridRow | SharedCombinedData;
+	type DisplayStatus = DisplayData['catchRecord'];
 
 	export let combinedData: DisplayData[] | null;
 	export let readOnly = false;
@@ -119,21 +213,21 @@
 
 	const BOX_VIEW_LAYOUT_STORAGE_KEY = 'livingdex:boxViewLayout:v1';
 	type BoxViewLayout = 'comfortable' | 'compact' | 'ultra';
-	let boxViewLayout: BoxViewLayout = 'comfortable';
-
-	onMount(() => {
-		try {
-			const stored = localStorage.getItem(BOX_VIEW_LAYOUT_STORAGE_KEY);
-			if (stored === 'comfortable' || stored === 'compact' || stored === 'ultra') {
-				boxViewLayout = stored;
-			}
-		} catch {
-			// ignore (privacy mode / disabled storage)
-		}
-	});
+	export let initialLayout: BoxViewLayout = 'comfortable';
+	let boxViewLayout: BoxViewLayout = initialLayout;
 
 	function persistBoxViewLayout(next: BoxViewLayout) {
+		const anchor = [...shells.entries()].find(
+			([, node]) => node.getBoundingClientRect().bottom > 0
+		);
+		const top = anchor?.[1].getBoundingClientRect().top;
 		boxViewLayout = next;
+		document.cookie = `boxViewLayout=${next};path=/;max-age=31536000;SameSite=Lax`;
+		void tick().then(() => {
+			if (anchor && top !== undefined && window.scrollY > 0)
+				window.scrollBy(0, anchor[1].getBoundingClientRect().top - top);
+			measureViewport();
+		});
 		try {
 			localStorage.setItem(BOX_VIEW_LAYOUT_STORAGE_KEY, next);
 		} catch {
@@ -202,7 +296,7 @@
 </script>
 
 <main class="flex-1 p-4 w-full">
-	<div class="max-w-fit mx-auto">
+	<div class="max-w-[1440px] w-full mx-auto">
 		{#if combinedData && combinedData.length > 0}
 			<div class="container mx-auto">
 				<div class="card bg-base-100 shadow mb-4">
@@ -212,6 +306,7 @@
 								<span class="label-text font-semibold">Box view layout</span>
 							</label>
 							<select
+								data-offline-action
 								id="box-view-layout"
 								class="select select-bordered select-sm"
 								bind:value={boxViewLayout}
@@ -222,6 +317,16 @@
 								<option value="compact">Compact (3 boxes/row)</option>
 								<option value="ultra">Ultra (4 boxes/row)</option>
 							</select>
+							{#if virtualize}
+								<label class="label cursor-pointer gap-2"
+									><input
+										data-offline-action
+										type="checkbox"
+										class="checkbox checkbox-sm"
+										bind:checked={renderAll}
+									/>Render all boxes</label
+								>
+							{/if}
 
 							<div class="flex flex-wrap items-center gap-2 text-sm">
 								<span class="font-semibold">Legend:</span>
@@ -288,6 +393,7 @@
 								<span class="font-semibold">Filters:</span>
 								<label class="label cursor-pointer gap-2 p-0">
 									<input
+										data-offline-action
 										type="checkbox"
 										class="checkbox checkbox-sm"
 										bind:checked={filterNotCaught}
@@ -296,6 +402,7 @@
 								</label>
 								<label class="label cursor-pointer gap-2 p-0">
 									<input
+										data-offline-action
 										type="checkbox"
 										class="checkbox checkbox-sm"
 										bind:checked={filterNeedsToEvolve}
@@ -304,6 +411,7 @@
 								</label>
 								<label class="label cursor-pointer gap-2 p-0">
 									<input
+										data-offline-action
 										type="checkbox"
 										class="checkbox checkbox-sm"
 										bind:checked={filterInHome}
@@ -313,6 +421,7 @@
 								</label>
 								<label class="label cursor-pointer gap-2 p-0">
 									<input
+										data-offline-action
 										type="checkbox"
 										class="checkbox checkbox-sm"
 										bind:checked={filterNotInHome}
@@ -350,233 +459,252 @@
 				</div>
 
 				<div
+					bind:this={grid}
 					class="boxes-grid"
 					style="--boxes-per-row: {boxesPerRow}; --cell-padding: {cellPaddingRem}rem; --sprite-size: {spriteSizePx}px;"
 				>
-					{#each boxNumbers as boxNumber}
+					{#each boxNumbers as boxNumber (boxNumber)}
 						{@const bulkMenuId = `box-${boxNumber}-bulk-menu`}
-						<div class="mb-8">
-							<div class="flex flex-wrap items-center justify-between gap-3 mb-4 relative z-20">
-								<h2 class="text-xl font-bold">Box {boxNumber}</h2>
-								{#if !readOnly}<div class="relative">
-										<button
-											type="button"
-											class="btn btn-sm btn-outline relative z-[210]"
-											aria-label="Open bulk actions menu"
-											aria-haspopup="menu"
-											aria-controls={bulkMenuId}
-											aria-expanded={openBulkMenuForBox === boxNumber}
-											on:click={(event) => {
-												event.stopPropagation();
-												openBulkMenuForBox = openBulkMenuForBox === boxNumber ? null : boxNumber;
-											}}
-											on:keydown={(event) => {
-												if (event.key === 'Escape') openBulkMenuForBox = null;
-											}}
-										>
-											⋯
-										</button>
+						<div class="box-shell" use:boxShell={boxNumber} data-box-number={boxNumber}>
+							{#if !virtualize || renderAll || visibleBoxes.has(boxNumber) || focusedBox === boxNumber}
+								<div class="box-content">
+									<div
+										class="box-heading flex items-center justify-between gap-3 mb-4 relative z-20"
+									>
+										<h2 class="text-xl font-bold">Box {boxNumber}</h2>
+										{#if !readOnly}<div class="relative">
+												<button
+													type="button"
+													class="btn btn-sm btn-outline relative z-[210]"
+													aria-label="Open bulk actions menu"
+													aria-haspopup="menu"
+													aria-controls={bulkMenuId}
+													aria-expanded={openBulkMenuForBox === boxNumber}
+													on:click={(event) => {
+														event.stopPropagation();
+														openBulkMenuForBox =
+															openBulkMenuForBox === boxNumber ? null : boxNumber;
+													}}
+													on:keydown={(event) => {
+														if (event.key === 'Escape') openBulkMenuForBox = null;
+													}}
+												>
+													⋯
+												</button>
 
-										{#if openBulkMenuForBox === boxNumber}
-											<ul
-												id={bulkMenuId}
-												class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
-											>
-												<li>
-													<button
-														type="button"
-														on:click|stopPropagation={() => {
-															markBoxAsNotCaught(boxNumber);
-															openBulkMenuForBox = null;
-														}}
+												{#if openBulkMenuForBox === boxNumber}
+													<ul
+														id={bulkMenuId}
+														class="menu bg-base-100 rounded-box absolute right-0 mt-2 z-[220] w-56 p-2 shadow border border-base-300"
 													>
-														Mark box as Not caught
-													</button>
-												</li>
-												<li>
-													<button
-														type="button"
-														on:click|stopPropagation={() => {
-															markBoxAsCaught(boxNumber);
-															openBulkMenuForBox = null;
-														}}
-													>
-														Mark box as Caught
-													</button>
-												</li>
-												<li>
-													<button
-														type="button"
-														on:click|stopPropagation={() => {
-															markBoxAsNeedsToEvolve(boxNumber);
-															openBulkMenuForBox = null;
-														}}
-													>
-														Mark box as Needs to evolve
-													</button>
-												</li>
-												<li>
-													<button
-														type="button"
-														on:click|stopPropagation={() => {
-															markBoxAsInHome(boxNumber);
-															openBulkMenuForBox = null;
-														}}
-													>
-														Mark box as In HOME
-													</button>
-												</li>
-												<li>
-													<button
-														type="button"
-														on:click|stopPropagation={() => {
-															markBoxAsNotInHome(boxNumber);
-															openBulkMenuForBox = null;
-														}}
-													>
-														Mark box as Not in HOME
-													</button>
-												</li>
-											</ul>
-										{/if}
-									</div>{/if}
-							</div>
-							<div class="grid grid-cols-6">
-								{#each BOX_POSITIONS as positionInBox}
-									{@const globalIndex = (boxNumber - 1) * POKEMON_PER_BOX + positionInBox}
-									{@const placement = calculateBoxPlacement(globalIndex)}
-									{@const entry = combinedData?.[globalIndex]}
-									{@const pokedexEntry = entry?.pokedexEntry}
-									{@const catchRecord = entry?.catchRecord ?? null}
-									{@const isFilteredOut =
-										!!entry && filtersActive && !!filtersKey && !matchesFilters(catchRecord)}
-									{#if entry && pokedexEntry}
-										<button
-											type="button"
-											class="pokemon-box {cellStatusClasses(catchRecord)} {isFilteredOut
-												? 'pokemon-box--filtered-out'
-												: 'hover:scale-105 hover:shadow-lg hover:z-50'} transition-all cursor-pointer relative"
-											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
+														<li>
+															<button
+																type="button"
+																on:click|stopPropagation={() => {
+																	markBoxAsNotCaught(boxNumber);
+																	openBulkMenuForBox = null;
+																}}
+															>
+																Mark box as Not caught
+															</button>
+														</li>
+														<li>
+															<button
+																type="button"
+																on:click|stopPropagation={() => {
+																	markBoxAsCaught(boxNumber);
+																	openBulkMenuForBox = null;
+																}}
+															>
+																Mark box as Caught
+															</button>
+														</li>
+														<li>
+															<button
+																type="button"
+																on:click|stopPropagation={() => {
+																	markBoxAsNeedsToEvolve(boxNumber);
+																	openBulkMenuForBox = null;
+																}}
+															>
+																Mark box as Needs to evolve
+															</button>
+														</li>
+														<li>
+															<button
+																type="button"
+																on:click|stopPropagation={() => {
+																	markBoxAsInHome(boxNumber);
+																	openBulkMenuForBox = null;
+																}}
+															>
+																Mark box as In HOME
+															</button>
+														</li>
+														<li>
+															<button
+																type="button"
+																on:click|stopPropagation={() => {
+																	markBoxAsNotInHome(boxNumber);
+																	openBulkMenuForBox = null;
+																}}
+															>
+																Mark box as Not in HOME
+															</button>
+														</li>
+													</ul>
+												{/if}
+											</div>{/if}
+									</div>
+									<div class="grid grid-cols-6">
+										{#each BOX_POSITIONS as positionInBox}
+											{@const globalIndex = (boxNumber - 1) * POKEMON_PER_BOX + positionInBox}
+											{@const placement = calculateBoxPlacement(globalIndex)}
+											{@const entry = combinedData?.[globalIndex]}
+											{@const pokedexEntry = entry?.pokedexEntry}
+											{@const catchRecord = entry?.catchRecord ?? null}
+											{@const isFilteredOut =
+												!!entry && filtersActive && !!filtersKey && !matchesFilters(catchRecord)}
+											{#if entry && pokedexEntry}
+												<button
+													type="button"
+													class="pokemon-box {cellStatusClasses(catchRecord)} {isFilteredOut
+														? 'pokemon-box--filtered-out'
+														: 'hover:scale-105 hover:shadow-lg hover:z-50'} transition-all cursor-pointer relative"
+													style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
 															{cellBackgroundColourStyle(globalIndex, catchRecord)}"
-											aria-disabled={isFilteredOut}
-											on:click={() => {
-												if (!isFilteredOut) onPokemonClick({ pokedexEntry, catchRecord });
-											}}
-											aria-label="View details for {pokedexEntry.pokemon}. Status: {statusLabel(
-												catchRecord
-											)}"
-										>
-											<Tooltip>
-												<div slot="hover-target" class="w-full h-full">
-													{#if catchRecord?.caught}
-														<span
-															class="status-badge status-badge--caught absolute left-0.5 status-badge-top z-10"
-															title="Caught"
-														>
-															<svg
-																class="status-icon"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="3"
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																aria-hidden="true"
-															>
-																<path d="M5 13l4 4L19 7" />
-															</svg>
-															<span class="sr-only">Caught</span>
-														</span>
-													{:else if catchRecord?.haveToEvolve}
-														<span
-															class="status-badge status-badge--evolve absolute left-0.5 status-badge-top z-10"
-															title="Caught but needs to evolve"
-														>
-															<svg
-																class="status-icon"
-																viewBox="0 0 24 24"
-																fill="none"
-																stroke="currentColor"
-																stroke-width="3"
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																aria-hidden="true"
-															>
-																<path d="M12 19V5" />
-																<path d="M5 12l7-7 7 7" />
-															</svg>
-															<span class="sr-only">Caught but needs to evolve</span>
-														</span>
-													{/if}
-													{#if catchRecord?.inHome}
-														<span
-															class="status-badge status-badge--home absolute right-0.5 status-badge-top z-10"
-															title="In Pokémon HOME"
-														>
-															<svg
-																class="status-icon"
-																viewBox="0 0 24 24"
-																fill="currentColor"
-																stroke="currentColor"
-																stroke-width="2"
-																stroke-linecap="round"
-																stroke-linejoin="round"
-																aria-hidden="true"
-															>
-																<path
-																	d="M12 3 3 10.5V21a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1V10.5L12 3Z"
+													data-offline-action
+													data-entry-index={globalIndex}
+													data-entry-id={pokedexEntry._id}
+													on:focus={() => (focusedBox = boxNumber)}
+													on:keydown={(event) => navigateEntry(event, globalIndex)}
+													aria-disabled={isFilteredOut}
+													on:click={() => {
+														if (!isFilteredOut) onPokemonClick(entry);
+													}}
+													aria-label="View details for {pokedexEntry.pokemon}{pokedexEntry.form
+														? ` (${pokedexEntry.form})`
+														: ''}. Status: {statusLabel(catchRecord)}"
+												>
+													<span class="cell-tooltip">
+														<span class="block w-full h-full">
+															{#if catchRecord?.caught}
+																<span
+																	class="status-badge status-badge--caught absolute left-0.5 status-badge-top z-10"
+																	title="Caught"
+																>
+																	<svg
+																		class="status-icon"
+																		viewBox="0 0 24 24"
+																		fill="none"
+																		stroke="currentColor"
+																		stroke-width="3"
+																		stroke-linecap="round"
+																		stroke-linejoin="round"
+																		aria-hidden="true"
+																	>
+																		<path d="M5 13l4 4L19 7" />
+																	</svg>
+																	<span class="sr-only">Caught</span>
+																</span>
+															{:else if catchRecord?.haveToEvolve}
+																<span
+																	class="status-badge status-badge--evolve absolute left-0.5 status-badge-top z-10"
+																	title="Caught but needs to evolve"
+																>
+																	<svg
+																		class="status-icon"
+																		viewBox="0 0 24 24"
+																		fill="none"
+																		stroke="currentColor"
+																		stroke-width="3"
+																		stroke-linecap="round"
+																		stroke-linejoin="round"
+																		aria-hidden="true"
+																	>
+																		<path d="M12 19V5" />
+																		<path d="M5 12l7-7 7 7" />
+																	</svg>
+																	<span class="sr-only">Caught but needs to evolve</span>
+																</span>
+															{/if}
+															{#if catchRecord?.inHome}
+																<span
+																	class="status-badge status-badge--home absolute right-0.5 status-badge-top z-10"
+																	title="In Pokémon HOME"
+																>
+																	<svg
+																		class="status-icon"
+																		viewBox="0 0 24 24"
+																		fill="currentColor"
+																		stroke="currentColor"
+																		stroke-width="2"
+																		stroke-linecap="round"
+																		stroke-linejoin="round"
+																		aria-hidden="true"
+																	>
+																		<path
+																			d="M12 3 3 10.5V21a1 1 0 0 0 1 1h5v-6h6v6h5a1 1 0 0 0 1-1V10.5L12 3Z"
+																		/>
+																	</svg>
+																	<span class="sr-only">In HOME</span>
+																</span>
+															{/if}
+															<div class="pokemon-box-inner">
+																<PokemonSprite
+																	pokemonName={pokedexEntry.pokemon}
+																	pokedexNumber={pokedexEntry.pokedexNumber}
+																	form={pokedexEntry.form}
+																	spriteKey={pokedexEntry.spriteKey}
+																	shiny={showShiny}
+																	variant="grid"
 																/>
-															</svg>
-															<span class="sr-only">In HOME</span>
+															</div>
 														</span>
-													{/if}
-													<div class="pokemon-box-inner">
-														<PokemonSprite
-															pokemonName={pokedexEntry.pokemon}
-															pokedexNumber={pokedexEntry.pokedexNumber}
-															form={pokedexEntry.form}
-															spriteKey={pokedexEntry.spriteKey}
-															shiny={showShiny}
-														/>
-													</div>
-												</div>
-												<div slot="tooltip">
-													<div class="font-bold">
-														{pokedexEntry.pokemon}
-														{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
-													</div>
-													<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
-													<div>
-														Caught: {catchRecord?.caught ? 'Yes' : 'No'} <br />
-														Caught but needs to Evolve: {catchRecord?.haveToEvolve ? 'Yes' : 'No'}
-														<br />
-														In Home: {catchRecord?.inHome ? 'Yes' : 'No'}
-													</div>
-												</div>
-											</Tooltip>
-										</button>
-									{:else}
-										<button
-											type="button"
-											class="pokemon-box pokemon-box--empty"
-											disabled
-											style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
+														<span class="cell-tooltip-text" role="tooltip">
+															<div class="font-bold">
+																{pokedexEntry.pokemon}
+																{pokedexEntry.form ? `(${pokedexEntry.form})` : ''}
+															</div>
+															<div>{pokedexEntry.pokedexNumber.toString().padStart(3, '0')}</div>
+															<div>
+																Caught: {catchRecord?.caught ? 'Yes' : 'No'} <br />
+																Caught but needs to Evolve: {catchRecord?.haveToEvolve
+																	? 'Yes'
+																	: 'No'}
+																<br />
+																In Home: {catchRecord?.inHome ? 'Yes' : 'No'}
+															</div>
+														</span>
+													</span>
+												</button>
+											{:else}
+												<button
+													type="button"
+													class="pokemon-box pokemon-box--empty"
+													disabled
+													style="grid-column-start: {placement.column}; grid-row-start: {placement.row};
 															{cellBackgroundColourStyle(globalIndex, null)}"
-											aria-label="Empty box slot"
-										>
-											<div class="pokemon-box-inner" aria-hidden="true">
-												<span class="sprite-placeholder" />
-											</div>
-										</button>
-									{/if}
-								{/each}
-							</div>
+													aria-label="Empty box slot"
+												>
+													<div class="pokemon-box-inner" aria-hidden="true">
+														<span class="sprite-placeholder" />
+													</div>
+												</button>
+											{/if}
+										{/each}
+									</div>
+								</div>
+							{/if}
 						</div>
 					{/each}
 				</div>
 			</div>
 		{:else if failedToLoad}
-			{#if creatingRecords && totalRecordsCreated > 0}
+			{#if retryLoad}
+				<p role="alert">Unable to load Pokédex.</p>
+				<button class="btn" on:click={retryLoad}>Retry loading Pokédex</button>
+			{:else if creatingRecords && totalRecordsCreated > 0}
 				<p>Processed {totalRecordsCreated} Pokédex entries so far...</p>
 				<p>Please be patient, this may take some time.</p>
 			{:else if creatingRecords}
@@ -592,6 +720,8 @@
 					<button class="btn" on:click={createCatchRecords}>Create Pokédex data</button>
 				{/if}
 			{/if}
+		{:else if combinedData}
+			<p>No entries match this Pokédex.</p>
 		{:else}
 			<div class="min-w-max mx-auto">
 				<h1>Loading Pokédex</h1>
@@ -602,6 +732,43 @@
 </main>
 
 <style>
+	.box-shell {
+		position: relative;
+		min-width: 0;
+	}
+	.box-shell::before {
+		content: '';
+		display: block;
+		padding-top: calc(83.333333% + 80px);
+	}
+	.box-content {
+		position: absolute;
+		inset: 0 0 32px;
+	}
+	.box-heading {
+		height: 32px;
+	}
+	.cell-tooltip {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	.cell-tooltip-text {
+		display: none;
+		position: absolute;
+		z-index: 100;
+		pointer-events: none;
+		background: #1f2937;
+		color: white;
+		border-radius: 4px;
+		padding: 8px;
+		width: 13rem;
+	}
+	.pokemon-box:hover .cell-tooltip-text,
+	.pokemon-box:focus-visible .cell-tooltip-text {
+		display: block;
+	}
+
 	/*
 		Theme-aware backgrounds for non-caught box slots.
 		- Light mode (`pokeball`) keeps the original exact colors.

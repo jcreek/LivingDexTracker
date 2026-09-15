@@ -83,7 +83,12 @@
 		showShiny={shared.isShinyDex}
 		combinedData={shared.combinedData}
 		{boxNumbers}
-		onPokemonClick={handlePokemonClick}
+		onPokemonClick={(row) => {
+			const full = shared.combinedData.find(
+				(entry) => entry.pokedexEntry._id === row.pokedexEntry._id
+			);
+			if (full) handlePokemonClick(full);
+		}}
 	/>
 </div>
 
