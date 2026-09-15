@@ -265,3 +265,27 @@ export function startOfflineSync(getUserId: () => string | null): () => void {
 		window.removeEventListener('online', schedule);
 	};
 }
+
+/** Read details only from the snapshot currently claimed by this account. */
+export async function readOfflineEntry(userId: string, pokedexId: string, entryId: string) {
+	if (typeof window === 'undefined' || !('caches' in window)) return null;
+	const meta = (await readOfflineMeta()) as (OfflineMeta & { dataCache?: string }) | null;
+	if (
+		meta?.userId !== userId ||
+		meta.format !== OFFLINE_META_FORMAT ||
+		!meta.dataCache?.startsWith(`${OFFLINE_CACHE_PREFIX}data-v1-${userId}-`)
+	)
+		return null;
+	const response = await (
+		await caches.open(meta.dataCache)
+	).match(`/__offline/snapshot/${encodeURIComponent(userId)}`);
+	const snapshot = (await response?.json()) as OfflineSnapshot | undefined;
+	const current = await readOfflineMeta();
+	if (current?.userId !== userId || snapshot?.userId !== userId || snapshot.version !== 1)
+		return null;
+	return (
+		snapshot.pokedexes
+			.find((dex) => dex.pokedex._id === pokedexId)
+			?.entries.find((row) => row.pokedexEntry._id === entryId) ?? null
+	);
+}

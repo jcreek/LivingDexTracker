@@ -52,6 +52,7 @@
 			if (navigator.onLine) return;
 			const target = event.target instanceof Element ? event.target : null;
 			if (!target?.closest('button, input, textarea, select, form')) return;
+			if (target.closest('[data-offline-action]')) return;
 			event.preventDefault();
 			event.stopImmediatePropagation();
 		};
@@ -313,10 +314,10 @@
 </div>
 
 <style>
-	:global(.offline-readonly button),
-	:global(.offline-readonly input),
-	:global(.offline-readonly textarea),
-	:global(.offline-readonly select) {
+	:global(.offline-readonly button:not([data-offline-action])),
+	:global(.offline-readonly input:not([data-offline-action])),
+	:global(.offline-readonly textarea:not([data-offline-action])),
+	:global(.offline-readonly select:not([data-offline-action])) {
 		pointer-events: none;
 		opacity: 0.65;
 	}
