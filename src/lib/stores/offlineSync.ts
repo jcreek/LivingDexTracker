@@ -1,3 +1,4 @@
+import { afterCriticalPageWork } from '$lib/utils/criticalPageWork';
 import { writable } from 'svelte/store';
 import { PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER } from '$env/static/public';
 import type { OfflineSnapshot } from '$lib/models/OfflineSnapshot';
@@ -246,17 +247,45 @@ export function startOfflineSync(getUserId: () => string | null): () => void {
 		}, 1_000);
 	};
 	// Explicit requests (edits, Retry, a new sign-in) and reconnecting always fetch a new copy.
-	const schedule = () => scheduleSync(false);
+	const schedule = () => {
+		cancelStartup();
+		scheduleSync(false);
+	};
 
 	// Best effort: ask the browser not to evict the offline artwork cache under storage pressure.
 	void navigator.storage?.persist?.().catch(() => undefined);
 	window.addEventListener(SYNC_EVENT, schedule);
 	window.addEventListener('online', schedule);
-	scheduleSync(true);
+	const cancelStartup = afterCriticalPageWork(() => scheduleSync(true));
 	return () => {
 		stopped = true;
+		cancelStartup();
 		if (timer !== null) window.clearTimeout(timer);
 		window.removeEventListener(SYNC_EVENT, schedule);
 		window.removeEventListener('online', schedule);
 	};
+}
+
+/** Read details only from the snapshot currently claimed by this account. */
+export async function readOfflineEntry(userId: string, pokedexId: string, entryId: string) {
+	if (typeof window === 'undefined' || !('caches' in window)) return null;
+	const meta = (await readOfflineMeta()) as (OfflineMeta & { dataCache?: string }) | null;
+	if (
+		meta?.userId !== userId ||
+		meta.format !== OFFLINE_META_FORMAT ||
+		!meta.dataCache?.startsWith(`${OFFLINE_CACHE_PREFIX}data-v1-${userId}-`)
+	)
+		return null;
+	const response = await (
+		await caches.open(meta.dataCache)
+	).match(`/__offline/snapshot/${encodeURIComponent(userId)}`);
+	const snapshot = (await response?.json()) as OfflineSnapshot | undefined;
+	const current = await readOfflineMeta();
+	if (current?.userId !== userId || snapshot?.userId !== userId || snapshot.version !== 1)
+		return null;
+	return (
+		snapshot.pokedexes
+			.find((dex) => dex.pokedex._id === pokedexId)
+			?.entries.find((row) => row.pokedexEntry._id === entryId) ?? null
+	);
 }

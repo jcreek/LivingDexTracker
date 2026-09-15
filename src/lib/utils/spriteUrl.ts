@@ -46,3 +46,14 @@ export function resolveSpriteUrl(
 	if (/^female\b/i.test(form)) root += '/female';
 	return `${root}/${key}.webp`;
 }
+
+/** Grid assets use a separate immutable URL space; detail resolution is unchanged. */
+export function resolveGridSpriteUrl(
+	entry: { pokedexNumber: number; form?: string; spriteKey?: string },
+	shiny: boolean
+): string {
+	return resolveSpriteUrl(entry, shiny, true).replace(
+		'/sprites-small/home/',
+		'/sprites-grid/v1/home/'
+	);
+}

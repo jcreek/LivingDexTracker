@@ -12,7 +12,7 @@ Feature: Signed-in page speed
   Scenario: A Pokédex opens without a second round trip for its entries
     When I load the Pokédex page directly
     Then its entries appear within 5 seconds
-    And the browser did not request the entries separately
+    And the browser did not request the grid separately
 
   Scenario: Moving between my Pokédex list and a Pokédex is quick
     When I switch between my Pokédex list and the Pokédex

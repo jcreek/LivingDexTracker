@@ -10,7 +10,7 @@ const config = {
 	preprocess: vitePreprocess(),
 
 	kit: {
-		// Netlify by default, or the node adapter when NODE_ADAPTER=true. See adapter.mjs.
+		// Netlify by default; DEPLOY_TARGET selects the Cloudflare preview or Node test build.
 		adapter,
 		serviceWorker: {
 			// VitePWA owns registration. Registering here as well requests SvelteKit's default

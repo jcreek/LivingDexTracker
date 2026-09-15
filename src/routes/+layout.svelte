@@ -2,6 +2,7 @@
 	// The only app stylesheet: Vite bundles, minifies and content-hashes it so it is cached for good.
 	// static/output.css is built separately for the credential-free offline.html page only.
 	import '../app.css';
+	import { afterCriticalPageWork } from '$lib/utils/criticalPageWork';
 	import { onDestroy, onMount } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
@@ -27,18 +28,21 @@
 	let { supabase } = data;
 	$: ({ supabase } = data);
 
-	let localUser = null as User | null;
+	let localUser: User | null = data.user ?? null;
+	let userStoreReady = false;
 	const unsubscribe = user.subscribe((value) => {
-		localUser = value;
+		if (userStoreReady) localUser = value;
 	});
 	onDestroy(unsubscribe);
 
 	let authSubscription: { unsubscribe: () => void } | null = null;
+	let cancelBackupStartup: (() => void) | null = null;
 	let stopOfflineSync: (() => void) | null = null;
 	let isOnline = true;
 	let signOutError = '';
 
 	onMount(() => {
+		userStoreReady = true;
 		isOnline = navigator.onLine;
 		const updateOnlineState = () => {
 			isOnline = navigator.onLine;
@@ -48,6 +52,7 @@
 			if (navigator.onLine) return;
 			const target = event.target instanceof Element ? event.target : null;
 			if (!target?.closest('button, input, textarea, select, form')) return;
+			if (target.closest('[data-offline-action]')) return;
 			event.preventDefault();
 			event.stopImmediatePropagation();
 		};
@@ -60,7 +65,9 @@
 		void getUser()
 			.then(async () => {
 				if (localUser) {
-					void refreshBackupStatus();
+					cancelBackupStartup = afterCriticalPageWork(() => {
+						if (localUser) void refreshBackupStatus();
+					});
 					await claimOfflineData(localUser.id);
 				}
 				stopOfflineSync = startOfflineSync(() => localUser?.id ?? null);
@@ -77,6 +84,8 @@
 				// SIGNED_IN also fires when a tab regains focus, so only a change of account fetches a new
 				// offline copy. Page loads and token refreshes reuse the saved one while it is fresh.
 				if (event === 'SIGNED_IN' && session.user.id !== previousUserId) {
+					cancelBackupStartup?.();
+					clearBackupStatus();
 					void claimOfflineData(session.user.id)
 						.then(requestOfflineSync)
 						.catch((error) => console.error('Unable to claim offline data', error));
@@ -96,6 +105,7 @@
 		return () => {
 			authSubscription?.unsubscribe();
 			stopOfflineSync?.();
+			cancelBackupStartup?.();
 			window.removeEventListener('online', updateOnlineState);
 			window.removeEventListener('offline', updateOnlineState);
 			for (const name of ['click', 'submit', 'input', 'change', 'keydown']) {
@@ -304,10 +314,10 @@
 </div>
 
 <style>
-	:global(.offline-readonly button),
-	:global(.offline-readonly input),
-	:global(.offline-readonly textarea),
-	:global(.offline-readonly select) {
+	:global(.offline-readonly button:not([data-offline-action])),
+	:global(.offline-readonly input:not([data-offline-action])),
+	:global(.offline-readonly textarea:not([data-offline-action])),
+	:global(.offline-readonly select:not([data-offline-action])) {
 		pointer-events: none;
 		opacity: 0.65;
 	}

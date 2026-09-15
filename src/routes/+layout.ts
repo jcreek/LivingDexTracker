@@ -60,6 +60,7 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
 	return {
 		supabase,
 		session,
+		user: data.user,
 		recoveryIntent: !!session && (hashRecoveryCallback || recoveryExchangeSucceeded)
 	};
 };

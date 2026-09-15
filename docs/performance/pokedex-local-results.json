@@ -1,0 +1,60 @@
+{
+	"capturedAt": "2026-09-15T16:28:41.386Z",
+	"environment": "local-node",
+	"revision": "local-working-tree",
+	"clientLocation": "local-loopback",
+	"groups": [
+		{
+			"fixture": "national",
+			"navigation": "direct",
+			"samples": 30,
+			"visibleP75": 123.5,
+			"interactiveP75": 145.40000009536743,
+			"responseBytesP75": 248668,
+			"missingBytes": 0,
+			"maxDOM": 2088,
+			"maxCells": 120,
+			"maxCLS": 0,
+			"gridRequests": 0
+		},
+		{
+			"fixture": "national",
+			"navigation": "client",
+			"samples": 30,
+			"visibleP75": 495.59999990463257,
+			"interactiveP75": 494.09999990463257,
+			"responseBytesP75": 102687,
+			"missingBytes": 0,
+			"maxDOM": 2090,
+			"maxCells": 120,
+			"maxCLS": 0,
+			"gridRequests": 0
+		},
+		{
+			"fixture": "scoped-forms",
+			"navigation": "direct",
+			"samples": 30,
+			"visibleP75": 114.5,
+			"interactiveP75": 133.10000014305115,
+			"responseBytesP75": 203601,
+			"missingBytes": 0,
+			"maxDOM": 2073,
+			"maxCells": 120,
+			"maxCLS": 0,
+			"gridRequests": 0
+		},
+		{
+			"fixture": "scoped-forms",
+			"navigation": "client",
+			"samples": 30,
+			"visibleP75": 491.7000000476837,
+			"interactiveP75": 490.60000014305115,
+			"responseBytesP75": 45645,
+			"missingBytes": 0,
+			"maxDOM": 2075,
+			"maxCells": 120,
+			"maxCLS": 0,
+			"gridRequests": 0
+		}
+	]
+}

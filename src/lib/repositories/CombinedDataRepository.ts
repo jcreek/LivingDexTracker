@@ -1,3 +1,4 @@
+import type { PokedexGridRow } from '$lib/models/PokedexGridRow';
 import { type PokedexEntry, type PokedexEntryDB } from '$lib/models/PokedexEntry';
 import { type CatchRecord, type CatchRecordDB } from '$lib/models/CatchRecord';
 import { type CombinedData } from '$lib/models/CombinedData';
@@ -20,8 +21,16 @@ class CombinedDataRepository {
 	constructor(
 		private supabase: SupabaseClient,
 		private userId: string | null,
-		private pokedexId: string | null
+		private pokedexId: string | null,
+		private compact = false
 	) {}
+
+	private scopedEntries = new Map<string, Promise<PokedexEntryDB[]>>();
+	private get entryColumns() {
+		return this.compact
+			? 'id,pokedexNumber,pokemon,form,spriteKey,canGigantamax,unownSortOrder,formSortBucket,formSortRegionOrder,formSortRegionalSub,formSortLabel'
+			: '*';
+	}
 
 	// Transform Supabase data to match frontend expectations (minimal transformation)
 	private transformPokedexEntry(entry: PokedexEntryDB): PokedexEntry {
@@ -57,7 +66,7 @@ class CombinedDataRepository {
 	}
 
 	private buildEntriesQuery(enableForms: boolean, region: string, game: string) {
-		let query = this.supabase.from('pokedex_entries').select('*');
+		let query = this.supabase.from('pokedex_entries').select(this.entryColumns);
 
 		if (!enableForms) {
 			// Filter to base forms only. Gendered species (form='male') and Unown ('A') are
@@ -86,7 +95,10 @@ class CombinedDataRepository {
 	}
 
 	private buildDexEntriesQuery(dexScopes: string[], enableForms: boolean, region: string) {
-		let query = this.supabase.from('game_pokedex_entry_details').select('*').in('dexId', dexScopes);
+		let query = this.supabase
+			.from('game_pokedex_entry_details')
+			.select(this.compact ? `${this.entryColumns},dexNumber,dexSortOrder` : '*')
+			.in('dexId', dexScopes);
 
 		if (!enableForms) {
 			// Filter to base forms only. Gendered species (form='male') and Unown ('A') are
@@ -128,7 +140,10 @@ class CombinedDataRepository {
 
 		for (;;) {
 			const end = start + maxRows - 1;
-			let query = this.supabase.from('pokedex_entries').select('*').not('form', 'is', null);
+			let query = this.supabase
+				.from('pokedex_entries')
+				.select(this.entryColumns)
+				.not('form', 'is', null);
 
 			if (game) {
 				query = query.contains('gamesToCatchIn', [game]);
@@ -140,13 +155,12 @@ class CombinedDataRepository {
 			const { data, error } = await query.order('id', { ascending: true }).range(start, end);
 
 			if (error) {
-				console.error('Error fetching forms for game:', error);
-				return [];
+				throw new Error('Unable to load form entries');
 			}
 
 			if (!data || data.length === 0) break;
 
-			allForms.push(...(data as PokedexEntryDB[]).filter((e) => !excludeIds.has(e.id)));
+			allForms.push(...(data as unknown as PokedexEntryDB[]).filter((e) => !excludeIds.has(e.id)));
 
 			if (data.length < maxRows) break;
 			start = end + 1;
@@ -155,7 +169,17 @@ class CombinedDataRepository {
 		return allForms;
 	}
 
-	private async fetchAllDexEntries(
+	private fetchAllDexEntries(dexScopes: string[], enableForms: boolean, region: string, game = '') {
+		const key = JSON.stringify([dexScopes, enableForms, region, game]);
+		let entries = this.scopedEntries.get(key);
+		if (!entries) {
+			entries = this.readAllDexEntries(dexScopes, enableForms, region, game);
+			this.scopedEntries.set(key, entries);
+		}
+		return entries;
+	}
+
+	private async readAllDexEntries(
 		dexScopes: string[],
 		enableForms: boolean,
 		region: string,
@@ -175,15 +199,14 @@ class CombinedDataRepository {
 			);
 
 			if (error) {
-				console.error('Error finding dex-scoped combined data:', error);
-				return [];
+				throw new Error('Unable to load dex entries');
 			}
 
 			if (!data || data.length === 0) {
 				break;
 			}
 
-			entries.push(...(data as RawDexEntry[]));
+			entries.push(...(data as unknown as RawDexEntry[]));
 
 			if (data.length < maxRows) {
 				break;
@@ -283,15 +306,14 @@ class CombinedDataRepository {
 			);
 
 			if (error) {
-				console.error('Error finding paginated combined data:', error);
-				return [];
+				throw new Error('Unable to load dex entries');
 			}
 
 			if (!data || data.length === 0) {
 				break;
 			}
 
-			entries.push(...data);
+			entries.push(...(data as unknown as PokedexEntryDB[]));
 
 			if (data.length < end - start + 1) {
 				break;
@@ -320,15 +342,14 @@ class CombinedDataRepository {
 			);
 
 			if (error) {
-				console.error('Error finding combined data:', error);
-				return [];
+				throw new Error('Unable to load dex entries');
 			}
 
 			if (!data || data.length === 0) {
 				break;
 			}
 
-			entries.push(...data);
+			entries.push(...(data as unknown as PokedexEntryDB[]));
 
 			if (data.length < maxRows) {
 				break;
@@ -351,22 +372,77 @@ class CombinedDataRepository {
 			const chunk = entryIds.slice(i, i + chunkSize);
 			const { data, error } = await this.supabase
 				.from('catch_records')
-				.select('*')
+				.select(this.compact ? 'id,pokemonId,caught,haveToEvolve,inHome,hasGigantamaxed' : '*')
 				.eq('userId', userId)
 				.eq('pokedexId', this.pokedexId)
 				.in('pokemonId', chunk);
 
 			if (error) {
-				console.error('Error loading catch records:', error);
-				continue;
+				throw new Error('Unable to load catch records');
 			}
 
 			if (data) {
-				records.push(...data);
+				records.push(...(data as unknown as CatchRecordDB[]));
 			}
 		}
 
 		return records;
+	}
+
+	async findGridEntries(enableForms: boolean, game: string, dexScopes: string[]) {
+		if (!this.compact) throw new Error('Grid reads require a compact repository');
+		const entries = dexScopes.length
+			? this.dedupeEntries(await this.fetchAllDexEntries(dexScopes, enableForms, '', game))
+			: await this.fetchAllEntries(enableForms, '', game);
+		return entries;
+	}
+
+	async joinGridCatches(entries: PokedexEntryDB[]): Promise<PokedexGridRow[]> {
+		const catches = new Map(
+			(
+				await this.fetchCatchRecords(
+					entries.map((e) => e.id),
+					this.userId!
+				)
+			).map((r) => [r.pokemonId, r])
+		);
+		return entries.map((e) => {
+			const c = catches.get(e.id);
+			return {
+				pokedexEntry: {
+					_id: String(e.id),
+					pokemon: e.pokemon,
+					pokedexNumber: e.pokedexNumber,
+					form: e.form || '',
+					spriteKey: e.spriteKey || '',
+					canGigantamax: e.canGigantamax
+				},
+				catchRecord: c
+					? {
+							_id: c.id,
+							caught: c.caught,
+							haveToEvolve: c.haveToEvolve,
+							inHome: c.inHome,
+							hasGigantamaxed: c.hasGigantamaxed
+						}
+					: null
+			};
+		});
+	}
+
+	async findEntryDetail(entryId: number): Promise<CombinedData | null> {
+		const { data, error } = await this.supabase
+			.from('pokedex_entries')
+			.select('*')
+			.eq('id', entryId)
+			.maybeSingle();
+		if (error) throw new Error('Unable to load entry details');
+		if (!data) return null;
+		const catches = await this.fetchCatchRecords([entryId], this.userId!);
+		return {
+			pokedexEntry: this.transformPokedexEntry(data),
+			catchRecord: catches[0] ? this.transformCatchRecord(catches[0]) : null
+		};
 	}
 
 	async findAllCombinedData(
@@ -392,9 +468,9 @@ class CombinedDataRepository {
 			catchRecords = await this.fetchCatchRecords(entryIds, userId);
 		}
 
-		// Combine the data exactly like master branch
+		const catchesById = new Map(catchRecords.map((record) => [record.pokemonId, record]));
 		const combinedData = entries.map((entry) => {
-			const userCatchRecord = catchRecords.find((record) => record.pokemonId === entry.id) || null;
+			const userCatchRecord = catchesById.get(entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			const transformedCatchRecord = userCatchRecord
@@ -440,9 +516,9 @@ class CombinedDataRepository {
 			catchRecords = await this.fetchCatchRecords(entryIds, userId);
 		}
 
-		// Combine the data exactly like master branch
+		const catchesById = new Map(catchRecords.map((record) => [record.pokemonId, record]));
 		const combinedData = entries.map((entry) => {
-			const userCatchRecord = catchRecords.find((record) => record.pokemonId === entry.id) || null;
+			const userCatchRecord = catchesById.get(entry.id) || null;
 
 			const transformedEntry = this.transformPokedexEntry(entry);
 			const transformedCatchRecord = userCatchRecord

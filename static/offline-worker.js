@@ -74,7 +74,7 @@ async function missingSprites(cache, root) {
 
 // Covers both the local `/sprites-small/...` folder and the GitHub-hosted copy of it.
 function isSpriteUrl(url) {
-	return /\/sprites(-small)?\//.test(url.pathname) && url.pathname.endsWith('.webp');
+	return /\/sprites(?:-small|-grid\/v1)?\//.test(url.pathname) && url.pathname.endsWith('.webp');
 }
 
 async function currentOfflineMeta() {

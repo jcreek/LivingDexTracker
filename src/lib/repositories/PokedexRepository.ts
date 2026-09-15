@@ -55,14 +55,16 @@ class PokedexRepository {
 	async findById(id: string): Promise<Pokedex | null> {
 		const { data, error } = await this.supabase
 			.from('pokedexes')
-			.select('*')
+			.select('*, pokedex_dex_scopes(dexId)')
 			.eq('id', id)
 			.eq('userId', this.userId)
 			.single();
 
 		if (error || !data) return null;
-		const dexScopesMap = await this.fetchDexScopesMap([data.id]);
-		return this.transform(data, dexScopesMap.get(data.id) || []);
+		return this.transform(
+			data,
+			(data.pokedex_dex_scopes ?? []).map((scope: { dexId: string }) => scope.dexId)
+		);
 	}
 
 	async findAll(): Promise<Pokedex[]> {

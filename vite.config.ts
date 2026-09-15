@@ -1,10 +1,21 @@
 import { sveltekit } from '@sveltejs/kit/vite';
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vite';
 import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 // you don't need to do this if you're using generateSW strategy in your app
 import { generateSW } from './pwa.mjs';
 
 export default defineConfig({
+	resolve: {
+		alias:
+			process.env.DEPLOY_TARGET === 'cloudflare'
+				? {
+						'$lib/server/compression': fileURLToPath(
+							new URL('./src/lib/server/compression.cloudflare.ts', import.meta.url)
+						)
+					}
+				: {}
+	},
 	plugins: [
 		sveltekit(),
 		SvelteKitPWA({
@@ -46,11 +57,11 @@ export default defineConfig({
 			},
 			injectManifest: {
 				globPatterns: ['client/**/*.{html,js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
-				globIgnores: ['**/sprites/**', '**/sprites-small/**']
+				globIgnores: ['**/sprites/**', '**/sprites-small/**', '**/sprites-grid/**']
 			},
 			workbox: {
 				globPatterns: ['client/**/*.{html,js,css,ico,png,svg,webp,woff,woff2,webmanifest}'],
-				globIgnores: ['**/sprites/**', '**/sprites-small/**'],
+				globIgnores: ['**/sprites/**', '**/sprites-small/**', '**/sprites-grid/**'],
 				// Shared message/fetch handling keeps generateSW and injectManifest behavior equal.
 				importScripts: ['/offline-worker.js']
 			},

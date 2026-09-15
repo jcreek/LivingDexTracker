@@ -13,6 +13,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			supabase: SupabaseClient;
+			pokedexAuthMs?: number;
 			safeGetSession(): Promise<{ session: Session | null; user: User | null }>;
 			userid: string;
 			buildDate: string;

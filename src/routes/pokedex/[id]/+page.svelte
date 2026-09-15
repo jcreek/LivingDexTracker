@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
 	import { user } from '$lib/stores/user.js';
 	import { type User } from '@supabase/auth-js';
 	import { type CombinedData } from '$lib/models/CombinedData';
@@ -16,7 +16,7 @@
 	import PokedexEntryCatchRecord from '$lib/components/pokedex/PokedexEntryCatchRecord.svelte';
 	import type { Pokedex } from '$lib/models/Pokedex';
 	import type { PageData } from './$types';
-	import { requestOfflineSync } from '$lib/stores/offlineSync';
+	import { readOfflineEntry, requestOfflineSync } from '$lib/stores/offlineSync';
 	import { get } from 'svelte/store';
 	import {
 		PROVIDER_LABELS,
@@ -25,7 +25,12 @@
 		refreshBackupStatus
 	} from '$lib/stores/backupStatus';
 	import type { ExportProvider } from '$lib/models/PokedexExportIntegration';
-	import type { SharedCombinedData } from '$lib/models/SharedPokedex';
+	import {
+		unpackGrid,
+		type PokedexGridRow,
+		type CatchRecordPatch
+	} from '$lib/models/PokedexGridRow';
+	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
 
 	export let data: PageData;
 
@@ -42,19 +47,17 @@
 		}
 	}
 
-	let combinedData = null as CombinedData[] | null;
-	let currentPage = 1 as number;
-	// Box view requires the full dataset for correct box numbering/placement.
-	// If/when a paginated list view is introduced, this can be lowered and paired with UI controls.
-	let itemsPerPage = 9999 as number;
+	let combinedData: PokedexGridRow[] | null = null;
 	type CatchUpdateEvent = CustomEvent<{
 		catchRecord: CatchRecord;
 		source: 'toggle' | 'notes' | 'notes-blur';
+		changes?: Partial<CatchRecord>;
 	}>;
 	let creatingRecords = false;
 	let totalRecordsCreated = 0;
 	let failedToLoad = false;
-	let localUser: User | null;
+	let localUser: User | null = data.user ?? null;
+	let userStoreReady = false;
 	let boxNumbers: number[] = [];
 	let showModal = false;
 	let selectedPokemon: CombinedData | null = null;
@@ -62,6 +65,7 @@
 	let shareUrl = '';
 	let shareFeedback = '';
 	let nativeShareSupported = false;
+	let online = true;
 
 	let catchWriteQueue: ReturnType<typeof createCatchRecordWriteQueue> | null = null;
 	let catchWriteQueueKey: string | null = null;
@@ -170,9 +174,13 @@
 	$: showShiny = !!pokedex?.isShinyDex;
 
 	const unsubscribe = user.subscribe((value) => {
-		localUser = value;
+		if (userStoreReady) localUser = value;
 	});
 	onDestroy(unsubscribe);
+	onDestroy(() => {
+		detailRequest++;
+		detailAbort?.abort();
+	});
 	onDestroy(() => {
 		catchWriteQueueUnsubscribe?.();
 		catchWriteQueueUnsubscribe = null;
@@ -181,9 +189,74 @@
 		resetExportState();
 	});
 
-	function openPokemonModal(pokemon: CombinedData | SharedCombinedData) {
-		selectedPokemon = pokemon as CombinedData;
+	let selectedSummary: PokedexGridRow | null = null;
+	let detailError = '';
+	let detailRequest = 0;
+	let detailAbort: AbortController | null = null;
+	let returnFocus: HTMLElement | null = null;
+	const detailCache = new Map<string, CombinedData>();
+	let detailOwner = '';
+	$: if (localUser?.id !== detailOwner) {
+		detailOwner = localUser?.id ?? '';
+		detailCache.clear();
+		closePokemonModal();
+	}
+
+	async function openPokemonModal(pokemon: PokedexGridRow) {
+		if (!showModal) returnFocus = document.activeElement as HTMLElement;
+		selectedSummary = pokemon;
+		selectedPokemon = null;
+		detailError = '';
 		showModal = true;
+		const request = ++detailRequest;
+		detailAbort?.abort();
+		detailAbort = new AbortController();
+		const id = pokedexId;
+		const owner = localUser?.id || '';
+		const entryId = pokemon.pokedexEntry._id;
+		const key = `${owner}:${id}:${entryId}`;
+		try {
+			let detail = detailCache.get(key);
+			if (!detail) {
+				if (!navigator.onLine) detail = (await readOfflineEntry(owner, id, entryId)) ?? undefined;
+				else {
+					const response = await fetch(`/api/pokedexes/${id}/entries/${entryId}`, {
+						signal: detailAbort.signal
+					});
+					if (!response.ok) throw new Error('Unable to load details. Please retry.');
+					detail = await response.json();
+				}
+			}
+			if (request !== detailRequest || id !== pokedexId || owner !== localUser?.id) return;
+			if (!detail) throw new Error('These details are not saved for offline use.');
+			detailCache.set(key, detail);
+			// A detail response must not undo status changes made while it was in flight.
+			const current = combinedData?.find((row) => row.pokedexEntry._id === entryId)?.catchRecord;
+			const pending = catchWriteQueue?.getPendingPatch(entryId);
+			selectedPokemon = {
+				...detail,
+				catchRecord:
+					detail.catchRecord || current || pending
+						? {
+								_id: '',
+								userId: owner,
+								pokedexId: id,
+								pokemonId: entryId,
+								caught: false,
+								haveToEvolve: false,
+								inHome: false,
+								hasGigantamaxed: false,
+								personalNotes: '',
+								...detail.catchRecord,
+								...current,
+								...pending
+							}
+						: null
+			};
+		} catch (error) {
+			if (request !== detailRequest || id !== pokedexId || owner !== localUser?.id) return;
+			detailError = error instanceof Error ? error.message : 'Unable to load details.';
+		}
 	}
 
 	function openShareModal() {
@@ -223,15 +296,24 @@
 	}
 
 	function closePokemonModal() {
+		detailRequest++;
+		detailAbort?.abort();
 		showModal = false;
 		selectedPokemon = null;
+		selectedSummary = null;
+		if (browser && returnFocus) {
+			const target = returnFocus;
+			void tick().then(() => target.isConnected && target.focus());
+		}
+		returnFocus = null;
 	}
 
 	function ensureCatchWriteQueue() {
 		if (!browser) return;
 		if (!pokedexId) return;
 		if (!localUser?.id) return;
-		const desiredKey = `${localUser.id}:${pokedexId}`;
+		const ownerId = localUser.id;
+		const desiredKey = `${ownerId}:${pokedexId}`;
 		if (catchWriteQueue && catchWriteQueueKey === desiredKey) return;
 
 		resetExportState();
@@ -244,7 +326,8 @@
 			endpointUrl: `/api/pokedexes/${pokedexId}/catch-records`,
 			fetchFn: fetch,
 			batchSize: 200,
-			concurrency: 1
+			concurrency: 1,
+			isCurrentUser: () => get(user)?.id === ownerId
 		});
 		catchWriteQueueKey = desiredKey;
 
@@ -271,67 +354,93 @@
 		});
 	}
 
-	function applyOptimisticCatchRecordUpdate(next: CatchRecord) {
+	let editGeneration = 0;
+	function applyOptimisticCatchRecordUpdate(next: CatchRecordPatch) {
 		if (!combinedData) return;
-		const idx = combinedData.findIndex((cd) => cd.pokedexEntry._id === next.pokemonId);
-		if (idx === -1) return;
-		// Replace the catchRecord entry with the updated version.
-		const current = combinedData[idx];
-		const patched: CombinedData = {
-			...current,
-			catchRecord: {
-				...(current.catchRecord ?? next),
-				...next
-			}
-		};
-		combinedData = [...combinedData.slice(0, idx), patched, ...combinedData.slice(idx + 1)];
-
-		if (selectedPokemon?.pokedexEntry._id === next.pokemonId) {
-			selectedPokemon = patched;
-		}
+		editGeneration++;
+		combinedData = combinedData.map((row) =>
+			row.pokedexEntry._id === next.pokemonId
+				? {
+						...row,
+						catchRecord: {
+							_id: '',
+							caught: false,
+							haveToEvolve: false,
+							inHome: false,
+							hasGigantamaxed: false,
+							...row.catchRecord,
+							...next
+						}
+					}
+				: row
+		);
+		const key = `${next.userId}:${next.pokedexId}:${next.pokemonId}`;
+		const cached = detailCache.get(key);
+		if (cached)
+			detailCache.set(key, {
+				...cached,
+				catchRecord: {
+					_id: '',
+					caught: false,
+					haveToEvolve: false,
+					inHome: false,
+					hasGigantamaxed: false,
+					personalNotes: '',
+					...cached.catchRecord,
+					...next
+				}
+			});
+		if (selectedPokemon?.pokedexEntry._id === next.pokemonId)
+			selectedPokemon = {
+				...selectedPokemon,
+				catchRecord: {
+					_id: '',
+					caught: false,
+					haveToEvolve: false,
+					inHome: false,
+					hasGigantamaxed: false,
+					personalNotes: '',
+					...selectedPokemon.catchRecord,
+					...next
+				}
+			};
 	}
 
 	async function handleModalCatchUpdate(event: CatchUpdateEvent) {
 		await updateACatch(event);
 	}
 
-	type GetDataOptions = {
-		page?: number;
-		perPage?: number;
-		setCombinedDataToNull?: boolean;
-	};
-
-	async function getData({
-		page = currentPage,
-		perPage = itemsPerPage,
-		setCombinedDataToNull = true
-	}: GetDataOptions = {}) {
-		if (!pokedex || !pokedexId) return;
-		if (setCombinedDataToNull) {
-			combinedData = null;
-		}
-		const effectivePage = Math.max(1, page);
-		const effectivePerPage = Math.max(1, perPage);
-		// Use new pokédex-scoped endpoint
-		const endpoint = `/api/pokedexes/${pokedexId}/combined-data?page=${effectivePage}&limit=${effectivePerPage}&enableForms=${pokedex.isFormDex}`;
-
-		const response = await fetch(endpoint);
-		const fetchedData = await response.json();
-		if (fetchedData.error) {
-			failedToLoad = true;
-			return;
-		}
-		combinedData = fetchedData.combinedData;
-		// Always extract box numbers for box view
-		if (combinedData) {
-			boxNumbers = calculateBoxNumbers(combinedData.length);
+	let gridRequest = 0;
+	async function getData({ setCombinedDataToNull = true } = {}) {
+		const id = pokedexId;
+		const owner = localUser?.id;
+		const request = ++gridRequest;
+		const generation = editGeneration;
+		if (setCombinedDataToNull) combinedData = null;
+		failedToLoad = false;
+		try {
+			const response = await fetch(`/api/pokedexes/${id}/grid`);
+			if (!response.ok) throw new Error('Unable to load grid');
+			const result = await response.json();
+			if (
+				request !== gridRequest ||
+				id !== pokedexId ||
+				owner !== localUser?.id ||
+				generation !== editGeneration
+			)
+				return;
+			combinedData = unpackGrid(result.grid);
+			detailCache.clear();
+		} catch {
+			if (request === gridRequest && id === pokedexId && owner === localUser?.id)
+				failedToLoad = true;
 		}
 	}
 
 	async function updateACatch(event: CatchUpdateEvent) {
 		if (!pokedexId) return;
 		ensureCatchWriteQueue();
-		const { catchRecord, source } = event.detail;
+		const { catchRecord, source, changes } = event.detail;
 		// Enforce mutual exclusivity (should be impossible to have both true).
 		const sanitizedCatchRecord: CatchRecord = { ...catchRecord };
 		if (sanitizedCatchRecord.caught) {
@@ -346,11 +455,25 @@
 		}
 
 		// Optimistic UI: update local state immediately.
-		applyOptimisticCatchRecordUpdate(sanitizedCatchRecord);
+		const patch: CatchRecordPatch = {
+			userId: localUser.id,
+			pokedexId,
+			pokemonId: sanitizedCatchRecord.pokemonId,
+			...(changes ??
+				(source === 'toggle'
+					? {
+							caught: sanitizedCatchRecord.caught,
+							haveToEvolve: sanitizedCatchRecord.haveToEvolve,
+							inHome: sanitizedCatchRecord.inHome,
+							hasGigantamaxed: sanitizedCatchRecord.hasGigantamaxed
+						}
+					: { personalNotes: sanitizedCatchRecord.personalNotes }))
+		};
+		applyOptimisticCatchRecordUpdate(patch);
 
 		// Queue a background write with coalescing.
 		const debounceMs = source === 'notes' ? 650 : 0;
-		catchWriteQueue?.enqueue(sanitizedCatchRecord, {
+		catchWriteQueue?.enqueue(patch, {
 			debounceMs,
 			flushSoon: true
 		});
@@ -375,37 +498,14 @@
 		if (!pokedexId) return;
 		ensureCatchWriteQueue();
 
-		const catchRecordsToUpdate: CatchRecord[] = combinedData
+		const catchRecordsToUpdate: CatchRecordPatch[] = combinedData
 			.filter((_, index) => calculateBoxPlacement(index).box === boxNumber)
-			.map(({ pokedexEntry, catchRecord }) => {
-				// Create default record if null
-				const baseRecord: CatchRecord = catchRecord ?? {
-					_id: '',
-					userId: localUser?.id || '',
-					pokemonId: pokedexEntry._id,
-					pokedexId: pokedexId,
-					haveToEvolve: false,
-					caught: false,
-					inHome: false,
-					hasGigantamaxed: false,
-					personalNotes: ''
-				};
-
-				let updatedRecord: CatchRecord = { ...baseRecord };
-				if (inHome !== null) {
-					updatedRecord = {
-						...updatedRecord,
-						inHome
-					};
-				} else {
-					updatedRecord = {
-						...updatedRecord,
-						caught,
-						haveToEvolve: needsToEvolve
-					};
-				}
-				return updatedRecord;
-			});
+			.map(({ pokedexEntry }) => ({
+				userId: localUser?.id || '',
+				pokedexId,
+				pokemonId: pokedexEntry._id,
+				...(inHome !== null ? { inHome } : { caught, haveToEvolve: needsToEvolve })
+			}));
 
 		// Optimistic patch: apply locally first.
 		for (const record of catchRecordsToUpdate) {
@@ -498,42 +598,25 @@
 
 			creatingRecords = false;
 			failedToLoad = false;
-			await getData({ page: currentPage, perPage: itemsPerPage });
+			await getData();
 		});
 	}
 
-	// Show data whenever the dex or pagination changes (client-side only). The first page is streamed
-	// from the server load, so it only needs fetching when that failed or the page changes.
-	let shownKey = '';
-	function showPage(
-		id: string,
-		page: number,
-		perPage: number,
-		initial: Promise<CombinedData[] | null> | undefined
-	) {
-		const key = `${id}:${page}:${perPage}`;
-		if (key === shownKey) return;
-		shownKey = key;
-		if (page !== 1 || !initial) {
-			void getData({ page, perPage });
-			return;
-		}
-		combinedData = null;
-		void initial.then((rows) => {
-			if (shownKey !== key) return;
-			if (!rows) {
-				void getData({ page, perPage });
-				return;
-			}
-			combinedData = rows;
-			boxNumbers = calculateBoxNumbers(rows.length);
-		});
+	let shownData: PageData | undefined;
+	$: if (data !== shownData) {
+		shownData = data;
+		localUser = data.user ?? null;
+		gridRequest++;
+		closePokemonModal();
+		detailCache.clear();
+		combinedData = data.grid ? unpackGrid(data.grid) : null;
+		failedToLoad = data.grid === null;
 	}
-	$: if (browser && pokedexId)
-		showPage(pokedexId, currentPage, itemsPerPage, data?.initialCombinedData);
+	$: boxNumbers = calculateBoxNumbers(combinedData?.length ?? 0);
 
 	onMount(() => {
 		if (!browser) return;
+		userStoreReady = true;
 		nativeShareSupported = typeof navigator.share === 'function';
 
 		const flushKeepalive = () => {
@@ -546,7 +629,15 @@
 			if (document.visibilityState === 'hidden') flushKeepalive();
 		};
 
-		const onOnline = () => void catchWriteQueue?.flushNow();
+		online = navigator.onLine;
+		const onOffline = () => {
+			online = false;
+		};
+		const onOnline = () => {
+			online = true;
+			void catchWriteQueue?.flushNow();
+		};
+		window.addEventListener('offline', onOffline);
 
 		window.addEventListener('pagehide', flushKeepalive);
 		document.addEventListener('visibilitychange', onVisibilityChange);
@@ -557,13 +648,14 @@
 			if (!pokedexId) return;
 			if (creatingRecords) return;
 			if (catchWriteStatus.pending > 0 || catchWriteStatus.inFlight > 0) return;
-			void getData({ page: currentPage, perPage: itemsPerPage, setCombinedDataToNull: false });
+			void getData({ setCombinedDataToNull: false });
 		}, 60_000);
 
 		return () => {
 			window.removeEventListener('pagehide', flushKeepalive);
 			document.removeEventListener('visibilitychange', onVisibilityChange);
 			window.removeEventListener('online', onOnline);
+			window.removeEventListener('offline', onOffline);
 			window.clearInterval(reconcileInterval);
 		};
 	});
@@ -767,7 +859,7 @@
 		<!-- Box View -->
 		<PokedexViewBoxes
 			{showShiny}
-			bind:combinedData
+			{combinedData}
 			bind:boxNumbers
 			bind:creatingRecords
 			{totalRecordsCreated}
@@ -778,22 +870,59 @@
 			{markBoxAsInHome}
 			{markBoxAsNotInHome}
 			{createCatchRecords}
-			onPokemonClick={openPokemonModal}
+			retryLoad={() => getData()}
+			virtualize={true}
+			gridKey={pokedexId}
+			initialLayout={data.boxViewLayout}
+			onPokemonClick={(row) => {
+				const own = combinedData?.find((entry) => entry.pokedexEntry._id === row.pokedexEntry._id);
+				if (own) void openPokemonModal(own);
+			}}
 		/>
 	</div>
 
-	{#if showModal && selectedPokemon}
+	{#if showModal && selectedSummary}
 		<PokedexModal isOpen={showModal} onClose={closePokemonModal}>
-			<PokedexEntryCatchRecord
-				pokedexEntry={selectedPokemon.pokedexEntry}
-				bind:catchRecord={selectedPokemon.catchRecord}
-				{showOrigins}
-				showForms={pokedex.isFormDex}
-				{showShiny}
-				userId={localUser?.id}
-				{pokedexId}
-				on:updateCatch={handleModalCatchUpdate}
-			/>
+			{#if selectedPokemon}
+				<PokedexEntryCatchRecord
+					pokedexEntry={selectedPokemon.pokedexEntry}
+					bind:catchRecord={selectedPokemon.catchRecord}
+					{showOrigins}
+					showForms={pokedex.isFormDex}
+					{showShiny}
+					userId={localUser?.id}
+					{pokedexId}
+					on:updateCatch={handleModalCatchUpdate}
+					readOnly={!online}
+					sharedCatchStatus={selectedPokemon.catchRecord}
+				/>
+				{#if !online && selectedPokemon.catchRecord?.personalNotes}<p class="p-6">
+						Notes: {selectedPokemon.catchRecord.personalNotes}
+					</p>{/if}
+			{:else}
+				<div class="p-6" aria-busy={!detailError}>
+					<h2 class="text-xl font-bold">{selectedSummary.pokedexEntry.pokemon}</h2>
+					<div class="w-64 h-64">
+						<PokemonSprite
+							pokemonName={selectedSummary.pokedexEntry.pokemon}
+							pokedexNumber={selectedSummary.pokedexEntry.pokedexNumber}
+							form={selectedSummary.pokedexEntry.form}
+							spriteKey={selectedSummary.pokedexEntry.spriteKey}
+							shiny={showShiny}
+							loadingStrategy="eager"
+						/>
+					</div>
+					{#if detailError}
+						<p role="alert">{detailError}</p>
+						<button
+							class="btn"
+							data-offline-action
+							on:click={() => selectedSummary && openPokemonModal(selectedSummary)}
+							>Retry details</button
+						>
+					{:else}<p role="status">Loading details…</p>{/if}
+				</div>
+			{/if}
 		</PokedexModal>
 	{/if}
 

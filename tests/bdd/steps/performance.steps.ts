@@ -23,7 +23,8 @@ When('I load the Pokédex page directly', async ({ page, state }) => {
 	// Only requests made while the page first loads matter; the page's 60s reconciliation refetch
 	// can't fire within this window.
 	const countEntryRequests = (request: { url(): string }) => {
-		if (/\/api\/pokedexes\/[^/]+\/combined-data/.test(request.url())) record.entryRequests++;
+		if (/\/api\/pokedexes\/[^/]+\/(?:grid|combined-data)/.test(request.url()))
+			record.entryRequests++;
 	};
 	page.on('request', countEntryRequests);
 
@@ -40,8 +41,8 @@ Then('its entries appear within {int} seconds', async ({ page }, seconds: number
 	expect(entriesMs!).toBeLessThan(seconds * 1000);
 });
 
-Then('the browser did not request the entries separately', async ({ page }) => {
-	// The server load streams the first page of entries with the HTML, so the page must not make
+Then('the browser did not request the grid separately', async ({ page }) => {
+	// The server load includes the compact grid with the HTML, so the page must not make
 	// the old hydrate-then-fetch round trip.
 	expect(timings.get(page)?.entryRequests).toBe(0);
 });

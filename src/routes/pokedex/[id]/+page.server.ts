@@ -1,47 +1,33 @@
+import { packGrid } from '$lib/models/PokedexGridRow';
 import { error, redirect } from '@sveltejs/kit';
 import PokedexRepository from '$lib/repositories/PokedexRepository';
-import { loadCombinedDataPage } from '$lib/services/CombinedDataService';
+import { loadPokedexGrid } from '$lib/services/PokedexGridService';
+import { PokedexPerformance } from '$lib/server/pokedexPerformance';
 import type { PageServerLoad } from './$types';
 
-// Must match the page's itemsPerPage: the box view needs the whole dex in one page.
-const INITIAL_PAGE_SIZE = 9999;
-
-export const load: PageServerLoad = async ({ locals, params }) => {
-	const { safeGetSession, supabase } = locals;
-	const { session, user } = await safeGetSession();
-
-	// Require authentication
-	if (!session || !user) {
-		throw redirect(303, '/signin');
+export const load: PageServerLoad = async ({ locals, params, setHeaders, cookies }) => {
+	const timings = new PokedexPerformance();
+	const { session, user } = await timings.measure('auth', () => locals.safeGetSession());
+	if (!session || !user) throw redirect(303, '/signin');
+	const pokedex = await timings.measure('ownership', () =>
+		new PokedexRepository(locals.supabase, user.id).findById(params.id)
+	);
+	if (!pokedex) throw error(404, 'Pokédex not found');
+	let grid = null;
+	try {
+		grid = await loadPokedexGrid(locals.supabase, user.id, pokedex, timings);
+	} catch {
+		console.error('Unable to load Pokédex grid');
 	}
-
-	const { id } = params;
-
-	// Fetch pokédex to verify ownership (RLS will also block, but we want a proper 404)
-	const repo = new PokedexRepository(supabase, user.id);
-	const pokedex = await repo.findById(id);
-
-	if (!pokedex) {
-		// Either doesn't exist or user doesn't own it
-		throw error(404, 'Pokédex not found');
-	}
-
-	// Streamed rather than awaited: the page shell renders straight away and the entries arrive in
-	// the same response, instead of the browser requesting them after hydration. A failure resolves
-	// to null so the page falls back to fetching (and reporting) through the API.
-	const initialCombinedData = loadCombinedDataPage(supabase, user.id, pokedex, {
-		page: 1,
-		limit: INITIAL_PAGE_SIZE,
-		enableForms: pokedex.isFormDex
-	})
-		.then((result) => result.combinedData)
-		.catch((err) => {
-			console.error('Unable to preload combined data', err);
-			return null;
-		});
-
-	return {
-		pokedex,
-		initialCombinedData
-	};
+	const packed = timings.prepare(() => (grid ? packGrid(grid) : null));
+	timings.recordAuth(locals.pokedexAuthMs);
+	const timing = timings.finish();
+	setHeaders({
+		'cache-control': 'private, no-store',
+		...(timing ? { 'server-timing': timing } : {})
+	});
+	const layout = cookies.get('boxViewLayout');
+	const boxViewLayout: 'comfortable' | 'compact' | 'ultra' =
+		layout === 'compact' || layout === 'ultra' ? layout : 'comfortable';
+	return { pokedex, grid: packed, boxViewLayout };
 };

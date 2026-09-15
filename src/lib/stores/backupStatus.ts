@@ -24,7 +24,19 @@ export function setBackupStatus(integrations: IntegrationSummary[]): void {
 	backupsNeedingReconnect.set(integrations.filter((i) => !i.enabled).map((i) => i.provider));
 }
 
-export async function refreshBackupStatus(): Promise<void> {
+let refreshInFlight: { generation: number; promise: Promise<void> } | null = null;
+
+export function refreshBackupStatus(): Promise<void> {
+	if (refreshInFlight?.generation === mutationGeneration) return refreshInFlight.promise;
+	const generation = mutationGeneration;
+	const promise = performRefresh().finally(() => {
+		if (refreshInFlight?.promise === promise) refreshInFlight = null;
+	});
+	refreshInFlight = { generation, promise };
+	return promise;
+}
+
+async function performRefresh(): Promise<void> {
 	if (typeof window === 'undefined' || !navigator.onLine) return;
 	const sequence = ++refreshSequence;
 	const generation = mutationGeneration;
