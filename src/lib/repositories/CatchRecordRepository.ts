@@ -90,19 +90,27 @@ class CatchRecordRepository {
 			return mapped;
 		});
 
-		const { data: result, error } = await this.supabase
-			.from('catch_records')
-			.upsert(dbRows, {
-				onConflict: '"userId","pokedexId","pokemonId"'
-			})
-			.select();
-
-		if (error) {
-			console.error('Supabase error bulk upserting catch records:', error);
-			throw new Error(`Failed to bulk upsert catch records: ${error.message}`);
+		const groups = new Map<string, Partial<CatchRecordDB>[]>();
+		for (const row of dbRows) {
+			const key = Object.keys(row).sort().join(',');
+			const group = groups.get(key) ?? [];
+			group.push(row);
+			groups.set(key, group);
 		}
-
-		return (result ?? []).map((row) => this.transformCatchRecord(row));
+		const saved: CatchRecord[] = [];
+		for (const group of groups.values()) {
+			const { data, error } = await this.supabase
+				.from('catch_records')
+				.upsert(group, {
+					onConflict: '"userId","pokedexId","pokemonId"',
+					defaultToNull: false
+				})
+				.select();
+			if (error) throw new Error(`Failed to bulk upsert catch records: ${error.message}`);
+			saved.push(...(data ?? []).map((row) => this.transformCatchRecord(row)));
+		}
+		const byPokemon = new Map(saved.map((row) => [row.pokemonId, row]));
+		return records.map((row) => byPokemon.get(row.pokemonId)!);
 	}
 
 	async findById(id: string): Promise<CatchRecord | null> {

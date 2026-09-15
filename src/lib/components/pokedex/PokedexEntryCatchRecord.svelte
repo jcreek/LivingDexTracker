@@ -38,9 +38,9 @@
 		value: string | CatchInformationItem
 	): value is CatchInformationItem => typeof value !== 'string';
 
-	function updateCatchRecord(source: UpdateCatchSource) {
+	function updateCatchRecord(source: UpdateCatchSource, changes?: Partial<CatchRecord>) {
 		if (readOnly) return;
-		dispatch('updateCatch', { pokedexEntry, catchRecord, source });
+		dispatch('updateCatch', { pokedexEntry, catchRecord, source, changes });
 	}
 
 	function onCaughtChange() {
@@ -50,7 +50,10 @@
 		if (catchRecord.caught) {
 			catchRecord.haveToEvolve = false;
 		}
-		updateCatchRecord('toggle');
+		updateCatchRecord('toggle', {
+			caught: catchRecord.caught,
+			haveToEvolve: catchRecord.haveToEvolve
+		});
 	}
 
 	function onNeedsToEvolveChange() {
@@ -60,7 +63,10 @@
 		if (catchRecord.haveToEvolve) {
 			catchRecord.caught = false;
 		}
-		updateCatchRecord('toggle');
+		updateCatchRecord('toggle', {
+			caught: catchRecord.caught,
+			haveToEvolve: catchRecord.haveToEvolve
+		});
 	}
 </script>
 
@@ -154,7 +160,7 @@
 								type="checkbox"
 								bind:checked={catchRecord.inHome}
 								class="checkbox checkbox-primary"
-								on:change={() => updateCatchRecord('toggle')}
+								on:change={() => updateCatchRecord('toggle', { inHome: catchRecord?.inHome })}
 							/>
 						</label>
 					</div>
@@ -168,7 +174,8 @@
 									type="checkbox"
 									bind:checked={catchRecord.hasGigantamaxed}
 									class="checkbox checkbox-primary"
-									on:change={() => updateCatchRecord('toggle')}
+									on:change={() =>
+										updateCatchRecord('toggle', { hasGigantamaxed: catchRecord?.hasGigantamaxed })}
 								/>
 							</label>
 						</div>
