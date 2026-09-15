@@ -112,13 +112,25 @@ describe('refreshBackupStatus', () => {
 
 	const json = (body: unknown) => new Response(JSON.stringify(body));
 
-	it('ignores a response overtaken by a newer refresh', async () => {
+	it('coalesces concurrent refreshes for the same account state', async () => {
+		const slow = deferredResponse();
+		fetchMock.mockReturnValueOnce(slow.promise);
+		const first = refreshBackupStatus();
+		const second = refreshBackupStatus();
+		expect(second).toBe(first);
+		expect(fetchMock).toHaveBeenCalledTimes(1);
+		slow.resolve(json([]));
+		await Promise.all([first, second]);
+	});
+
+	it('ignores a response overtaken by a new account refresh', async () => {
 		const slow = deferredResponse();
 		fetchMock
 			.mockReturnValueOnce(slow.promise)
 			.mockResolvedValueOnce(json([{ provider: 'google_drive', enabled: true }]));
 
 		const first = refreshBackupStatus();
+		clearBackupStatus();
 		await refreshBackupStatus();
 		slow.resolve(json([{ provider: 'google_drive', enabled: false }]));
 		await first;

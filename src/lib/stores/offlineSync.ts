@@ -1,3 +1,4 @@
+import { afterCriticalPageWork } from '$lib/utils/criticalPageWork';
 import { writable } from 'svelte/store';
 import { PUBLIC_USE_LOCAL_POKEMON_SPRITE_FOLDER } from '$env/static/public';
 import type { OfflineSnapshot } from '$lib/models/OfflineSnapshot';
@@ -246,15 +247,19 @@ export function startOfflineSync(getUserId: () => string | null): () => void {
 		}, 1_000);
 	};
 	// Explicit requests (edits, Retry, a new sign-in) and reconnecting always fetch a new copy.
-	const schedule = () => scheduleSync(false);
+	const schedule = () => {
+		cancelStartup();
+		scheduleSync(false);
+	};
 
 	// Best effort: ask the browser not to evict the offline artwork cache under storage pressure.
 	void navigator.storage?.persist?.().catch(() => undefined);
 	window.addEventListener(SYNC_EVENT, schedule);
 	window.addEventListener('online', schedule);
-	scheduleSync(true);
+	const cancelStartup = afterCriticalPageWork(() => scheduleSync(true));
 	return () => {
 		stopped = true;
+		cancelStartup();
 		if (timer !== null) window.clearTimeout(timer);
 		window.removeEventListener(SYNC_EVENT, schedule);
 		window.removeEventListener('online', schedule);
