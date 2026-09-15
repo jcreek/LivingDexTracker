@@ -30,17 +30,20 @@ export const handle: Handle = async ({ event, resolve }) => {
 	let sessionPromise: ReturnType<App.Locals['safeGetSession']> | null = null;
 	event.locals.safeGetSession = () => {
 		sessionPromise ??= (async () => {
+			const authStarted = performance.now();
 			const {
 				data: { user },
 				error
 			} = await event.locals.supabase.auth.getUser();
 			if (error) {
+				event.locals.pokedexAuthMs = performance.now() - authStarted;
 				return { session: null, user: null };
 			}
 
 			const {
 				data: { session }
 			} = await event.locals.supabase.auth.getSession();
+			event.locals.pokedexAuthMs = performance.now() - authStarted;
 			return { session, user };
 		})();
 		return sessionPromise;
