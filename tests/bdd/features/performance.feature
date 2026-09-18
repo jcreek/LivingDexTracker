@@ -14,6 +14,12 @@ Feature: Signed-in page speed
     Then its entries appear within 5 seconds
     And the browser did not request the grid separately
 
+  Scenario: A Pokémon's card opens from data the browser already has
+    When I load the Pokédex page directly
+    And the Pokédex has finished loading its details in the background
+    And I open the first Pokémon
+    Then its details were already in the browser
+
   Scenario: Moving between my Pokédex list and a Pokédex is quick
     When I switch between my Pokédex list and the Pokédex
     Then each switch finishes within 3 seconds

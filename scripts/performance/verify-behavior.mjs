@@ -71,6 +71,9 @@ try {
 		`Scroll anchor moved: ${anchorTop} to ${resizedTop}`
 	);
 	await page.setViewportSize({ width: 1350, height: 940 });
+	// Let the resize settle first: restoring the box anchor scrolls the page, and a late restore
+	// would undo the scroll below.
+	await page.waitForTimeout(200);
 	await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 	await page.waitForSelector('[data-entry-index="1024"]');
 	assert.ok((await page.locator('[data-entry-index]').count()) < 300);
@@ -117,6 +120,9 @@ try {
 	await page.waitForSelector('[data-grid-interactive]');
 	assert.ok((await page.locator('body').innerText()).includes('Showing 439 of 439'));
 	await page.goBack();
+	// Block the background detail read so the cache stays empty: these checks are about the offline
+	// snapshot answering a click, not about details the browser already holds.
+	await page.route(`**/api/pokedexes/${national.id}/combined-data*`, (route) => route.abort());
 	await page
 		.locator('.card')
 		.filter({ hasText: national.name })

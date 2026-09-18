@@ -27,12 +27,13 @@ export async function loadPokedexEntryDetail(
 	entryId: number
 ) {
 	const scopes = await resolveDexScopes(supabase, pokedex);
-	const membership = new CombinedDataRepository(supabase, userId, pokedex._id, true);
-	const entries = await membership.findGridEntries(
+	const repo = new CombinedDataRepository(supabase, userId, pokedex._id);
+	const member = await repo.isEntryInDex(
+		entryId,
 		pokedex.isFormDex,
 		pokedex.gameScope || '',
 		scopes
 	);
-	if (!entries.some((entry) => entry.id === entryId)) return null;
-	return new CombinedDataRepository(supabase, userId, pokedex._id).findEntryDetail(entryId);
+	if (!member) return null;
+	return repo.findEntryDetail(entryId);
 }

@@ -74,4 +74,23 @@ describe('loadCombinedDataPage', () => {
 		releaseRows([]);
 		await expect(pending).resolves.toMatchObject({ totalCount: 45, totalPages: 5 });
 	});
+
+	it('skips the count query when the caller asks for every row at once', async () => {
+		findCombinedData.mockResolvedValue([{ id: 'a' }, { id: 'b' }]);
+
+		const result = await loadCombinedDataPage(supabase, 'user-1', pokedex, {
+			page: 1,
+			limit: 9999,
+			enableForms: true,
+			includeCount: false
+		});
+
+		expect(countCombinedData).not.toHaveBeenCalled();
+		expect(result).toEqual({
+			combinedData: [{ id: 'a' }, { id: 'b' }],
+			totalPages: 1,
+			currentPage: 1,
+			totalCount: 2
+		});
+	});
 });

@@ -9,6 +9,8 @@ export type CombinedDataQuery = {
 	enableForms: boolean;
 	region?: string;
 	game?: string;
+	/** Counting repeats the whole scoped read; callers fetching every row in one page can skip it. */
+	includeCount?: boolean;
 };
 
 /**
@@ -20,16 +22,37 @@ export async function loadCombinedDataPage(
 	supabase: SupabaseClient,
 	userId: string,
 	pokedex: Pokedex,
-	{ page, limit, enableForms, region = '', game = '' }: CombinedDataQuery
+	{ page, limit, enableForms, region = '', game = '', includeCount = true }: CombinedDataQuery
 ) {
 	// Use the pokédex's gameScope as the default filter if no manual game filter is set.
 	const effectiveGame = game || pokedex.gameScope || '';
 	const dexScopes = await resolveDexScopes(supabase, pokedex);
 	const repo = new CombinedDataRepository(supabase, userId, pokedex._id);
 
+	const rows = repo.findCombinedData(
+		userId,
+		page,
+		limit,
+		enableForms,
+		region,
+		effectiveGame,
+		dexScopes
+	);
+
+	if (!includeCount) {
+		// Single-page callers already hold every row, so counting would repeat the same scoped read.
+		const combinedData = await rows;
+		return {
+			combinedData,
+			totalPages: 1,
+			currentPage: page,
+			totalCount: combinedData.length
+		};
+	}
+
 	// The rows and the count are independent queries, so run them together.
 	const [combinedData, totalCount] = await Promise.all([
-		repo.findCombinedData(userId, page, limit, enableForms, region, effectiveGame, dexScopes),
+		rows,
 		repo.countCombinedData(enableForms, region, effectiveGame, dexScopes)
 	]);
 

@@ -21,6 +21,8 @@ export const GET = async (event: RequestEvent) => {
 		const enableForms = url.searchParams.get('enableForms') === 'true';
 		const region = url.searchParams.get('region') || '';
 		const game = url.searchParams.get('game') || '';
+		// Callers that fetch the whole dex in one page opt out of the duplicate count query.
+		const includeCount = url.searchParams.get('includeCount') !== 'false';
 
 		if (!userId) {
 			// Anonymous users cannot view pokédexes
@@ -42,7 +44,8 @@ export const GET = async (event: RequestEvent) => {
 				limit,
 				enableForms,
 				region,
-				game
+				game,
+				includeCount
 			})
 		);
 	} catch (err) {
