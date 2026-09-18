@@ -397,6 +397,51 @@ class CombinedDataRepository {
 		return entries;
 	}
 
+	/**
+	 * Authorises one entry without materialising the dex. Mirrors `findGridEntries`, which reads the
+	 * scoped dex tables and — for game-scoped form dexes — supplements named forms from
+	 * `pokedex_entries`. Region is not a grid filter, so it is not applied here either.
+	 */
+	async isEntryInDex(
+		entryId: number,
+		enableForms: boolean,
+		game: string,
+		dexScopes: string[]
+	): Promise<boolean> {
+		if (dexScopes.length) {
+			let scoped = this.supabase
+				.from('game_pokedex_entry_details')
+				.select('id')
+				.in('dexId', dexScopes)
+				.eq('id', entryId);
+			if (!enableForms) scoped = scoped.eq('isDefaultForm', true);
+
+			const { data, error } = await scoped.limit(1);
+			if (error) throw new Error('Unable to load dex entries');
+			if (data && data.length > 0) return true;
+			if (!enableForms || !game) return false;
+
+			// Named forms are absent from the game dex tables and are supplemented from pokedex_entries.
+			const { data: forms, error: formsError } = await this.supabase
+				.from('pokedex_entries')
+				.select('id')
+				.eq('id', entryId)
+				.not('form', 'is', null)
+				.contains('gamesToCatchIn', [game])
+				.limit(1);
+			if (formsError) throw new Error('Unable to load form entries');
+			return !!forms && forms.length > 0;
+		}
+
+		let query = this.supabase.from('pokedex_entries').select('id').eq('id', entryId);
+		if (!enableForms) query = query.eq('isDefaultForm', true);
+		if (game) query = query.contains('gamesToCatchIn', [game]);
+
+		const { data, error } = await query.limit(1);
+		if (error) throw new Error('Unable to load dex entries');
+		return !!data && data.length > 0;
+	}
+
 	async joinGridCatches(entries: PokedexEntryDB[]): Promise<PokedexGridRow[]> {
 		const catches = new Map(
 			(

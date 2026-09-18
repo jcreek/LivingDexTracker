@@ -41,6 +41,14 @@ const errors = [];
 page.on('pageerror', (error) => errors.push(error.message));
 const requests = [];
 page.on('request', (request) => requests.push(new URL(request.url()).pathname));
+const primedDetails = () =>
+	requests.filter((path) => /\/api\/pokedexes\/[^/]+\/combined-data$/.test(path)).length;
+// Details are read once per dex at the idle boundary, so allow for a slow idle callback.
+async function waitForDetailPrime() {
+	const deadline = Date.now() + 15_000;
+	while (primedDetails() === 0 && Date.now() < deadline) await page.waitForTimeout(100);
+	assert.equal(primedDetails(), 1, 'Details must be read exactly once for the dex');
+}
 const results = [];
 try {
 	for (const dex of fixture.dexes) {
@@ -61,18 +69,25 @@ try {
 		assert.ok(stats.cells <= 180, `Mounted cells: ${stats.cells}`);
 		assert.ok(stats.dom < 2500, `DOM elements: ${stats.dom}`);
 		assert.ok(stats.cls <= 0.1, `CLS: ${stats.cls}`);
-		assert.equal(
-			requests.filter((path) => /\/api\/pokedexes\/[^/]+\/(grid|combined-data)$/.test(path)).length,
-			0
-		);
+		// The grid ships with the page, so re-fetching it would be redundant. The details read is
+		// deliberate: it is what lets a card open without a round trip of its own.
+		assert.equal(requests.filter((path) => /\/api\/pokedexes\/[^/]+\/grid$/.test(path)).length, 0);
+		await waitForDetailPrime();
 		assert.equal(await page.locator('button button').count(), 0);
 		await page.screenshot({ path: `${directory}/${dex.gameScope ? 'scoped' : 'national'}.png` });
 		const first = page.locator('[data-entry-index="0"]');
 		const entryId = await first.getAttribute('data-entry-id');
 		const notes = await readJson(`/api/pokedexes/${dex.id}/entries/${entryId}`);
+		const openedWith = requests.filter((path) => path.endsWith(`/entries/${entryId}`)).length;
 		await first.click();
 		const modal = page.getByRole('dialog', { name: 'Pokémon details' });
 		await modal.getByLabel('Notes:', { exact: true }).waitFor();
+		// Primed details mean opening a card costs no request of its own.
+		assert.equal(
+			requests.filter((path) => path.endsWith(`/entries/${entryId}`)).length,
+			openedWith,
+			'Opening a card must not fetch its details separately'
+		);
 		assert.equal(
 			await modal.getByLabel('Notes:', { exact: true }).inputValue(),
 			notes.catchRecord.personalNotes

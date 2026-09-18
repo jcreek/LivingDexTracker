@@ -31,6 +31,8 @@
 		type CatchRecordPatch
 	} from '$lib/models/PokedexGridRow';
 	import PokemonSprite from '$lib/components/PokemonSprite.svelte';
+	import { afterCriticalPageWork } from '$lib/utils/criticalPageWork';
+	import { mergeEntryDetail } from '$lib/utils/pokemonDetail';
 
 	export let data: PageData;
 
@@ -180,6 +182,10 @@
 	onDestroy(() => {
 		detailRequest++;
 		detailAbort?.abort();
+		detailPrimeRequest++;
+		detailPrimeAbort?.abort();
+		cancelDetailPrime?.();
+		cancelDetailPrime = null;
 	});
 	onDestroy(() => {
 		catchWriteQueueUnsubscribe?.();
@@ -196,10 +202,60 @@
 	let returnFocus: HTMLElement | null = null;
 	const detailCache = new Map<string, CombinedData>();
 	let detailOwner = '';
+	// Details are catalog text plus personal notes, so one background read serves every card in the
+	// dex. Without it each card open costs an authenticated round trip before anything can render.
+	let detailPrimeKey = '';
+	let detailPrimeRequest = 0;
+	let detailPrimeAbort: AbortController | null = null;
+	let cancelDetailPrime: (() => void) | null = null;
+
 	$: if (localUser?.id !== detailOwner) {
 		detailOwner = localUser?.id ?? '';
 		detailCache.clear();
+		detailPrimeKey = '';
 		closePokemonModal();
+	}
+
+	$: if (browser && pokedexId && localUser?.id) scheduleDetailPrime();
+
+	function scheduleDetailPrime(force = false) {
+		if (!browser) return;
+		const owner = localUser?.id ?? '';
+		const id = pokedexId;
+		if (!owner || !id) return;
+		const key = `${owner}:${id}`;
+		if (!force && key === detailPrimeKey) return;
+		detailPrimeKey = key;
+		cancelDetailPrime?.();
+		cancelDetailPrime = afterCriticalPageWork(() => {
+			cancelDetailPrime = null;
+			void primeDetailCache(owner, id);
+		});
+	}
+
+	async function primeDetailCache(owner: string, id: string) {
+		if (!browser || !navigator.onLine) return;
+		const request = ++detailPrimeRequest;
+		detailPrimeAbort?.abort();
+		detailPrimeAbort = new AbortController();
+		try {
+			const enableForms = pokedex?.isFormDex ?? false;
+			const response = await fetch(
+				`/api/pokedexes/${id}/combined-data?page=1&limit=9999&enableForms=${enableForms}&includeCount=false`,
+				{ signal: detailPrimeAbort.signal }
+			);
+			if (!response.ok) throw new Error('Unable to load details');
+			const result: { combinedData: CombinedData[] } = await response.json();
+			if (request !== detailPrimeRequest || id !== pokedexId || owner !== localUser?.id) return;
+			for (const row of result.combinedData) {
+				detailCache.set(`${owner}:${id}:${row.pokedexEntry._id}`, row);
+			}
+			// A card opened before this landed is still waiting on its own request; serve it now.
+			if (showModal && !selectedPokemon && selectedSummary) void openPokemonModal(selectedSummary);
+		} catch {
+			// Cards fall back to fetching their own details; allow a later attempt to prime again.
+			if (request === detailPrimeRequest) detailPrimeKey = '';
+		}
 	}
 
 	async function openPokemonModal(pokemon: PokedexGridRow) {
@@ -230,29 +286,14 @@
 			if (request !== detailRequest || id !== pokedexId || owner !== localUser?.id) return;
 			if (!detail) throw new Error('These details are not saved for offline use.');
 			detailCache.set(key, detail);
-			// A detail response must not undo status changes made while it was in flight.
-			const current = combinedData?.find((row) => row.pokedexEntry._id === entryId)?.catchRecord;
-			const pending = catchWriteQueue?.getPendingPatch(entryId);
-			selectedPokemon = {
-				...detail,
-				catchRecord:
-					detail.catchRecord || current || pending
-						? {
-								_id: '',
-								userId: owner,
-								pokedexId: id,
-								pokemonId: entryId,
-								caught: false,
-								haveToEvolve: false,
-								inHome: false,
-								hasGigantamaxed: false,
-								personalNotes: '',
-								...detail.catchRecord,
-								...current,
-								...pending
-							}
-						: null
-			};
+			selectedPokemon = mergeEntryDetail(
+				detail,
+				combinedData?.find((row) => row.pokedexEntry._id === entryId)?.catchRecord,
+				catchWriteQueue?.getPendingPatch(entryId),
+				owner,
+				id,
+				entryId
+			);
 		} catch (error) {
 			if (request !== detailRequest || id !== pokedexId || owner !== localUser?.id) return;
 			detailError = error instanceof Error ? error.message : 'Unable to load details.';
@@ -430,7 +471,7 @@
 			)
 				return;
 			combinedData = unpackGrid(result.grid);
-			detailCache.clear();
+			// Cached details keep their catalog text; catch status is taken from the grid on open.
 		} catch {
 			if (request === gridRequest && id === pokedexId && owner === localUser?.id)
 				failedToLoad = true;
@@ -609,6 +650,7 @@
 		gridRequest++;
 		closePokemonModal();
 		detailCache.clear();
+		detailPrimeKey = '';
 		combinedData = data.grid ? unpackGrid(data.grid) : null;
 		failedToLoad = data.grid === null;
 	}
@@ -636,6 +678,8 @@
 		const onOnline = () => {
 			online = true;
 			void catchWriteQueue?.flushNow();
+			// Priming is skipped while offline, so ask for it again now the network is back.
+			scheduleDetailPrime(true);
 		};
 		window.addEventListener('offline', onOffline);
 

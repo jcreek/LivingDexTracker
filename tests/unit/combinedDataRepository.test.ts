@@ -234,3 +234,54 @@ describe('compact grid reads', () => {
 		expect(selection?.args).toHaveLength(1);
 	});
 });
+
+describe('CombinedDataRepository.isEntryInDex', () => {
+	it('accepts an entry the scoped dex lists, without reading the whole dex', async () => {
+		const { supabase, queries } = createSupabaseStub((table) =>
+			table === 'game_pokedex_entry_details'
+				? { data: [{ id: 25 }], error: null }
+				: { data: [], error: null }
+		);
+		const repo = new CombinedDataRepository(supabase, 'user-1', 'dex-1');
+
+		await expect(repo.isEntryInDex(25, false, 'Black', ['black-unova'])).resolves.toBe(true);
+
+		const [dexEntries] = queryFor(queries, 'game_pokedex_entry_details');
+		expect(hasCall(dexEntries, 'eq', ['id', 25])).toBe(true);
+		expect(hasCall(dexEntries, 'eq', ['isDefaultForm', true])).toBe(true);
+		expect(hasCall(dexEntries, 'limit', [1])).toBe(true);
+		// A membership check must not page the dex the way the grid read does.
+		expect(dexEntries.calls.some((c) => c.method === 'range')).toBe(false);
+	});
+
+	it('accepts a named form a game-scoped form dex supplements from pokedex_entries', async () => {
+		const { supabase, queries } = createSupabaseStub((table) =>
+			table === 'pokedex_entries' ? { data: [{ id: 99 }], error: null } : { data: [], error: null }
+		);
+		const repo = new CombinedDataRepository(supabase, 'user-1', 'dex-1');
+
+		await expect(repo.isEntryInDex(99, true, 'Scarlet', ['scarlet-paldea'])).resolves.toBe(true);
+
+		const [forms] = queryFor(queries, 'pokedex_entries');
+		expect(hasCall(forms, 'not', ['form', 'is', null])).toBe(true);
+		expect(hasCall(forms, 'contains', ['gamesToCatchIn', ['Scarlet']])).toBe(true);
+	});
+
+	it('rejects an entry that is in neither the scoped dex nor its form supplement', async () => {
+		const { supabase } = createSupabaseStub();
+		const repo = new CombinedDataRepository(supabase, 'user-1', 'dex-1');
+
+		await expect(repo.isEntryInDex(1, true, 'Scarlet', ['scarlet-paldea'])).resolves.toBe(false);
+	});
+
+	it('checks an unscoped dex against the game filter alone', async () => {
+		const { supabase, queries } = createSupabaseStub(() => ({ data: [{ id: 25 }], error: null }));
+		const repo = new CombinedDataRepository(supabase, 'user-1', 'dex-1');
+
+		await expect(repo.isEntryInDex(25, true, 'Red', [])).resolves.toBe(true);
+
+		const [entries] = queryFor(queries, 'pokedex_entries');
+		expect(hasCall(entries, 'contains', ['gamesToCatchIn', ['Red']])).toBe(true);
+		expect(mentionsIsDefaultForm(entries)).toBe(false);
+	});
+});
